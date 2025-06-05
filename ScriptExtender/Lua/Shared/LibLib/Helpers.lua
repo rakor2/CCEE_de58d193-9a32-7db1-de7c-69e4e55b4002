@@ -1,26 +1,3 @@
----AahzLib
----Ext.OnNextTick, but variable ticks
----@param ticks integer
----@param fn function
-function TickTimer(ticks, fn)
-    local ticksPassed = 0
-    local eventID
-    eventID = Ext.Events.Tick:Subscribe(function()
-        ticksPassed = ticksPassed + 1
-        if ticksPassed >= ticks then
-            fn()
-            Ext.Events.Tick:Unsubscribe(eventID)
-        end
-    end)
-end
-
-
-
-
-
-
----LibLib
-
 Hellpers = {}
 
 
@@ -28,7 +5,7 @@ Hellpers = {}
 --Osi.DisplayName or whatever is bad, becasuse for some templates (most of them) it returns simple names like Elf or Goblin
 ---@param templateName string
 ---@return string
-function ExtractDisplayName(templateName)
+function Hellpers:ExtractDisplayName(templateName)
     if not templateName or templateName == "" then
         return "Unknown"
     end
@@ -60,7 +37,7 @@ end
 ---@param uuid string
 ---@param howmuchleft integer
 ---@return ShortUuid string
-function UUIDShortner(uuid, howmuchleft)
+function Hellpers:UUIDShortner(uuid, howmuchleft)
     if type(uuid) ~= "string" then
         return "?"
     end
@@ -69,12 +46,10 @@ function UUIDShortner(uuid, howmuchleft)
 end
 
 
-
-
 --Gets templates by type
 ---@param type string
 ---@return string
-function GetTemplates(type)
+function Hellpers:GetTemplates(type)
     templatesCache = {}
     if templatesCache[type] then
         return templatesCache[type]
@@ -94,12 +69,10 @@ function GetTemplates(type)
 end
 
 
-
 function Hellpers:GetUserID()
     local userID = _C().UserReservedFor.UserID
     return userID
 end
-
 
 
 function Hellpers:GetCameraData()
