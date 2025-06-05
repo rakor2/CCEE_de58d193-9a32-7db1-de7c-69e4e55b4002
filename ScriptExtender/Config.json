@@ -1,0 +1,5 @@
+{
+    "RequiredVersion": 23,
+    "ModTable": "CCEE",
+    "FeatureFlags": ["Lua"]
+}

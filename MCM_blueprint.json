@@ -1,0 +1,33 @@
+{
+    "SchemaVersion": 1,
+    "ModName": "CCEE",
+    "Tabs": [
+            {
+                "TabId": "CCEE-main",
+                "TabName": "BCCEE",
+                "Sections": [
+                    {
+                        "SectionId": "general_settings",
+                        "SectionName": "",
+                        "Settings": [
+                            {
+                                "Id": "ccee_toggle_window",
+                                "Name": "! Toggle window",
+                                "Description": "looks boring with no description",
+                                "Type": "keybinding_v2",
+                                "Default": {
+                                    "Keyboard": {
+                                        "Key": "",
+                                        "ModifierKeys": []
+                                    }
+                                },
+                                "Options": {
+                                    "BlockIfLevelNotStarted": true
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
