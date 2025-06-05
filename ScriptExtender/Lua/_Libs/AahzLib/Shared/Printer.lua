@@ -233,20 +233,21 @@ function SimplePrinter:RunningRainbowPrint(data, depth, includeTime)
 
     Ext.Utils.Print(full)
 end
-local prefix = Ext.Mod.GetMod(ModuleUUID).Info.Directory
-prefix = prefix:gsub(" ","")
 
-SimplePrint = SimplePrinter:New{Prefix = prefix or "AahzLib", ApplyColor = true}
-function SPrint(...) SimplePrint:SetFontColor(58, 183, 255) SimplePrint:Print(...) end
-function STest(...) SimplePrint:SetFontColor(202, 63, 109) SimplePrint:PrintTest(...) end
-function SDebug(...) SimplePrint:SetFontColor(216, 106, 189) SimplePrint:PrintDebug(...) end
-function SWarn(...) SimplePrint:SetFontColor(221, 116, 18) SimplePrint:PrintWarning(...) end
-function SDump(...) SimplePrint:SetFontColor(37, 161, 85) SimplePrint:Dump(...) end
-function SDumpS(...) SimplePrint:SetFontColor(241, 177, 225) SimplePrint:Dump(..., true) end
-function SDumpArray(...) SimplePrint:DumpArray(...) end
+local modName = Ext.Mod.GetMod(ModuleUUID).Info.Name
 
-function RPrint(...) SimplePrint:RunningRainbowPrint(..., 12, false) end
-function RPrintS(...) SimplePrint:RunningRainbowPrint(..., 1, false) end
+SimplePrint = SimplePrinter:New{Prefix = tostring(modName), ApplyColor = true}
+function DPrint(...) SimplePrint:SetFontColor(0, 255, 158) SimplePrint:Print(...) end
+function DTest(...) SimplePrint:SetFontColor(228, 101, 255) SimplePrint:PrintTest(...) end
+function DDebug(...) SimplePrint:SetFontColor(255, 224, 81) SimplePrint:PrintDebug(...) end
+function DWarn(...) SimplePrint:SetFontColor(221, 116, 18) SimplePrint:PrintWarning(...) end
+function DDump(...) SimplePrint:SetFontColor(78, 233, 255) SimplePrint:Dump(...) end
+function DDumpS(...) SimplePrint:SetFontColor(104, 255, 0) SimplePrint:Dump(..., true) end
+function DDumpArray(...) SimplePrint:DumpArray(...) end
+
+function DRPrint(...) SimplePrint:RunningRainbowPrint(..., 12, false) end
+function DRPrintS(...) SimplePrint:RunningRainbowPrint(..., 1, false) end
+
 -- local printcolor    = rgb(58, 183, 255)
 -- local testcolor     = rgb(202, 63, 109)
 -- local debugcolor    = rgb(216, 106, 189)
