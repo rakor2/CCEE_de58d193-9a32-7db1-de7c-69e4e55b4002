@@ -1,9 +1,10 @@
 
 
 function FindAttachment(attachment)
-    for i = 1, #_C().Visual.Visual.Attachments do
-        if _C().Visual.Visual.Attachments[i].Visual.VisualResource and _C().Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
-            local visuals = _C().Visual.Visual.Attachments[i].Visual
+    characterEnt = Ext.Entity.Get(_C().Uuid.EntityUuid)
+    for i = 1, #characterEnt.Visual.Visual.Attachments do
+        if characterEnt.Visual.Visual.Attachments[i].Visual.VisualResource and characterEnt.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
+            local visuals = characterEnt.Visual.Visual.Attachments[i].Visual
             return visuals
         end
     end
@@ -97,7 +98,7 @@ lastParameters = lastParameters or {}
 
 function ApplyParameters(attachment, parameterName, parameterType, value)
     local visuals = FindAttachment(attachment)
-
+    
     lastParameters[attachment] = lastParameters[attachment] or {}
     lastParameters[attachment][parameterType]  = lastParameters[attachment][parameterType] or {}
 
@@ -105,6 +106,9 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
 
         for _, desc in pairs(visuals.ObjectDescs) do
             local am = desc.Renderable.ActiveMaterial
+            -- local ap = desc.Renderable.ActiveMaterial.Material
+            -- local am1 = desc.Renderable.AppliedMaterials[1]
+            -- local am1m = desc.Renderable.AppliedMaterials[1].Material
             if am ~= nil and am.Material ~= nil then
 
                 if parameterType == 'Scalar' then
@@ -112,6 +116,9 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
                         for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                             if scalarParam.ParameterName == parameterName then
                                 am:SetScalar(parameterName, value)
+                                -- ap:SetScalar(parameterName, value)
+                                -- am1:SetScalar(parameterName, value)
+                                -- am1m:SetScalar(parameterName, value)
                                 lastParameters[attachment][parameterType][parameterName] = value
                             end
                         end
@@ -122,6 +129,9 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
                         for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                             if scalarParam.ParameterName == parameterName then
                                 am:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                -- ap:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                -- am1:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                -- am1m:SetVector3(parameterName, {value[1], value[2], value[3]})
                                 lastParameters[attachment][parameterType][parameterName] = value
                             end
                         end
@@ -153,23 +163,61 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
 end
 
 
-
 function LoadParameters()
 
-    Helpers.Timer:OnTicks(100, function()
-
-        local userVars = Mods.CCEE.Helpers.UserVars:Get(_C(), 'CCEE_Last')
-        if userVars then
-            for attachment, parameters in pairs(userVars) do
-                for parameterType, parametersAll in pairs(parameters) do
-                    for parameterName, value in pairs(parametersAll) do
-                        ApplyParameters(attachment, parameterName, parameterType, value)
-                    end
+    local userVars = Mods.CCEE.Helpers.UserVars:Get(_C(), 'CCEE_Last')
+    if userVars then
+        for attachment, parameters in pairs(userVars) do
+            for parameterType, parametersAll in pairs(parameters) do
+                for parameterName, value in pairs(parametersAll) do
+                    ApplyParameters(attachment, parameterName, parameterType, value)
                 end
             end
         end
-
-    end)
+    end
 
 end
 
+
+
+-- Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, _, component)
+--     -- TLPreviewDummy matching
+--     Helpers.Timer:OnTicks(8, function()
+--         DDebug("ClientEquipmentVisuals created: %s (%s)", entity, entity.DisplayName and entity.DisplayName.NameKey:Get() or "Unknown")
+--         -- if entity.Uuid ~= nil then _P("EntityUuid:", entity.Uuid.EntityUuid) end
+--         local cevs = Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
+--         DDebug("CEV count: %d", #cevs)
+--         for i, v in ipairs(cevs) do
+--             if v.ClientPaperdoll then DDebug("ClientPaperdoll found: %d (%s)", i, Helpers.Loca:GetDisplayName(v) or "Unknown")
+--             elseif v.TLPreviewDummy then DDebug("TLPreviewDummy found: %d (%s)", i, Helpers.Loca:GetDisplayName(v) or "Unknown")
+--             else
+--                 DDebug("Probably character found: %d (%s)", i, Helpers.Loca:GetDisplayName(v) or "Unknown")
+--             end
+--         end
+--         DDebug("================")
+--         local dummy = entity.TLPreviewDummy
+--         if dummy ~= nil and entity.ClientTimelineActorControl ~= nil then
+--             -- Match and find owner
+--             local actorLink = entity.ClientTimelineActorControl.field_0
+--             local owner
+--             for i, v in ipairs(Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")) do
+--                 -- Owner character should have TimelineActorData but not ClientTimelineActorControl
+--                 if v.TimelineActorData ~= nil and not v.ClientTimelineActorControl and v.TimelineActorData.field_0 == actorLink then
+--                     owner = v
+--                 end
+--             end
+--             if owner ~= nil then
+--                 -- local name = owner.DisplayName and owner.DisplayName.NameKey:Get() or "Unknown"
+--                 -- EDDebug("Found TLPreviewDummy's owner: %s", name)
+--                 -- Get owner's visuals to assign and update doll
+--                 if owner.Uuid ~= nil then
+--                     local evis = GetEntityVisuals(owner.Uuid.EntityUuid)
+--                     evis:AssignTimelineDummy(entity)
+--                 end
+--             -- else EDDebug("Couldn't find owner for TLPreviewDummy.")
+--             end
+--         else
+--             --EDDebug("No ClientPaperdoll Entity.")
+--         end
+--     end)
+-- end)

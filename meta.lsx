@@ -21,7 +21,7 @@
                     <attribute id="Author" type="LSString" value=""/>
                     <attribute id="CharacterCreationLevelName" type="FixedString" value=""/>
                     <attribute id="Description" type="LSString" value=""/>
-                    <attribute id="FileSize" type="uint64" value="3900500"/>
+                    <attribute id="FileSize" type="uint64" value="0"/>
                     <attribute id="Folder" type="LSString" value="CCEE_de58d193-9a32-7db1-de7c-69e4e55b4002"/>
                     <attribute id="LobbyLevelName" type="FixedString" value=""/>
                     <attribute id="MD5" type="LSString" value="f5a54945bcf194430ea3619d11cb36a2"/>

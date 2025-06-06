@@ -28,7 +28,6 @@ function UI:Init()
     -- self.SkinColor =  Skin:Color()
     -- self.TattooParams = Tattoo:Parameters()
     -- self.Tests = Tests:Tests()
-
 end
 
 function Window:CCEEMCM()
