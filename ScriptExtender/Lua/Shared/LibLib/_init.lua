@@ -3,7 +3,7 @@ Ext.Require("Shared/LibLib/Helpers.lua")
 Ext.Require("Shared/LibLib/ImGui/_init.lua")
 
 
-Helpers.UserVars:Register('CCEE_Current', {
+Helpers.UserVars:Register('CCEE_Last', {
     Server = true,
     Client = true,
     SyncToClient = true,
