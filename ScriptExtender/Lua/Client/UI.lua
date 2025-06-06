@@ -25,13 +25,11 @@ local OPENONRESETQUESTIONMARK = true
 function UI:Init()
     self.MCM = Window:CCEEMCM()
     self.Window = Window:CCEEWindow()
-    self.SkinColor =  Skin:Color()
-    self.TattooParams = Tattoo:Parameters()
-    self.Tests = Tests:Tests()
+    -- self.SkinColor =  Skin:Color()
+    -- self.TattooParams = Tattoo:Parameters()
+    -- self.Tests = Tests:Tests()
+
 end
-
-
-
 
 function Window:CCEEMCM()
 
@@ -72,7 +70,6 @@ function Window:CCEEWindow()
     MCM.SetKeybindingCallback('ccee_toggle_window', function()
         self.Window.Open = not self.Window.Open
     end)
-
 
 
     function Skin:Color()
@@ -120,11 +117,12 @@ function Window:CCEEWindow()
 
     end
 
+
     function Tests:Tests()
 
         local testParams = parent:AddCollapsingHeader('Tests')
 
-        function Body()
+        function Tests:Body()
 
             local testParamsBody = testParams:AddTree('Body')
             local treeTestParams = testParamsBody:AddTree('Scalar')
@@ -175,7 +173,7 @@ function Window:CCEEWindow()
         end
 
        
-        function Head()
+        function Tests:Head()
 
             local testParamsHead = testParams:AddTree('Head')
             local treeTestParams4 = testParamsHead:AddTree('Scalar')
@@ -227,28 +225,177 @@ function Window:CCEEWindow()
         end
 
     
-        function Genital()
+        function Tests:Genital()
+
+            local testParamsGenital = testParams:AddTree('Genital')
+            local treeTestParamsGenital_5821 = testParamsGenital:AddTree('Scalar')
+            local treeTestParamsGenital_1293 = testParamsGenital:AddTree('Vec3')
+            local treeTestParamsGenital_7640 = testParamsGenital:AddTree('Vec')
+        
+            function TestAllGenitalScalarParameters()
+                for _,v in ipairs(Parameters.Genital.Scalar) do
+                    local testSlider = treeTestParamsGenital_5821:AddSliderInt(v, 0, -100, 100)
+                    testSlider.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider.OnChange = function()
+                        for _, part in ipairs({'Genital'}) do
+                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            function TestAllGenitalVec3Parameters()
+                for _,v in ipairs(Parameters.Genital.Vector3) do
+                    local testPicker = treeTestParamsGenital_1293:AddColorEdit(v)
+                    testPicker.IDContext = v .. Ext.Math.Random(1,10000)
+                    testPicker.OnChange = function()
+                        for _, part in ipairs({'Genital'}) do
+                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                        end
+                    end
+                end
+            end
+        
+            function TestAllGenitalVecParameter()
+                for _,v in ipairs(Parameters.Genital.Vector) do
+                    local testSlider2 = treeTestParamsGenital_7640:AddSlider(v)
+                    testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider2.OnChange = function()
+                        for _, part in ipairs({'Genital'}) do
+                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            TestAllGenitalScalarParameters()
+            TestAllGenitalVec3Parameters()
+            TestAllGenitalVecParameter()
+        
         end
 
+        function Tests:Tail()
 
-        function Tail()
+            local testParamsTail = testParams:AddTree('Tail')
+            local treeTestParamsTail_8732 = testParamsTail:AddTree('Scalar')
+            local treeTestParamsTail_3281 = testParamsTail:AddTree('Vec3')
+            local treeTestParamsTail_9017 = testParamsTail:AddTree('Vec')
+        
+            if Parameters.Tail then
+
+            function TestAllTailScalarParameters()
+                for _,v in ipairs(Parameters.Tail.Scalar) do
+                    local testSlider = treeTestParamsTail_8732:AddSliderInt(v, 0, -100, 100)
+                    testSlider.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider.OnChange = function()
+                        for _, part in ipairs({'Tail'}) do
+                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            function TestAllTailVec3Parameters()
+                for _,v in ipairs(Parameters.Tail.Vector3) do
+                    local testPicker = treeTestParamsTail_3281:AddColorEdit(v)
+                    testPicker.IDContext = v .. Ext.Math.Random(1,10000)
+                    testPicker.OnChange = function()
+                        for _, part in ipairs({'Tail'}) do
+                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                        end
+                    end
+                end
+            end
+        
+            function TestAllTailVecParameter()
+                for _,v in ipairs(Parameters.Tail.Vector) do
+                    local testSlider2 = treeTestParamsTail_9017:AddSlider(v)
+                    testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider2.OnChange = function()
+                        for _, part in ipairs({'Tail'}) do
+                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            TestAllTailScalarParameters()
+            TestAllTailVec3Parameters()
+            TestAllTailVecParameter()
+            end
         end
 
+        function Tests:Horns()
 
-        function Horns()
+            local testParamsHorns = testParams:AddTree('Horns')
+            local treeTestParamsHorns_4472 = testParamsHorns:AddTree('Scalar')
+            local treeTestParamsHorns_9823 = testParamsHorns:AddTree('Vec3')
+            local treeTestParamsHorns_3106 = testParamsHorns:AddTree('Vec')
             
+            if Parameters.Horns then
+
+            function TestAllHornsScalarParameters()
+                for _,v in ipairs(Parameters.Horns.Scalar) do
+                    local testSlider = treeTestParamsHorns_4472:AddSliderInt(v, 0, -100, 100)
+                    testSlider.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider.OnChange = function()
+                        for _, part in ipairs({'Horns'}) do
+                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            function TestAllHornsVec3Parameters()
+                for _,v in ipairs(Parameters.Horns.Vector3) do
+                    local testPicker = treeTestParamsHorns_9823:AddColorEdit(v)
+                    testPicker.IDContext = v .. Ext.Math.Random(1,10000)
+                    testPicker.OnChange = function()
+                        for _, part in ipairs({'Horns'}) do
+                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                        end
+                    end
+                end
+            end
+        
+            function TestAllHornsVecParameter()
+                for _,v in ipairs(Parameters.Horns.Vector) do
+                    local testSlider2 = treeTestParamsHorns_3106:AddSlider(v)
+                    testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider2.OnChange = function()
+                        for _, part in ipairs({'Horns'}) do
+                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            TestAllHornsScalarParameters()
+            TestAllHornsVec3Parameters()
+            TestAllHornsVecParameter()
+            end
         end
 
-
-
-        Body()
-        Head()
-        Genital()
-        Tail()
-        Horns()
+        Tests:Body()
+        Tests:Head()
+        Tests:Genital()
+        Tests:Tail()
+        Tests:Horns()
 
     end
-   
+
+
+    Ext.RegisterNetListener('CCEE_LevelStarted', function (channel, payload, user)
+        PopulateWithParamNames()
+        Tests:Tests()
+        LoadParameters()
+    end)
+
+
+    Ext.Events.ResetCompleted:Subscribe(function ()
+        PopulateWithParamNames()
+        Tests:Tests()
+    end)
 
 end
 

@@ -63,16 +63,16 @@ function GetParameterNames(attachment, parameterType)
     end
 end
 
-
-for _, part in ipairs({'Head', 'Body', 'Genital', 'Tail', 'Horns'}) do
-    for _, paramType in ipairs({'Scalar', 'Vector3', 'Vector'}) do
-        GetParameterNames(part, paramType)
+function PopulateWithParamNames()
+    for _, part in ipairs({'Head', 'Body', 'Genital', 'Tail', 'Horns'}) do
+        for _, paramType in ipairs({'Scalar', 'Vector3', 'Vector'}) do
+            GetParameterNames(part, paramType)
+        end
     end
+    
 end
 
-DDump(Parameters)
-
-
+-- DDump(Parameters)
 
 function CountTattoes()
 tattooCount = 0
@@ -99,6 +99,7 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
     local visuals = FindAttachment(attachment)
 
     lastParameters[attachment] = lastParameters[attachment] or {}
+    lastParameters[attachment][parameterType]  = lastParameters[attachment][parameterType] or {}
 
     if visuals then
 
@@ -111,7 +112,7 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
                         for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                             if scalarParam.ParameterName == parameterName then
                                 am:SetScalar(parameterName, value)
-                                lastParameters[attachment][parameterName] = value
+                                lastParameters[attachment][parameterType][parameterName] = value
                             end
                         end
                     end
@@ -121,7 +122,7 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
                         for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                             if scalarParam.ParameterName == parameterName then
                                 am:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                lastParameters[attachment][parameterName] = value
+                                lastParameters[attachment][parameterType][parameterName] = value
                             end
                         end
                     end
@@ -134,10 +135,10 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
 
                                 if parameterName == 'BodyTattooIntensity' then
                                     am:SetVector4(parameterName, {value, defValue[2] , defValue[3], defValue[4]})
-                                    lastParameters[attachment][parameterName] = value
+                                    lastParameters[attachment][parameterType][parameterName]  = value
                                 else
                                     am:SetVector4(parameterName, {defValue[1], defValue[2] , value, defValue[4]}) --for body tats 1st value, for head 3rd
-                                    lastParameters[attachment][parameterName] = value
+                                    lastParameters[attachment][parameterType][parameterName]  = value
                                 end
 
                             end
@@ -147,15 +148,28 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
             end
         end
     end
-    DDump(lastParameters)
+    -- DDump(lastParameters)
     Helpers.UserVars:Set(_C(), 'CCEE_Last', lastParameters)
 end
 
 
+
 function LoadParameters()
 
-    -- for k,v in ipairs(Mods.CCEE.Helpers.UserVars:Get(_C(), 'CCEE_Last')) do
-    --     ApplyParameters(attachment, paramete, parameterType, value)
-    -- end
+    Helpers.Timer:OnTicks(100, function()
+
+        local userVars = Mods.CCEE.Helpers.UserVars:Get(_C(), 'CCEE_Last')
+        if userVars then
+            for attachment, parameters in pairs(userVars) do
+                for parameterType, parametersAll in pairs(parameters) do
+                    for parameterName, value in pairs(parametersAll) do
+                        ApplyParameters(attachment, parameterName, parameterType, value)
+                    end
+                end
+            end
+        end
+
+    end)
 
 end
+
