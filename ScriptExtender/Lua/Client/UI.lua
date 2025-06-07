@@ -1,17 +1,3 @@
-
-
-
-
-------------------------------------
---[[
-TODO:
-REMOVE SOME SELFS
-PERHAPS FIX TAGS AND SCALING
-]]
-------------------------------------
-
-
-
 UI = {}
 Window = {}
 Skin = {}
@@ -24,7 +10,7 @@ local OPENONRESETQUESTIONMARK = true
 
 function UI:Init()
     self.MCM = Window:CCEEMCM()
-    self.Window = Window:CCEEWindow()
+    cceeWindow = Window:CCEEWindow()
     -- self.SkinColor =  Skin:Color()
     -- self.TattooParams = Tattoo:Parameters()
     -- self.Tests = Tests:Tests()
@@ -37,7 +23,7 @@ function Window:CCEEMCM()
         local openButton = tab:AddButton("Open")
         openButton.OnClick = function()
 
-            self.Window.Open = not self.Window.Open
+            cceeWindow.Open = not cceeWindow.Open
 
         end
     end
@@ -50,24 +36,24 @@ end
 
 function Window:CCEEWindow()
 
-    self.Window = Ext.IMGUI.NewWindow("CCEE")
-    self.Window.Open = OPENONRESETQUESTIONMARK
-    self.Window.Closeable = true
-    self.Window.AlwaysAutoResize = false
-    self.Window:SetSize({643, 700})
+    local cceeWindow = Ext.IMGUI.NewWindow("CCEE")
+    cceeWindow.Open = OPENONRESETQUESTIONMARK
+    cceeWindow.Closeable = true
+    cceeWindow.AlwaysAutoResize = false
+    cceeWindow:SetSize({643, 700})
     -- self.Window.HorizontalScrollbar = true
     -- self.Window.AlwaysVerticalScrollbar = true
     -- self.Window.NoDecoration = true
 
 
-    StyleV2:RegisterWindow(self.Window)
+    StyleV2:RegisterWindow(cceeWindow)
 
-    ApplyStyle(self.Window, 1)
+    ApplyStyle(cceeWindow, 1)
 
-    parent = self.Window
+    parent = cceeWindow
 
     MCM.SetKeybindingCallback('ccee_toggle_window', function()
-        self.Window.Open = not self.Window.Open
+        cceeWindow.Open = not cceeWindow.Open
     end)
 
 
@@ -113,13 +99,18 @@ function Window:CCEEWindow()
             ApplyParameters('Head', 'TattooIntensity', 'Vector', slider2.Value[1])
         end
 
+        local picker3 = fTatsColorCollapse:AddColorPicker('Color2')
+        picker3.OnChange = function()
+            ApplyParameters('wpn', 'Glow_Color', 'Vector3', picker2.Color)
+        end
 
     end
 
 
     function Tests:Tests()
 
-        local testParams = parent:AddCollapsingHeader('Tests')
+
+        testParams = parent:AddCollapsingHeader('Tests')
 
         function Tests:Body()
 
@@ -134,7 +125,8 @@ function Window:CCEEWindow()
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Body'}) do
-                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                            
+                            ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
                         end
                     end
                 end
@@ -146,7 +138,7 @@ function Window:CCEEWindow()
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Body'}) do
-                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                            ApplyParameters(_C(), part, v, 'Vector3', testPicker.Color)
                         end
                     end
                 end
@@ -158,7 +150,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Body'}) do
-                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
                         end
                     end
                 end
@@ -170,7 +162,6 @@ function Window:CCEEWindow()
             TestAllBodyVecParameter()
     
         end
-
        
         function Tests:Head()
 
@@ -186,7 +177,7 @@ function Window:CCEEWindow()
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Head'}) do
-                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                            ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
                         end
                     end
                 end
@@ -198,7 +189,7 @@ function Window:CCEEWindow()
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Head'}) do
-                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                            ApplyParameters(_C(), part, v, 'Vector3', testPicker.Color)
                         end
                     end
                 end
@@ -210,7 +201,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Head'}) do
-                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
                         end
                     end
                 end
@@ -223,7 +214,6 @@ function Window:CCEEWindow()
 
         end
 
-    
         function Tests:Genital()
 
             local testParamsGenital = testParams:AddTree('Genital')
@@ -237,7 +227,7 @@ function Window:CCEEWindow()
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Genital'}) do
-                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                            ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
                         end
                     end
                 end
@@ -249,7 +239,7 @@ function Window:CCEEWindow()
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Genital'}) do
-                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                            ApplyParameters(_C(), part, v, 'Vector3', testPicker.Color)
                         end
                     end
                 end
@@ -261,7 +251,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Genital'}) do
-                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
                         end
                     end
                 end
@@ -288,7 +278,7 @@ function Window:CCEEWindow()
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Tail'}) do
-                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                            ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
                         end
                     end
                 end
@@ -300,7 +290,7 @@ function Window:CCEEWindow()
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Tail'}) do
-                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                            ApplyParameters(_C(), part, v, 'Vector3', testPicker.Color)
                         end
                     end
                 end
@@ -312,7 +302,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Tail'}) do
-                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
                         end
                     end
                 end
@@ -339,7 +329,7 @@ function Window:CCEEWindow()
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Horns'}) do
-                            ApplyParameters(part, v, 'Scalar', testSlider.Value[1])
+                            ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
                         end
                     end
                 end
@@ -351,7 +341,7 @@ function Window:CCEEWindow()
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Horns'}) do
-                            ApplyParameters(part, v, 'Vector3', testPicker.Color)
+                            ApplyParameters(_C(), part, v, 'Vector3', testPicker.Color)
                         end
                     end
                 end
@@ -363,7 +353,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Horns'}) do
-                            ApplyParameters(part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
                         end
                     end
                 end
@@ -376,25 +366,24 @@ function Window:CCEEWindow()
         end
 
         Tests:Body()
-        Tests:Head()
+        Tests:Head()  
         Tests:Genital()
         Tests:Tail()
         Tests:Horns()
 
+
+
+    end
+
+    local forceBtn = parent:AddButton('Force load')
+    forceBtn.OnClick = function ()
+        Ext.Net.PostMessageToServer('ForceLoad', '')
+
+        testParams:Destroy()
+
     end
 
 
-    Ext.RegisterNetListener('CCEE_LevelStarted', function (channel, payload, user)
-        PopulateWithParamNames()
-        Tests:Tests()
-        LoadParameters()
-    end)
-
-
-    Ext.Events.ResetCompleted:Subscribe(function ()
-        PopulateWithParamNames()
-        Tests:Tests()
-    end)
 
 end
 

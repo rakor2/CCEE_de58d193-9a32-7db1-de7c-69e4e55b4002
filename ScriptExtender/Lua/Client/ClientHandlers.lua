@@ -1,21 +1,19 @@
 
+Parameters = Parameters or {}
+lastParameters = lastParameters or {}
 
-function FindAttachment(attachment)
-    characterEnt = Ext.Entity.Get(_C().Uuid.EntityUuid)
-    for i = 1, #characterEnt.Visual.Visual.Attachments do
-        if characterEnt.Visual.Visual.Attachments[i].Visual.VisualResource and characterEnt.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
-            local visuals = characterEnt.Visual.Visual.Attachments[i].Visual
+function FindAttachment(entity, attachment)
+    for i = 1, #entity.Visual.Visual.Attachments do
+        if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
+            local visuals = entity.Visual.Visual.Attachments[i].Visual
             return visuals
         end
     end
 end
 
 
-Parameters = Parameters or {}
-
-function GetParameterNames(attachment, parameterType)
-    
-    local visuals = FindAttachment(attachment)
+function GetParameterNames(entity, attachment, parameterType)
+    local visuals = FindAttachment(entity, attachment)
 
     if visuals then
 
@@ -62,12 +60,15 @@ function GetParameterNames(attachment, parameterType)
             end
         end
     end
+    
 end
 
-function PopulateWithParamNames()
+
+function PopulateWithParamNames(entity)
+    Parameters = {}
     for _, part in ipairs({'Head', 'Body', 'Genital', 'Tail', 'Horns'}) do
         for _, paramType in ipairs({'Scalar', 'Vector3', 'Vector'}) do
-            GetParameterNames(part, paramType)
+            GetParameterNames(entity, part, paramType)
         end
     end
     
@@ -93,22 +94,25 @@ end
 CountTattoes()
 
 
-lastParameters = lastParameters or {}
+function ApplyParameters(entity, attachment, parameterName, parameterType, value)
 
+    PopulateWithParamNames(entity)
+    local entityUuid = entity.Uuid.EntityUuid
+    lastParameters[entityUuid] = lastParameters[entityUuid] or {}
+    lastParameters[entityUuid][attachment] = lastParameters[entityUuid] [attachment] or {}
+    lastParameters[entityUuid][attachment][parameterType]  = lastParameters[entityUuid] [attachment][parameterType] or {}
 
-function ApplyParameters(attachment, parameterName, parameterType, value)
-    local visuals = FindAttachment(attachment)
+    local visuals = FindAttachment(entity, attachment)
     
-    lastParameters[attachment] = lastParameters[attachment] or {}
-    lastParameters[attachment][parameterType]  = lastParameters[attachment][parameterType] or {}
-
     if visuals then
 
         for _, desc in pairs(visuals.ObjectDescs) do
             local am = desc.Renderable.ActiveMaterial
             -- local ap = desc.Renderable.ActiveMaterial.Material
             -- local am1 = desc.Renderable.AppliedMaterials[1]
-            -- local am1m = desc.Renderable.AppliedMaterials[1].Material
+            local am1m = desc.Renderable.AppliedMaterials[1].Material
+            -- DDump(desc.Renderable.AppliedMaterials[1].Material.Parameters.Vector3Parameters)
+
             if am ~= nil and am.Material ~= nil then
 
                 if parameterType == 'Scalar' then
@@ -119,7 +123,7 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
                                 -- ap:SetScalar(parameterName, value)
                                 -- am1:SetScalar(parameterName, value)
                                 -- am1m:SetScalar(parameterName, value)
-                                lastParameters[attachment][parameterType][parameterName] = value
+                                lastParameters[entityUuid][attachment][parameterType][parameterName] = value
                             end
                         end
                     end
@@ -131,8 +135,8 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
                                 am:SetVector3(parameterName, {value[1], value[2], value[3]})
                                 -- ap:SetVector3(parameterName, {value[1], value[2], value[3]})
                                 -- am1:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                -- am1m:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                lastParameters[attachment][parameterType][parameterName] = value
+                                am1m:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                lastParameters[entityUuid][attachment][parameterType][parameterName] = value
                             end
                         end
                     end
@@ -145,10 +149,10 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
 
                                 if parameterName == 'BodyTattooIntensity' then
                                     am:SetVector4(parameterName, {value, defValue[2] , defValue[3], defValue[4]})
-                                    lastParameters[attachment][parameterType][parameterName]  = value
+                                    lastParameters[entityUuid][attachment][parameterType][parameterName]  = value
                                 else
                                     am:SetVector4(parameterName, {defValue[1], defValue[2] , value, defValue[4]}) --for body tats 1st value, for head 3rd
-                                    lastParameters[attachment][parameterType][parameterName]  = value
+                                    lastParameters[entityUuid][attachment][parameterType][parameterName]  = value
                                 end
 
                             end
@@ -158,25 +162,47 @@ function ApplyParameters(attachment, parameterName, parameterType, value)
             end
         end
     end
-    -- DDump(lastParameters)
-    Helpers.UserVars:Set(_C(), 'CCEE_Last', lastParameters)
+
+    Ext.Net.PostMessageToServer('SendModVars', Ext.Json.Stringify(lastParameters))
+
+    
 end
 
 
-function LoadParameters()
+Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
 
-    local userVars = Mods.CCEE.Helpers.UserVars:Get(_C(), 'CCEE_Last')
-    if userVars then
-        for attachment, parameters in pairs(userVars) do
-            for parameterType, parametersAll in pairs(parameters) do
-                for parameterName, value in pairs(parametersAll) do
-                    ApplyParameters(attachment, parameterName, parameterType, value)
+    Helpers.Timer:OnTicks(1, function()
+
+        PopulateWithParamNames(_C())
+        Tests:Tests()
+
+        Helpers.Timer:OnTicks(1, function()
+
+            local lastParametersMV = Ext.Json.Parse(payload)
+
+            function LoadParameters()
+
+                -- DDump(lastParametersMV)
+                
+                for uuid, attachments in pairs(lastParametersMV) do
+                    local entity = Ext.Entity.Get(uuid)
+                    for attachment, parameterTypes in pairs(attachments) do
+                        for parameterType, parameterNames in pairs(parameterTypes) do
+                            for parameterName, value in pairs(parameterNames) do
+                                -- DPrint('Applying' .. ' ' ..  parameterName .. ' ' .. 'to: ' .. entity.Uuid.EntityUuid)
+                                ApplyParameters(entity, attachment, parameterName, parameterType, value)
+
+                            end
+                        end
+                    end
                 end
             end
-        end
-    end
+            LoadParameters()
+        end)
+    end)
 
-end
+end)
+
 
 
 
