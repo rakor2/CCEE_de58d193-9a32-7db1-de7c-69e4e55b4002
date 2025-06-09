@@ -23,22 +23,61 @@ end)
 --Only sp for now
 Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
     DPrint('LevelGameplayStarted')
-    DPrint('Waiting 200 ticks before applying parameters')
-    Helpers.Timer:OnTicks(200, function()
-        DPrint('Boom')
-        local lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
-        Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(lastParameters))
-    end)
+
+    local ticksToWait = 200
+    local payload = {
+        ticksToWait = ticksToWait,
+        lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
+    }
+
+    if Helpers.ModVars.Get(ModuleUUID).CCEE then 
+        Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
+    end
+
+end)
+
+
+Ext.Osiris.RegisterListener("AutomatedDialogStarted", 2, "after", function(dialog, instanceId)
+    -- DPrint('AutomatedDialogStarted')
+    Ext.Net.BroadcastMessage('LoadParameters', '')
 end)
 
 
 
-function ForceLoad()
-    local lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
-    Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(lastParameters))
+Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog, instanceId)
+    -- DPrint('DialogStarted')
+    Ext.Net.BroadcastMessage('LoadParameters', '')
+end)
+
+
+-- Ext.Osiris.RegisterListener("CombatStarted", 2, "after", function(dialog, instanceId)
+--     -- DPrint('CombatStarted')
+--     Ext.Net.BroadcastMessage('LoadParameters', '')
+-- end)
+
+
+function ForceLoad(ticksToWait)
+    
+    local payload = {
+        ticksToWait = ticksToWait,
+        lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
+    }
+
+    if Helpers.ModVars.Get(ModuleUUID).CCEE then 
+        Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
+    end
+    
 end
 
 Ext.RegisterNetListener('ForceLoad', function (channel, payload, user)
     DPrint('Force load')
-    ForceLoad()
+    ForceLoad(1)
 end)
+
+
+
+Ext.RegisterNetListener('stop', function (channel, payload, user)
+    Osi.PlayLoopingAnimation(GetHostCharacter(), "", '', "", "", "", "", "")
+end)
+
+
