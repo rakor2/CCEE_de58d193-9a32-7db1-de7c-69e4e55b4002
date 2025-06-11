@@ -159,6 +159,19 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
 
     local visuals = FindAttachment(entity, attachment)
     if visuals then
+--they call it junk or jank
+function MatchCharacterAndPMDummy(charUuid)
+    local originEnt = Ext.Entity.Get(charUuid)
+    for i = 1, #dummies do
+        if originEnt.Transform.Transform.Translate[1] == dummies[i].Transform.Transform.Translate[1]
+            and originEnt.Transform.Transform.Translate[2] == dummies[i].Transform.Transform.Translate[2] 
+            and originEnt.Transform.Transform.Translate[3] == dummies[i].Transform.Transform.Translate[3] then
+            -- DPrint(originEnt)
+            -- DPrint(dummies[i])
+            return dummies[i]
+        end
+    end
+end
 
         for _, desc in pairs(visuals.ObjectDescs) do
             local am = desc.Renderable.ActiveMaterial   
@@ -168,6 +181,19 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
             -- DDump(desc.Renderable.AppliedMaterials[1].Material.Parameters.Vector3Parameters)
 
             if am ~= nil and am.Material ~= nil then
+function GetPMDummies()
+    dummies = {}
+    local visual = Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
+    for i = 1, #visual do
+        if visual[i].Visual and visual[i].Visual.Visual
+            and visual[i].Visual.Visual.VisualResource
+            and visual[i].Visual.Visual.VisualResource.Template == "EMPTY_VISUAL_TEMPLATE"
+            and visual[i]:GetAllComponentNames(false)[2] == "ecl::dummy::AnimationStateComponent"
+        then
+            table.insert(dummies, visual[i])
+        end
+    end
+end
 
                 if parameterType == 'Scalar' then
                     if am.Material.Parameters.ScalarParameters then
@@ -280,6 +306,25 @@ function ApplyDummyParameters(entity, attachment, parameterName, parameterType, 
             end
         end
     end
+
+function ApplyParametersToDummies()
+    GetPMDummies()
+    for uuid, attachments in pairs(lastParameters) do
+        local entity = MatchCharacterAndPMDummy(uuid)
+        -- DPrint(entity)
+        for attachment, parameterTypes in pairs(attachments) do
+            for parameterType, parameterNames in pairs(parameterTypes) do
+                for parameterName, value in pairs(parameterNames) do
+                    -- DPrint(parameterName)
+                    -- DPrint(parameterType)
+                    -- DDump(value)
+                    ApplyParameters(entity, attachment, parameterName, parameterType, value)
+                end
+            end
+        end
+    end
+end
+
 
     
 end
