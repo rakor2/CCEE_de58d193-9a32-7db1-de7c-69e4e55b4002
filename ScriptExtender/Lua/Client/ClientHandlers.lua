@@ -1,6 +1,18 @@
 
 Parameters = Parameters or {}
 lastParameters = lastParameters or {}
+---@param type integer # 1 - keyborad / 0 - controller
+---@param bindingIndex integer 
+function GetKeybind(type, bindingIndex) 
+    for _, bind in pairs(Ext.Input.GetInputManager().InputScheme.RawToBinding) do
+        for i = 1, 2 do
+            if bind.Bindings[i] and bind.Bindings[i].BindingIndex == type and bind.Bindings[i].InputIndex == bindingIndex then 
+                local keybind = bind.Bindings[i].Binding.InputId
+                return keybind
+            end
+        end
+    end
+end
 
 
 
