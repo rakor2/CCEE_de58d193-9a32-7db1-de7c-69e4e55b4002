@@ -1,16 +1,58 @@
+
+TICKS_TO_WAIT = 1
+TICKS_TO_LOAD = 10
+
+
+--Only sp for now
+Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
+    DPrint('LevelGameplayStarted')
+    UpdateParameters(0, nil, false)
+    Ext.Net.BroadcastMessage('WhenLevelGameplayStarted', '')
+end)
+
+
 Ext.Osiris.RegisterListener("Equipped", 2, "after", function(item, character)
-    ForceLoad()
+    DPrint('Equipped')
+    UpdateParameters(3, Ext.Entity.Get(character), true)
 end)
 
 Ext.Osiris.RegisterListener("Unequipped", 2, "after", function(item, character)
-    ForceLoad()
+    DPrint('Unequipped')
+    UpdateParameters(3, Ext.Entity.Get(character), true)
 end)
 
 Ext.Entity.Subscribe("ArmorSetState", function(entity)
-    Helpers.Timer:OnTicks(3, function()
-        ForceLoad()
-    end)
+    -- DPrint(entity)
+    UpdateParameters(3, Ext.Entity.Get(entity), true)
+    DPrint('ArmorSetState')
 end)
+
+
+Ext.Osiris.RegisterListener("AutomatedDialogStarted", 2, "after", function(dialog, instanceId)
+    -- DPrint('AutomatedDialogStarted')
+    -- Ext.Net.BroadcastMessage('LoadParameters', '')
+    -- UpdateParameters(0, nil, false)
+    -- DPrint('AutomatedDialogStarted')
+end)
+
+
+Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog, instanceId)
+    -- DPrint('DialogStarted')
+    -- Ext.Net.BroadcastMessage('LoadParameters', '')
+    UpdateParameters(0, nil, false)
+    DPrint('DialogStarted')
+end)
+
+
+Ext.Osiris.RegisterListener("CombatStarted", 1, "after", function(combatGuid)
+    DPrint('CombatStarted')
+    -- Ext.Net.BroadcastMessage('LoadParameters', '')
+    UpdateParameters(0, nil, false)
+
+end)
+
+
+
 
 
 Ext.RegisterNetListener('SendModVars', function (channel, payload, user)
@@ -20,60 +62,32 @@ Ext.RegisterNetListener('SendModVars', function (channel, payload, user)
 end)
 
 
---Only sp for now
-Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
-    DPrint('LevelGameplayStarted')
+Ext.RegisterNetListener('LoadLocalSettings', function (channel, payload, user)
 
-    local ticksToWait = 200
+    local name = LocalSettings.FileName
+    LocalSettings.FileName = "CCEE"
+    local localData = LocalSettings:Get('CCEE')
+    LocalSettings.FileName = name
+
     local payload = {
-        ticksToWait = ticksToWait,
-        lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
+        TICKS_TO_WAIT = 4,
+        lastParameters = localData
     }
 
-    if Helpers.ModVars.Get(ModuleUUID).CCEE then 
+    Helpers.Timer:OnTicks(TICKS_TO_LOAD, function ()
         Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
-    end
+    end)
+
+
+
 
 end)
 
 
-Ext.Osiris.RegisterListener("AutomatedDialogStarted", 2, "after", function(dialog, instanceId)
-    -- DPrint('AutomatedDialogStarted')
-    Ext.Net.BroadcastMessage('LoadParameters', '')
+
+Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
+    UpdateParameters(1, nil, false)
 end)
-
-
-
-Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog, instanceId)
-    -- DPrint('DialogStarted')
-    Ext.Net.BroadcastMessage('LoadParameters', '')
-end)
-
-
--- Ext.Osiris.RegisterListener("CombatStarted", 2, "after", function(dialog, instanceId)
---     -- DPrint('CombatStarted')
---     Ext.Net.BroadcastMessage('LoadParameters', '')
--- end)
-
-
-function ForceLoad(ticksToWait)
-    
-    local payload = {
-        ticksToWait = ticksToWait,
-        lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
-    }
-
-    if Helpers.ModVars.Get(ModuleUUID).CCEE then 
-        Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
-    end
-    
-end
-
-Ext.RegisterNetListener('ForceLoad', function (channel, payload, user)
-    DPrint('Force load')
-    ForceLoad(1)
-end)
-
 
 
 Ext.RegisterNetListener('stop', function (channel, payload, user)
@@ -81,3 +95,6 @@ Ext.RegisterNetListener('stop', function (channel, payload, user)
 end)
 
 
+Ext.RegisterNetListener('dumpVars', function (channel, payload, user)
+    DDump(Helpers.ModVars.Get(ModuleUUID))
+end)
