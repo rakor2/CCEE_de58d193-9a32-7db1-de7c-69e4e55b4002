@@ -64,9 +64,16 @@ MoneyCounter()
 function FindAttachment(entity, attachment)
     if entity then
         for i = 1, #entity.Visual.Visual.Attachments do
-            if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
-                local visuals = entity.Visual.Visual.Attachments[i].Visual
-                return visuals
+            if attachment == 'Tail' then
+                if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then
+                    local visuals = entity.Visual.Visual.Attachments[i].Visual
+                    return visuals
+                end
+            else
+                if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) then
+                    local visuals = entity.Visual.Visual.Attachments[i].Visual
+                    return visuals
+                end
             end
         end
     end
