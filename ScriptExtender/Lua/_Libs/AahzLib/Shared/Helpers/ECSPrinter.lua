@@ -202,7 +202,7 @@ end
 
 ---@param entity EntityHandle
 ---@param changes EcsECSEntityLog
-function ChangePrinter:EntityHasPrintableChanges(entity, changes)
+function ChangePrinter:EntityHaDPrintableChanges(entity, changes)
     if self.EntityCreations ~= nil and self.EntityCreations ~= changes.Create then return false end
     if self.EntityDeletions ~= nil and self.EntityDeletions ~= changes.Destroy then return false end
 
@@ -310,7 +310,7 @@ function ChangePrinter:OnTick()
     local trace = Ext.Entity.GetTrace()
     local function PrintChanges(entity, changes)
         if not entity then return end
-        if self:EntityHasPrintableChanges(entity, changes) then
+        if self:EntityHaDPrintableChanges(entity, changes) then
             if self.PrintChanges then
                 local msg = "\x1b[90m[#" .. self.FrameNo .. "] " .. self:GetEntityNameDecorated(entity) .. ": "
                 if changes.Create then msg = msg .. "\x1b[33m Created" end

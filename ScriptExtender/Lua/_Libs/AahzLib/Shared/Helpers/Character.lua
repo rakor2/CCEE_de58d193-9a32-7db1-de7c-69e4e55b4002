@@ -7,13 +7,13 @@ function Helpers.Character:FullRestoreEntity(entity)
     if type(entity) == "string" then
         entity = Ext.Entity.Get(entity)
     end
-    if entity == nil then return SWarn("Not a valid entity, can't full restore.") end
+    if entity == nil then return DWarn("Not a valid entity, can't full restore.") end
     if entity.Health ~= nil then
-        --SWarn("Entity Health vs Max: %d vs %d", entity.Health.Hp, entity.Health.MaxHp)
+        --DWarn("Entity Health vs Max: %d vs %d", entity.Health.Hp, entity.Health.MaxHp)
         entity.Health.Hp = entity.Health.MaxHp
         entity:Replicate("Health")
     else
-        SWarn("Entity doesn't have health? %s", entity.Uuid.EntityUuid)
+        DWarn("Entity doesn't have health? %s", entity.Uuid.EntityUuid)
     end
     --Osi.RemoveHarmfulStatuses(entity.Uuid.EntityUuid) -- avoid? can't remember why
     local eu = entity.Uuid.EntityUuid
@@ -30,7 +30,7 @@ function Helpers.Character:ShortRestEntity(entity)
     if type(entity) == "string" then
         entity = Ext.Entity.Get(entity)
     end
-    if entity == nil then return SWarn("Not a valid entity, can't short rest.") end
+    if entity == nil then return DWarn("Not a valid entity, can't short rest.") end
     if entity ~= nil and entity.Health ~= nil then
         local currentHp = entity.Health.Hp
         entity.Health.Hp = math.min(entity.Health.MaxHp, currentHp + (entity.Health.MaxHp // 2))
@@ -45,7 +45,7 @@ function Helpers.Character:RestoreResources(entity, resttype)
     if type(entity) == "string" then
         entity = Ext.Entity.Get(entity)
     end
-    if entity == nil then return SWarn("Not a valid entity, can't restore resources.") end
+    if entity == nil then return DWarn("Not a valid entity, can't restore resources.") end
     if entity.ActionResources ~= nil then
         for i, v in pairs(entity.ActionResources.Resources) do
             for j,w in pairs(v) do
@@ -68,15 +68,15 @@ function Helpers.Character:RestoreResources(entity, resttype)
     end
 end
 function Helpers.Character:TeleportToCamp(entity)
-    if not Ext.IsServer() then return SWarn("Can only call TeleportToCamp on server.") end
+    if not Ext.IsServer() then return DWarn("Can only call TeleportToCamp on server.") end
     if type(entity) ~= "string" then
         entity = Helpers.Object:GetGuid(entity)
     end
-    if entity == nil then return SWarn("Could not teleport given entity to camp.") end
+    if entity == nil then return DWarn("Could not teleport given entity to camp.") end
 
     local db = Osi.DB_ActiveCamp:Get(nil)
     if db == nil or db[1] == nil then
-        return SWarn("No active camp to teleport to.")
+        return DWarn("No active camp to teleport to.")
     end
     local activecamp = Osi.DB_ActiveCamp:Get(nil)[1][1]
     if activecamp ~= nil then
@@ -168,7 +168,7 @@ function Helpers.Character:IsLocalControlledCharacter(entity)
     end
     if entity ~= nil and entity.ClientControl ~= nil then
         if entity.UserReservedFor == nil then
-            SWarn("Checking client control on entity that has control, but no UserReservedFor component yet.")
+            DWarn("Checking client control on entity that has control, but no UserReservedFor component yet.")
             return false
         end
         return entity.UserReservedFor ~= nil and entity.UserReservedFor.UserID == 1
@@ -179,7 +179,7 @@ end
 ---@return boolean
 ---@return nil|EntityHandle
 function Helpers.Character:IsPaperdoll(entity)
-    if Ext.IsServer() then SWarn("Cannot check client paperdoll from server") return false end
+    if Ext.IsServer() then DWarn("Cannot check client paperdoll from server") return false end
     
     if type(entity) == "string" then
         entity = Ext.Entity.Get(entity)
@@ -215,7 +215,7 @@ function Helpers.Character:GetCurrentParty()
         if g ~= nil then
             table.insert(partyMembers, g)
         else
-            --SWarn("Can't get UUID for party member: %s", v)
+            --DWarn("Can't get UUID for party member: %s", v)
         end
     end
     return partyMembers

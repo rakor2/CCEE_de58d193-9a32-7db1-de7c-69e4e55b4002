@@ -212,7 +212,7 @@ function Helpers.Format.Dump(obj, requestedName)
         warn = true
     end
     if warn then
-        SWarn(string.format("Overwriting previous dump: %s_0.json (10 same-name dumps max)", path))
+        DWarn(string.format("Overwriting previous dump: %s_0.json (10 same-name dumps max)", path))
     end
     RPrint(string.format("Dumping: %s_0.json", path))
     return Ext.IO.SaveFile(path.."_0.json", data or "No dumpable data available.")
@@ -230,7 +230,7 @@ if Ext.IsClient() then
             if type(root) ~= "string" then
                 local uuid = Ext.Entity.HandleToUuid(root)
                 if not uuid then
-                    return SWarn("Cannot request a server dump of entities that don't have UUID's (%s)", tostring(root))
+                    return DWarn("Cannot request a server dump of entities that don't have UUID's (%s)", tostring(root))
                 else
                     root = uuid
                 end
@@ -241,7 +241,7 @@ if Ext.IsClient() then
                 RequestedName = requestedName,
             })
         else
-            SWarn("Requested server dump without providing object path.")
+            DWarn("Requested server dump without providing object path.")
         end
     end
 else
@@ -257,10 +257,10 @@ else
                     Helpers.Dump(obj, args.RequestedName)
                 end
             else
-                SWarn("Couldn't resolve entity when requesting server dump: %s", tostring(args.Root))
+                DWarn("Couldn't resolve entity when requesting server dump: %s", tostring(args.Root))
             end
         else
-            SWarn("Invalid root type: %s (%s)", tostring(args.Root), type(args.Root))
+            DWarn("Invalid root type: %s (%s)", tostring(args.Root), type(args.Root))
         end
     end)
 end

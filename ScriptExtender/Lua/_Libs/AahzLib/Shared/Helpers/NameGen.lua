@@ -1587,7 +1587,7 @@ NameGen = {
 ---@param handle EntityRef|EntityHandle
 ---@return string? #nil for errors
 function NameGen:GenerateOrGet(handle)
-    if not handle then return SWarn("No handle provided for name generation") end
+    if not handle then return DWarn("No handle provided for name generation") end
     if type(handle) ~= "number" then
         handle = Ext.Utils.HandleToInteger(handle)
     end
@@ -1616,6 +1616,6 @@ function NameGen:GenerateOrGet(handle)
 
     -- If after 10 attempts, still no unique name, increase AdjectiveCount and try again
     self.AdjectiveCount = self.AdjectiveCount + 1
-    SWarn("Increasing AdjectiveCount to " .. self.AdjectiveCount .. " due to name collisions.")
+    DWarn("Increasing AdjectiveCount to " .. self.AdjectiveCount .. " due to name collisions.")
     return self:GenerateOrGet(handle) -- Recursive call with increased AdjectiveCount
 end

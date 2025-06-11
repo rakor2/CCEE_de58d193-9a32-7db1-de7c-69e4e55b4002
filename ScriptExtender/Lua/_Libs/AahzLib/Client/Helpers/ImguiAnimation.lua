@@ -36,7 +36,7 @@ function Imgui.AnimateColor(el, colorProp, initialColor, highlightColor, animati
     end
     local function resetColor()
         el:SetColor(colorProp, initialColor)
-        -- SPrint(string.format("Reset to: <%s, %s, %s, %s>", table.unpack(initialColor)))
+        -- DPrint(string.format("Reset to: <%s, %s, %s, %s>", table.unpack(initialColor)))
     end
     Imgui.MainTick:Take(animationLength):Subscribe(simpleTween, resetColor, resetColor)
 end
@@ -58,7 +58,7 @@ function Imgui.FadeColor(el, colorProp, initialColor, fadeColor, fadeTime)
     if currentFadeMap[el.Handle] then
         currentFadeMap[el.Handle]:Unsubscribe()
         currentFadeMap[el.Handle] = nil
-        -- SWarn("Fade Reset")
+        -- DWarn("Fade Reset")
     end
 
     -- based on frame number, lerp between initial color and fade color

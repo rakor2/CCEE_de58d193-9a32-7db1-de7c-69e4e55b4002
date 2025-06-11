@@ -158,7 +158,7 @@ function ImguiTheme.CreateFromData(data)
         local c = ImguiTheme:New{ID = data.ID, Name = data.Name, ThemeColors = data.ThemeColors}
         return c
     else
-        return SWarn("Couldn't create color theme from data.")
+        return DWarn("Couldn't create color theme from data.")
     end
 end
 
@@ -168,7 +168,7 @@ function ImguiTheme:Init()
     self.Name = self.Name or "Generic"
     self.Colors = self.Colors or {}
     self.Styles = self.Styles or {}
-    -- SPrint("Created theme: %s (%s)", self.Name, self.ID)
+    -- DPrint("Created theme: %s (%s)", self.Name, self.ID)
     self:UpdateImguiTheme()
 end
 

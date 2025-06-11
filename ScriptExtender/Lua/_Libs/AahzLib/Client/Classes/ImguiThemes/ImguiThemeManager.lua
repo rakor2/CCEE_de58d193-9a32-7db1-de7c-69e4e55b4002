@@ -27,11 +27,11 @@ function ThemeManager:Init()
         if table.isEmpty(self.AvailableThemes) then
             self:GenerateDefaults()
         else
-            SPrint("Theme presets loaded from file: %s", self.LocalFileName)
+            DPrint("Theme presets loaded from file: %s", self.LocalFileName)
         end
     else
         -- TODO Warn or create initial presets?
-        --SWarn("Couldn't load color presets from file: %s", self.LocalFileName)
+        --DWarn("Couldn't load color presets from file: %s", self.LocalFileName)
         self:GenerateDefaults()
     end
     -- Set current theme
@@ -66,7 +66,7 @@ function ThemeManager:SaveToFile(fileName)
         -- RPrint("Successful.")
         -- RPrint(self:GetPreset(nil, nil, "HighContrast"))
     else
-        SWarn("Presets have invalid data, failed to save: %s", fileName)
+        DWarn("Presets have invalid data, failed to save: %s", fileName)
     end
 end
 
@@ -88,13 +88,13 @@ end
 ---@param data table
 ---@return true|nil
 local function ParsePresetData(self, data)
-    if data == nil then return SWarn("Preset data missing.") end
+    if data == nil then return DWarn("Preset data missing.") end
     for i, v in ipairs(data) do
         local c = ImguiTheme.CreateFromData(v)
         if c ~= nil then
             self.AvailableThemes[i] = c
         else
-            SWarn("Preset data malformed.")
+            DWarn("Preset data malformed.")
         end
     end
     return true
@@ -109,12 +109,12 @@ function ThemeManager:LoadPresetsFromFile(fileName)
     if contents ~= nil then
         local success, data = pcall(Ext.Json.Parse, contents)
         if not success then
-            return --SWarn("Couldn't parse color presets: %s", fileName)
+            return --DWarn("Couldn't parse color presets: %s", fileName)
         end
         
         return ParsePresetData(self, data)
     else
-        return --SWarn("Couldn't find or load presets file: %s", fileName)
+        return --DWarn("Couldn't find or load presets file: %s", fileName)
     end
 end
 
@@ -160,7 +160,7 @@ end
 ---@param name string? optional preset name to change
 ---@param colorData table<string,vec4>? optional colordata
 function ThemeManager:EditPreset(id, name, colorData)
-    if id == nil then return SWarn("Cannot edit a preset without an ID.") end
+    if id == nil then return DWarn("Cannot edit a preset without an ID.") end
     --TODO
     local preset
     for i, v in ipairs(self.AvailableThemes) do
@@ -169,7 +169,7 @@ function ThemeManager:EditPreset(id, name, colorData)
             preset = v
         end
     end
-    if preset == nil then return SWarn("No preset found with given id: %s", id) end
+    if preset == nil then return DWarn("No preset found with given id: %s", id) end
 
     -- change name and desc, if provided and different than existing
     if name ~= nil and preset.Name ~= name then
@@ -189,7 +189,7 @@ end
 ---@return boolean|nil - Returns true if removed, false if not found, nil if ID not provided
 function ThemeManager:RemovePreset(id)
     if id == nil then
-        return --SWarn("Cannot remove preset without providing an id.")
+        return --DWarn("Cannot remove preset without providing an id.")
     end
 
     local index
@@ -201,7 +201,7 @@ function ThemeManager:RemovePreset(id)
     end
     if index ~= nil then
         local p = table.remove(self.AvailableThemes, index)
-        --SPrint("Removed preset: %s", p.ID)
+        --DPrint("Removed preset: %s", p.ID)
         self:SaveToFile()
         return true
     else
@@ -309,13 +309,13 @@ function ThemeManager:Apply(element)
     if self.CurrentTheme then
         self.CurrentTheme:Apply(element)
     else
-        SWarn("No current theme to apply.")
+        DWarn("No current theme to apply.")
     end
 end
 
 ---@param theme ImguiTheme
 function ThemeManager:ChangeTheme(theme)
-    if not theme or theme == "string" then return SWarn("Incorrect attempt to change theme.") end
+    if not theme or theme == "string" then return DWarn("Incorrect attempt to change theme.") end
     -- TODO rethink AahzLib multiple project imgui support
     -- for _, window in ipairs(Scribe.AllWindows) do
     --     -- Check if imgui element still exists
@@ -376,7 +376,7 @@ function ThemeManager:GetThemedColor(themeKey)
     if self.CurrentTheme then
         return self.CurrentTheme:GetThemedColor(themeKey)
     else
-        SWarn("Attempted to get themed color without a current theme set.")
+        DWarn("Attempted to get themed color without a current theme set.")
         return Imgui.Colors.White
     end
 end

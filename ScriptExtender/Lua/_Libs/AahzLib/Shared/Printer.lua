@@ -255,12 +255,12 @@ function DRPrintS(...) SimplePrint:RunningRainbowPrint(..., 1, false) end
 -- local dumpcolor     = rgb(37, 161, 85)
 -- local dumpscolor    = rgb(241, 177, 225)
 
--- SPrint("Print")
+-- DPrint("Print")
 -- STest("Test")
 -- local dmp = {"DUMP", {["Dump"] = "dumpies", 42, ["Other"] = { 33, ["42"] = 69}}}
 -- SDump(dmp)
 -- SDebug("Debug")
--- SWarn("Warning")
+-- DWarn("Warning")
 -- SDumpS(dmp)
 -- local td = {}
 -- for i = 1, 10, 1 do

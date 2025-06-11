@@ -23,6 +23,7 @@ function LocalSettings:__tostring() return string.format("%s Data, %d entries", 
 --- Resulting file is "<folder>/<fileName>.json"
 function LocalSettings:SaveToFile()
     local modinfo = Ext.Mod.GetMod(ModuleUUID).Info
+    -- DDump(modinfo)
     local save = Ext.DumpExport(self.Data)
     self.FolderName = self.FolderName or modinfo.Name
     local path = self.FolderName.."/"..self.FileName..".json"
@@ -30,7 +31,7 @@ function LocalSettings:SaveToFile()
         Ext.IO.SaveFile(path, save)
         --ECDebug("Saved LocalSettings to: %s", fileName)
     else
-        SWarn("LocalSettings have invalid data, failed to save: %s", self.Data)
+        DWarn("LocalSettings have invalid data, failed to save: %s", self.Data)
     end
 end
 function LocalSettings:_readyCheck()
@@ -117,4 +118,5 @@ local function GenerateCache()
     end
     Cache:AddOrChange(CacheData.RuntimeComponentNames, componentNames)
 end
-GenerateCache()
+
+-- GenerateCache() --No!

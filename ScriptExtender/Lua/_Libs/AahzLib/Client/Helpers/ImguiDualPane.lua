@@ -55,12 +55,12 @@ function ImguiDualPane:Init()
                 if change.MetaInfo then self._optionMetaCache[change.Value] = change.MetaInfo end
                 self:_AddAvailableOption(change.Value, change.MetaInfo)
             else
-                -- SWarn("Attempted to add option that already exists: %s", change.Value)
+                -- DWarn("Attempted to add option that already exists: %s", change.Value)
             end
         end
         if change.ChangeType == DualPaneChangeType.RemoveOption then
             if self._optionsMap[change.Value] == nil then
-                SWarn("Attempted to remove option that doesn't exist: %s", change.Value)
+                DWarn("Attempted to remove option that doesn't exist: %s", change.Value)
             else
                 -- Remove from visual imgui
                 if self._optionsMap[change.Value] then
@@ -74,7 +74,7 @@ function ImguiDualPane:Init()
         end
         if change.ChangeType == DualPaneChangeType.SelectItem then
             if self._optionsMap[change.Value] == nil then
-                SWarn("Attempted to select option that doesn't exist: %s", change.Value)
+                DWarn("Attempted to select option that doesn't exist: %s", change.Value)
             else
                 -- Change from available to selected in data
                 self._optionsMap[change.Value] = true
@@ -84,7 +84,7 @@ function ImguiDualPane:Init()
         end
         if change.ChangeType == DualPaneChangeType.DeselectItem then
             if self._optionsMap[change.Value] == nil then
-                SWarn("Attempted to deselect option that doesn't exist: %s", change.Value)
+                DWarn("Attempted to deselect option that doesn't exist: %s", change.Value)
             else
                 -- Change from selected to available in data
                 self._optionsMap[change.Value] = false
@@ -121,7 +121,7 @@ function ImguiDualPane:AddOption(option, metaInfo, selected)
             MetaInfo = metaInfo,
         })
     else
-        -- SWarn("Attempted to add option that already exists: %s", change.Value)
+        -- DWarn("Attempted to add option that already exists: %s", change.Value)
     end
     if selected and not self._optionsMap[option] then
         self:SelectOption(option)
@@ -132,7 +132,7 @@ end
 ---@return boolean? # true if valid option provided and unselected, false if already selected, nil if invalid option
 function ImguiDualPane:SelectOption(option)
     if self._optionsMap[option] == nil then
-        return SWarn("Attempted to select option that doesn't exist: %s", option)
+        return DWarn("Attempted to select option that doesn't exist: %s", option)
     end
     if not self._optionsMap[option] then
         self.ChangesSubject:OnNext({
@@ -148,7 +148,7 @@ end
 ---@return boolean? # true if valid option provided and selected, false if already unselected(available), nil if invalid option
 function ImguiDualPane:DeselectOption(option)
     if self._optionsMap[option] == nil then
-        return SWarn("Attempted to deselect option that doesn't exist: %s", option)
+        return DWarn("Attempted to deselect option that doesn't exist: %s", option)
     end
     if self._optionsMap[option] then
         self.ChangesSubject:OnNext({
