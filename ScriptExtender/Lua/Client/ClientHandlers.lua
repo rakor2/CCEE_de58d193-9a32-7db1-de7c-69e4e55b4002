@@ -15,6 +15,49 @@ function GetKeybind(type, bindingIndex)
 end
 
 
+--tbd: pairs ipairs or some shit 
+function MoneyCounter()
+    tattooCount = 0
+    makeupCount = 0
+    scarCount = 0
+    -- customCount = 0 
+    -- local kavtCount = 0
+
+        for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
+            local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
+            if name:lower():find('tattoo') then
+                tattooCount = tattooCount + 1
+                -- if name:lower():find('kaz') then
+                --     kavtCount = kavtCount + 1
+                -- end
+                -- tattoes = tattooCount - kavtCount
+            end
+        end
+
+        for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
+            local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
+            if name:lower():find('make') then
+                makeupCount = makeupCount + 1
+            end
+        end
+
+        for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
+            local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
+            if name:lower():find('scar') then
+                scarCount = scarCount + 1
+            end
+        end
+
+        -- for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
+        --     local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
+        --     if name:lower():find('custom') then
+        --         customCount = customCount + 1
+        --     end
+        -- end
+
+        -- DPrint(customCount)
+end
+MoneyCounter()
 
 
 
