@@ -45,9 +45,15 @@ function UpdateParameters(ticks, entity, single)
         TICKS_TO_WAIT = ticks,
         lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
     }
-
+    DPrint('UpdateParameters')
     if Helpers.ModVars.Get(ModuleUUID).CCEE then 
         Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
     end
 
 end
+
+-- eventID = Ext.Events.Tick:Subscribe(function()
+--     Ext.Entity.OnChange("DisplayName", function(entity)
+--         DPrint('123')
+--     end)
+-- end)
