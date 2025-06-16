@@ -12,7 +12,9 @@ function UI:Init()
     CCEE:Body()
     CCEE:Hair()
     CCEE:Glow()
-    GetAllParameterNames(_C())
+    CCEE:PresetsTab()
+    CCEE:Reset()
+    CCEE:Dev()
 end
 
 
@@ -47,7 +49,7 @@ function Window:CCEEWindow()
 
     ApplyStyle(cceeWindow, 1)
 
-    p = cceeWindow
+    -- p = cceeWindow
 
     MCM.SetKeybindingCallback('ccee_toggle_window', function()
         cceeWindow.Open = not cceeWindow.Open
@@ -62,8 +64,24 @@ function Window:CCEEWindow()
     -- end)
 
 
+    local bar = cceeWindow:AddTabBar('Tabs')
+
+    local mainTab = bar:AddTabItem('Main')
+
+    local presetsTab = bar:AddTabItem('Presets')
+    
+    local resetTab = bar:AddTabItem('Reset')
+
+    local devTab = bar:AddTabItem('Dev')
+
+    p = mainTab
+
+
+
     firstManToUseProgressBar = p:AddProgressBar()
     firstManToUseProgressBar.Visible = false
+
+    firstManToUseProgressBar:SetColor('PlotHistogram', {1.00, 0.7, 0.7, 1.00})
 
     firstManToUseProgressBarLable = p:AddText('Calculating quats')
     firstManToUseProgressBarLable.SameLine = true
@@ -71,13 +89,13 @@ function Window:CCEEWindow()
 
     function CCEE:CoolThings()
 
-        local mainCollapse = p:AddCollapsingHeader('xd')
-        -- local p = mainCollapse
 
-        local STOPPPPP = mainCollapse:AddButton('Idle')
+        local STOPPPPP = p:AddButton('Idle')
         STOPPPPP.OnClick = function()
             Ext.Net.PostMessageToServer('stop', '')
         end
+
+        -- local pmButton = p:AddButton('If parameters did not ')
 
         -- local iSwitchCharacter = mainCollapse:AddButton('I switched character')
         -- iSwitchCharacter.SameLine = true
@@ -85,69 +103,38 @@ function Window:CCEEWindow()
         --     Elements:UpdateElements(_C().Uuid.EntityUuid)
         -- end
 
-        local sepa = mainCollapse:AddSeparatorText('Savings loadings')
+        local resetCharacter = p:AddButton('Reset selected character')
+        resetCharacter.SameLine = true
+        resetCharacter.OnClick = function ()
 
-        local saveParams = mainCollapse:AddButton('Save')
-        saveParams.OnClick = function ()
-            SaveParamsToFile()
+            confirmResetChar.Visible = true
+            resetCharacter.Visible = false
+
+            confirmTimer = Ext.Timer.WaitFor(1000, function()
+                confirmResetChar.Visible = false
+                resetCharacter.Visible = true
+            end)
+
         end
 
-        local tp3 = saveParams:Tooltip()
-        tp3:AddText([[
-        Saves all edited parameters for every character in the scene in local file
-        AppData\Local\Larian Studios\Baldur's Gate 3\Script Extender\CCEE]])
-
-
-        local loadParams = mainCollapse:AddButton('Load')
-        loadParams.SameLine = true
-        loadParams.OnClick = function ()
-            LoadParamsFromFile()
-        end
-
-        local sepa = mainCollapse:AddSeparatorText('DO NOT missclick')
-
-
-        local resetCharacter = mainCollapse:AddButton('Reset selected character')
         local tp = resetCharacter:Tooltip()
         tp:AddText([[
         Tats/Makes/Eyes don't visually reset, you need to save and load the game]])
 
 
-        local resetTableBtn = mainCollapse:AddButton('Reset save data')
-        resetTableBtn.SameLine = true
-        resetTableBtn.OnClick = function ()
+        confirmResetChar = p:AddButton('Confirm')
 
-            lastParameters = {}
-            lastParametersMV = {}
-            dummies = {}
-            -- Parameters = {}
-            Helpers.ModVars:Get(ModuleUUID).CCEE = {}
+        confirmResetChar:SetColor("Button", {0.55, 0.0, 0.0, 1.00})
+        confirmResetChar:SetColor("ButtonHovered", {0.35, 0.0, 0.0, 1.0})
+        confirmResetChar:SetColor("ButtonActive", {0.25, 0.0, 0.0, 1.0})
 
-            for _, element in pairs(Elements) do
-                local s, _ = pcall(function() return element.Value end)
-                if s then
-                    element.Value = {0, 0, 0, 0}
-                else
-                    local s2, _ = pcall(function() return element.Color end)
-                    if s2 then
-                        element.Color = {0, 0, 0, 0}
-                    end
-                end
-            end
+        confirmResetChar.SameLine = true
+        confirmResetChar.Visible = false
+        confirmResetChar.OnClick = function ()
 
-        end
+            Ext.Timer.Cancel(confirmTimer)
 
-        -- local resetSliders = mainCollapse:AddButton('Reset sliders and pickers')
-        -- resetSliders.OnClick = function ()
 
-            
-        -- end
-
-        local tp2 = resetTableBtn:Tooltip()
-        tp2:AddText([[
-        The mod stores data in game save file, this button resets the data]])
-
-        resetCharacter.OnClick = function ()
             Ext.Net.PostMessageToServer('ResetCurrentCharacter', '')
             if _C().Uuid then
                 local uuid = _C().Uuid.EntityUuid
@@ -155,50 +142,27 @@ function Window:CCEEWindow()
                 lastParametersMV[uuid] = nil
                 Ext.Net.PostMessageToServer('SendModVars', Ext.Json.Stringify(lastParameters))
             end
+
+            resetCharacter.Visible = true
+            confirmResetChar.Visible = false
+
         end
 
 
-        local sepa = mainCollapse:AddSeparatorText('Dev thingies')
-
-        local dumpVars = mainCollapse:AddButton('Dump vars')
-        dumpVars.OnClick = function ()
-            Ext.Net.PostMessageToServer('dumpVars', '')
+        local backupPM = p:AddButton('PM backup')
+        backupPM.SameLine = true
+        backupPM.OnClick = function ()
+            ApplyParametersToDummies()
         end
 
-
-        local forceLoad = mainCollapse:AddButton('Force load')
-        forceLoad.SameLine = true
-        forceLoad.OnClick = function ()
-            Ext.Net.PostMessageToServer('UpdateParameters', '')
-        end
-
-        local tp3 = forceLoad:Tooltip()
-        tp3:AddText([[
-        Loads stored data from the save file for every character in scene
-        Useful if visually parameters got reset]])
-
-
-
-        local testsCheck = mainCollapse:AddCheckbox('All parameters (they do not save)')
-            testsCheck.IDContext = 'adasd22'
-            testsCheck.SameLine = true
-            testsCheck.OnChange = function ()
-                if testsCheck.Checked then
-                    CCEE:Tests()
-                else
-                    sepate:Destroy()
-                    testParams:Destroy()
-                end
-            end
-
+        local tp5 = backupPM:Tooltip()
+        tp5:AddText([[
+        If parameters haven't applied to PM characters]])
             
-        local sepa = p:AddSeparatorText('Main tabs')
+        local sepa = p:AddSeparatorText('')
 
     end
 
-
-
-    
 
     ---@param fn function # loooooooooooook it's colored! 
     function Elements:CreateElements(type, var, name, parent, options, fn)
@@ -378,10 +342,10 @@ function Window:CCEEWindow()
         ['Scales'] = {
         
             {'int', 'slIntScaleIndex', 'Index', parent, {max = 31}, function(var)
-                SaveAndApply(_C(), 'Head', 'CustomIndex', 'Scalar', var) end},
+                SaveAndApply(_C(), 'Head', 'CustomIndex', 'Scalar', var.Value[1]) end},
         
             {'picker', 'pickScaleColor', 'Color', parent, {}, function(var)
-                SaveAndApply(_C(), 'Head', 'CustomColor', 'Vector3', var) end},
+                SaveAndApply(_C(), 'Head', 'CustomColor', 'Vector3', var.Color) end},
         
             {nil, 'pickScaleInt', 'Intensity', parent, {min = -10, max = 10}, function(var)
                 SaveAndApply(_C(), 'Head', 'CustomIntensity', 'Scalar', var.Value[1]) end},
@@ -401,27 +365,27 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'Blindness_L', 'Scalar', var.Value[1])
             end},
             
-            {'picker', 'pickEyesC', 'Iris color 1', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickEyesC', 'Iris color 1', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_IrisColour', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickEyesCL', 'Iris color 1 L', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickEyesCL', 'Iris color 1 L', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_IrisColour_L', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickEyesC2', 'Iris color 2', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickEyesC2', 'Iris color 2', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_IrisSecondaryColour', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickEyesC2L', 'Iris color 2 L', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickEyesC2L', 'Iris color 2 L', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_IrisSecondaryColour_L', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickEyesSC', 'Sclera color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickEyesSC', 'Sclera color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_ScleraColour', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickEyesSCL', 'Sclera color L', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickEyesSCL', 'Sclera color L', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_ScleraColour_L', 'Vector3', var.Color)
             end},
         
@@ -455,15 +419,15 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'NakedBody', 'BodyTattooIndex', 'Scalar', var.Value[1])
             end},
             
-            {'picker', 'pickBTatCR', 'Color R', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickBTatCR', 'Color R', parent, {}, function(var)
                 SaveAndApply(_C(), 'NakedBody', 'BodyTattooColor', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickBTatCG', 'Color G', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickBTatCG', 'Color G', parent, {}, function(var)
                 SaveAndApply(_C(), 'NakedBody', 'BodyTattooColorG', 'Vector3', var.Color)
             end},
             
-            {'picker', 'pickBTatCB', 'Color B', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickBTatCB', 'Color B', parent, {}, function(var)
                 SaveAndApply(_C(), 'NakedBody', 'BodyTattooColorB', 'Vector3', var.Color)
             end},
             
@@ -495,6 +459,20 @@ function Window:CCEEWindow()
 
 
         ['Scalp'] = {
+
+                        
+            {'picker', 'pickHairScalpColor', 'Hair Scalp Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Head', 'Hair_Scalp_Color', 'Vector3', var.Color)
+            end},
+            
+            {'picker', 'pickHueShiftWeight', 'Hue Shift Weight', parent, {}, function(var)
+                SaveAndApply(_C(), 'Head', 'Scalp_HueShiftColorWeight', 'Vector3', var.Color)
+            end},
+            
+            {'picker', 'pickBeardScalpColor', 'Beard Scalp Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Head', 'Beard_Scalp_Color', 'Vector3', var.Color)
+            end},
+
             {nil, 'slScalpMinValue', 'Scalp Min Value', parent, {min = -1, max = 1}, function(var)
                 SaveAndApply(_C(), 'Head', 'Scalp_MinValue', 'Scalar', var.Value[1])
             end},
@@ -502,10 +480,14 @@ function Window:CCEEWindow()
             {nil, 'slHornMaskWeight', 'Horn Mask Weight', parent, {min = -1, max = 1}, function(var)
                 SaveAndApply(_C(), 'HaHeadir', 'Scalp_HornMaskWeight', 'Scalar', var.Value[1])
             end},
-            
+
             {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1}, function(var)
                 SaveAndApply(_C(), 'Head', 'Scalp_Graying_Intensity', 'Scalar', var.Value[1])
             end},
+            
+            {'picker', 'pickGrayingColor', 'Graying Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Head', 'Hair_Scalp_Graying_Color', 'Vector3', var.Color)
+            end},   
             
             {nil, 'slColorTransitionMid', 'Color Transition Mid', parent, {min = -10, max = 10}, function(var)
                 SaveAndApply(_C(), 'Head', 'Scalp_ColorTransitionMidPoint', 'Scalar', var.Value[1])
@@ -542,26 +524,11 @@ function Window:CCEEWindow()
             {nil, 'slScalpScatter', 'Scalp Scatter', parent, {min = -10, max = 10}, function(var)
                 SaveAndApply(_C(), 'Head', 'Scalp_Scatter', 'Scalar', var.Value[1])
             end},
-            
-            {'picker', 'pickHairScalpColor', 'Hair Scalp Color', parent, {float = true, noAlpha = true}, function(var)
-                SaveAndApply(_C(), 'Head', 'Hair_Scalp_Color', 'Vector3', var.Color)
-            end},
-            
-            {'picker', 'pickGrayingColor', 'Graying Color', parent, {float = true, noAlpha = true}, function(var)
-                SaveAndApply(_C(), 'Head', 'Hair_Scalp_Graying_Color', 'Vector3', var.Color)
-            end},
-            
-            {'picker', 'pickHueShiftWeight', 'Hue Shift Weight', parent, {float = true, noAlpha = true}, function(var)
-                SaveAndApply(_C(), 'Head', 'Scalp_HueShiftColorWeight', 'Vector3', var.Color)
-            end},
-            
-            {'picker', 'pickBeardScalpColor', 'Beard Scalp Color', parent, {float = true, noAlpha = true}, function(var)
-                SaveAndApply(_C(), 'Head', 'Beard_Scalp_Color', 'Vector3', var.Color)
-            end}
+
         },
 
         ['Hair'] = {
-            {'picker', 'pickHairColor', 'Hair Color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickHairColor', 'Hair Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Hair', 'Hair_Color', 'Vector3', var.Color)
             end},
         
@@ -615,7 +582,7 @@ function Window:CCEEWindow()
         },
         
         ['Graying'] = {
-            {'picker', 'pickHairGrayingColor', 'Hair Graying Color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickHairGrayingColor', 'Hair Graying Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Hair', 'Hair_Graying_Color', 'Vector3', var.Color)
             end},
         
@@ -629,7 +596,7 @@ function Window:CCEEWindow()
         },
         
         ['Highlights'] = {
-            {'picker', 'pickHighlightColor', 'Highlight Color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickHighlightColor', 'Highlight Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Hair', 'Highlight_Color', 'Vector3', var.Color)
             end},
         
@@ -644,11 +611,11 @@ function Window:CCEEWindow()
 
 
         ['Horns'] = {
-            {'picker', 'pickHornsColor', 'Color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickHornsColor', 'Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Horns', 'NonSkinColor', 'Vector3', var.Color)
             end},
         
-            {'picker', 'pickHornsTipColor', 'Tip color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'pickHornsTipColor', 'Tip color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Horns', 'NonSkinTipColor', 'Vector3', var.Color)
             end},
         
@@ -661,17 +628,38 @@ function Window:CCEEWindow()
             end}
         },
 
+        ['GlowHead'] = {
+
+
+            {'picker', 'pickHeadGlowColor', 'Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Head', 'GlowColor', 'Vector3', var.Color)
+            end},
+
+
+            {nil, 'slHeadGlowMult', 'Multiplier', parent, {max = 5}, function(var)
+                SaveAndApply(_C(), 'Head', 'GlowMultiplier', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHeadAnimdSpeed', 'Animation speed', parent, {max = 10}, function(var)
+                SaveAndApply(_C(), 'Head', 'AnimationSpeed', 'Scalar', var.Value[1])
+            end},
+        },
+
 
         ['GlowBody'] = {
 
 
-            {'picker', 'pickBodyGlowColor', 'Color', parent, {float = true, noAlpha = true}, function(var)
-                SaveAndApply(_C(), 'Body', 'GlowColor', 'Vector3', var.Color)
+            {'picker', 'pickBodyGlowColor', 'Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'NakedBody', 'GlowColor', 'Vector3', var.Color)
             end},
 
 
             {nil, 'slBodyGlowMult', 'Multiplier', parent, {max = 5}, function(var)
-                SaveAndApply(_C(), 'Body', 'GlowMultiplier', 'Scalar', var.Value[1])
+                SaveAndApply(_C(), 'NakedBody', 'GlowMultiplier', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slBodyAnimdSpeed', 'Animation speed', parent, {max = 10}, function(var)
+                SaveAndApply(_C(), 'NakedBody', 'AnimationSpeed', 'Scalar', var.Value[1])
             end},
         },
 
@@ -692,75 +680,17 @@ function Window:CCEEWindow()
             end},
 
             
-            {'picker', 'slEyesGlowColor', 'Color', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'slEyesGlowColor', 'Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_GlowColour', 'Vector3', var.Color)
             end},
 
-            {'picker', 'slEyesGlowColorL', 'Color L', parent, {float = true, noAlpha = true}, function(var)
+            {'picker', 'slEyesGlowColorL', 'Color L', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_GlowColour_L', 'Vector3', var.Color)
             end},
         },
 
     }
         
-
-
-                    
-            -- {'picker', pickBeardColor, 'Beard Color', parent, {}, function(var)
-            --     CallFunction('Vector3', 'Beard_Color', var) end},
-
-
-             -- {nil, slPixelDepthOffsetRoot, 'Pixel Depth Offset Root', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'PixelDepthOffsetRoot', var) end},
-        
-            -- {nil, slPixelDepthOffset, 'Pixel Depth Offset', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'PixelDepthOffset', var) end},
-        
-            -- {nil, slDepthTransitionMidPoint, 'Depth Transition Mid', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'DepthTransitionMidPoint', var) end},
-        
-            -- {nil, slDepthTransitionSoftness, 'Depth Transition Soft', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'DepthTransitionSoftness', var) end},
-
-            -- {nil, slBeardAlpha, 'Beard Alpha', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'DontTouchMe_Beard_Alpha', var) end},
-
-
-            -- {nil, slIsBeard, 'Is Beard', parent, {min = -10, max = 10}, function(var)
-        --     CallFunction('Scalar', 'DontTouchMe_isBeard', var) end},
-    
-            -- {nil, slBeardGrayingIntensity, 'Beard Graying Intensity', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'Beard_Graying_Intensity', var) end},
-
-            -- {nil, slIDContrast, 'ID Contrast', parent, {min = -10, max = 10}, function(var)
-        --     CallFunction('Scalar', 'IDContrast', var) end},
-
-            -- {nil, slDirtWetness, 'Dirt Wetness', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'Dirt_Wetness', var) end},
-        
-            -- {nil, slBlood, 'Blood', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'Blood', var) end},
-        
-            -- {nil, slDirt, 'Dirt', parent, {min = -10, max = 10}, function(var)
-            --     CallFunction('Scalar', 'Dirt', var) end},
-
-        
-            -- {'picker', pickBeardGrayingColor, 'Beard Graying Color', parent, {}, function(var)
-        --     CallFunction('Vector3', 'Beard_Graying_Color', var) end},
-            
-
-                
-            -- {'picker', pickBeardHighlightColor, 'Beard Highlight Color', parent, {}, function(var)
-            --     CallFunction('Vector3', 'Beard_Highlight_Color', var) end},
-                
-            -- {'picker', pickHueShiftWeight, 'Hue Shift Weight', parent, {}, function(var)
-            --     CallFunction('Vector3', 'HueShiftColorWeight', var) end},
-                
-            -- {'picker', pickDirtColor, 'Dirt Color', parent, {}, function(var)
-            --     CallFunction('Vector3', 'DirtColor', var) end},
-                
-            -- {'picker', pickBloodColor, 'Blood Color', parent, {}, function(var)
-            --     CallFunction('Vector3', 'Blood_Color', var) end}
 
 
     function Elements:PopulateTab(tbl, collapse, treeName)
@@ -889,10 +819,131 @@ function Window:CCEEWindow()
         local glowCollapse = p:AddCollapsingHeader('Glow')
 
         local parent = glowCollapse
+
+        local textGlow = parent:AddBulletText('Only works if texture has glow')
+        textGlow:SetColor('Text',  {1.00, 0.75, 0.75, 1.00})
+
+        Elements:PopulateTab(ahhTable['GlowHead'], parent, 'Head')
         
         Elements:PopulateTab(ahhTable['GlowBody'], parent, 'Body')
 
         Elements:PopulateTab(ahhTable['GlowEyes'], parent, 'Eyes')
+
+
+    end
+
+
+    function CCEE:PresetsTab()
+
+        -- local sepa = pT:AddSeparatorText('Savings loadings')
+
+        -- local saveParams = pT:AddButton('Save')
+        -- saveParams.OnClick = function ()
+        --     SaveParamsToFile()
+        -- end
+
+        -- local tp3 = saveParams:Tooltip()
+        -- tp3:AddText([[
+        -- Saves all edited parameters for every character in the scene in local file
+        -- AppData\Local\Larian Studios\Baldur's Gate 3\Script Extender\CCEE]])
+
+
+        -- local loadParams = pT:AddButton('Load')
+        -- loadParams.SameLine = true
+        -- loadParams.OnClick = function ()
+        --     LoadParamsFromFile()
+        -- end
+
+        -- local sepapT1 = pT:AddSeparatorText('Presets')
+
+        local sepapT2 = presetsTab:AddSeparatorText('Save')
+        local presetNameLoad = presetsTab:AddInputText('Preset name')
+        presetNameLoad.IDContext = 'presetNameLoad'
+
+        local savePreset = presetsTab:AddButton('Save')
+        savePreset.IDContext = 'savePreset'
+        savePreset.OnClick = function ()
+            SavePreset(presetNameLoad.Text)
+            presetNameLoad.Text = ''
+        end
+
+        local sepapT2 = presetsTab:AddSeparatorText('Load')
+        local presetLoadName = presetsTab:AddInputText('Preset name')
+        presetLoadName.IDContext = 'presetLoadName'
+
+        local loadPreset = presetsTab:AddButton('Load')
+        loadPreset.IDContext = 'loadPreset'
+        loadPreset.OnClick = function ()
+            LoadPreset(presetLoadName.Text)
+            presetLoadName.Text = ''
+        end
+
+    end
+
+    function CCEE:Reset()
+
+        local resetTableBtn = resetTab:AddButton('Reset save data')
+        resetTableBtn.OnClick = function ()
+
+            lastParameters = {}
+            lastParametersMV = {}
+            dummies = {}
+            -- Parameters = {}
+            Helpers.ModVars:Get(ModuleUUID).CCEE = {}
+
+            for _, element in pairs(Elements) do
+                local s, _ = pcall(function() return element.Value end)
+                if s then
+                    element.Value = {0, 0, 0, 0}
+                else
+                    local s2, _ = pcall(function() return element.Color end)
+                    if s2 then
+                        element.Color = {0, 0, 0, 0}
+                    end
+                end
+            end
+
+        end
+
+        local tp2 = resetTableBtn:Tooltip()
+        tp2:AddText([[
+        The mod stores data in game save file, this button resets the data]])
+
+    end
+
+    function CCEE:Dev()
+
+
+        local dumpVars = devTab:AddButton('Dump vars')
+        dumpVars.OnClick = function ()
+            Ext.Net.PostMessageToServer('dumpVars', '')
+        end
+
+
+        local forceLoad = devTab:AddButton('Force load')
+        forceLoad.SameLine = true
+        forceLoad.OnClick = function ()
+            Ext.Net.PostMessageToServer('UpdateParameters', '')
+        end
+
+        local tp3 = forceLoad:Tooltip()
+        tp3:AddText([[
+        Loads stored data from the save file for every character in scene
+        Useful if visually parameters got reset]])
+
+
+
+        local testsCheck = devTab:AddCheckbox('All parameters (they do not save)')
+            testsCheck.IDContext = 'adasd22'
+            testsCheck.SameLine = true
+            testsCheck.OnChange = function ()
+                if testsCheck.Checked then
+                    CCEE:Tests()
+                else
+                    sepate:Destroy()
+                    testParams:Destroy()
+                end
+            end
 
     end
 
@@ -1164,144 +1215,142 @@ function Window:CCEEWindow()
 
     end
 
+
 ---temp abomination 
 function Elements:UpdateElements(uuid)
     
-
-    
-
 
 
     if lastParameters[uuid] then
         
         local character = lastParameters[uuid]
-        DPrint(uuid)
+        -- DPrint(uuid)
 
-        self['pickMelaninColor'].Color = getValue(character, "NakedBody", "Vector3", "MelaninColor")
-        self['slMelaninAmount'].Value = getValue(character, "NakedBody", "Scalar", "MelaninAmount")
-        self['slMelaninRemoval'].Value = getValue(character, "NakedBody", "Scalar", "MelaninRemovalAmount")
-        self['slMelaninDarkM'].Value = getValue(character, "NakedBody", "Scalar", "MelaninDarkMultiplier")
-        self['slMelaninDarkT'].Value = getValue(character, "NakedBody", "Scalar", "MelaninDarkThreshold")
+        self['pickMelaninColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "MelaninColor")
+        self['slMelaninAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninAmount")
+        self['slMelaninRemoval'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninRemovalAmount")
+        self['slMelaninDarkM'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninDarkMultiplier")
+        self['slMelaninDarkT'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninDarkThreshold")
     
-        self['pickHemoglobinColor'].Color = getValue(character, "NakedBody", "Vector3", "HemoglobinColor")
-        self['slHemoglobinAmount'].Value = getValue(character, "NakedBody", "Scalar", "HemoglobinAmount")
-        self['pickYellowingColor'].Color = getValue(character, "NakedBody", "Vector3", "YellowingColor")
-        self['slYellowingAmount'].Value = getValue(character, "NakedBody", "Scalar", "YellowingAmount")
-        self['pickVeinColor'].Color = getValue(character, "NakedBody", "Vector3", "VeinColor")
-        self['slVeinAmount'].Value = getValue(character, "NakedBody", "Scalar", "VeinAmount")
+        self['pickHemoglobinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "HemoglobinColor")
+        self['slHemoglobinAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "HemoglobinAmount")
+        self['pickYellowingColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "YellowingColor")
+        self['slYellowingAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "YellowingAmount")
+        self['pickVeinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "VeinColor")
+        self['slVeinAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "VeinAmount")
     
-        self['slIntMakeupIndex'].Value = getValue(character, "Head", "Scalar", "MakeUpIndex")
-        self['pickMakeupColor'].Color = getValue(character, "Head", "Vector3", "MakeupColor")
-        self['slMakeupInt'].Value = getValue(character, "Head", "Scalar", "MakeupIntensity")
-        self['slMakeupMet'].Value = getValue(character, "Head", "Scalar", "LipsMakeupMetalness")
-        self['slMakeupRough'].Value = getValue(character, "Head", "Scalar", "MakeupRoughness")
+        self['slIntMakeupIndex'].Value = SLOP:getValue(character, "Head", "Scalar", "MakeUpIndex")
+        self['pickMakeupColor'].Color = SLOP:getValue(character, "Head", "Vector3", "MakeupColor")
+        self['slMakeupInt'].Value = SLOP:getValue(character, "Head", "Scalar", "MakeupIntensity")
+        self['slMakeupMet'].Value = SLOP:getValue(character, "Head", "Scalar", "LipsMakeupMetalness")
+        self['slMakeupRough'].Value = SLOP:getValue(character, "Head", "Scalar", "MakeupRoughness")
     
-        self['pickLipsColor'].Color = getValue(character, "Head", "Vector3", "Lips_Makeup_Color")
-        self['slLipsInt'].Value = getValue(character, "Head", "Scalar", "LipsMakeupIntensity")
-        self['slLipsMet'].Value = getValue(character, "Head", "Scalar", "LipsMakeupMetalness")
-        self['slLipsRough'].Value = getValue(character, "Head", "Scalar", "LipsMakeupRoughness")
+        self['pickLipsColor'].Color = SLOP:getValue(character, "Head", "Vector3", "Lips_Makeup_Color")
+        self['slLipsInt'].Value = SLOP:getValue(character, "Head", "Scalar", "LipsMakeupIntensity")
+        self['slLipsMet'].Value = SLOP:getValue(character, "Head", "Scalar", "LipsMakeupMetalness")
+        self['slLipsRough'].Value = SLOP:getValue(character, "Head", "Scalar", "LipsMakeupRoughness")
     
-        self['slIntTattooIndex'].Value = getValue(character, "Head", "Scalar", "TattooIndex")
-        self['pickTattooColorR'].Color = getValue(character, "Head", "Vector3", "TattooColor")
-        self['pickTattooColorG'].Color = getValue(character, "Head", "Vector3", "TattooColorG")
-        self['pickTattooColorB'].Color = getValue(character, "Head", "Vector3", "TattooColorB")
+        self['slIntTattooIndex'].Value = SLOP:getValue(character, "Head", "Scalar", "TattooIndex")
+        self['pickTattooColorR'].Color = SLOP:getValue(character, "Head", "Vector3", "TattooColor")
+        self['pickTattooColorG'].Color = SLOP:getValue(character, "Head", "Vector3", "TattooColorG")
+        self['pickTattooColorB'].Color = SLOP:getValue(character, "Head", "Vector3", "TattooColorB")
     
         local tattooIntensity =
-        (getValue(character, "Head", "Vector_1", "TattooIntensity")[1] ~= 0 and getValue(character, "Head", "Vector_1", "TattooIntensity")[1]) or
-        (getValue(character, "Head", "Vector_2", "TattooIntensity")[1] ~= 0 and getValue(character, "Head", "Vector_2", "TattooIntensity")[1]) or
-        getValue(character, "Head", "Vector_3", "TattooIntensity")[1] or 0
+        (SLOP:getValue(character, "Head", "Vector_1", "TattooIntensity")[1] ~= 0 and SLOP:getValue(character, "Head", "Vector_1", "TattooIntensity")[1]) or
+        (SLOP:getValue(character, "Head", "Vector_2", "TattooIntensity")[1] ~= 0 and SLOP:getValue(character, "Head", "Vector_2", "TattooIntensity")[1]) or
+        SLOP:getValue(character, "Head", "Vector_3", "TattooIntensity")[1] or 0
     
         self['pickTattooIntR'].Value = {tattooIntensity, 0, 0, 0}
         self['pickTattooIntG'].Value = {tattooIntensity, 0, 0, 0}
         self['pickTattooIntB'].Value = {tattooIntensity, 0, 0, 0}
         
-        self['slTattooMet'].Value = getValue(character, "Head", "Scalar", "TattooMetalness")
-        self['slTattooRough'].Value = getValue(character, "Head", "Scalar", "TattooRoughnessOffset")
-        self['slTattooCurve'].Value = getValue(character, "Head", "Scalar", "TattooCurvatureInfluence")
+        self['slTattooMet'].Value = SLOP:getValue(character, "Head", "Scalar", "TattooMetalness")
+        self['slTattooRough'].Value = SLOP:getValue(character, "Head", "Scalar", "TattooRoughnessOffset")
+        self['slTattooCurve'].Value = SLOP:getValue(character, "Head", "Scalar", "TattooCurvatureInfluence")
     
-        self['slAgeInt'].Value = getValue(character, "Head", "Scalar", "Age_Weight")
-        self['slIntScarIndex'].Value = getValue(character, "Head", "Scalar", "ScarIndex")
+        self['slAgeInt'].Value = SLOP:getValue(character, "Head", "Scalar", "Age_Weight")
+        self['slIntScarIndex'].Value = SLOP:getValue(character, "Head", "Scalar", "ScarIndex")
     
-        self['slEyesHet'].Value = getValue(character, "Head", "Scalar", "Heterochromia")
-        self['slEyesBR'].Value = getValue(character, "Head", "Scalar", "Blindness")
-        self['slEyesBL'].Value = getValue(character, "Head", "Scalar", "Blindness_L")
-        self['pickEyesC'].Color = getValue(character, "Head", "Vector3", "Eyes_IrisColour")
-        self['pickEyesCL'].Color = getValue(character, "Head", "Vector3", "Eyes_IrisColour_L")
-        self['pickEyesC2'].Color = getValue(character, "Head", "Vector3", "Eyes_IrisSecondaryColour")
-        self['pickEyesC2L'].Color = getValue(character, "Head", "Vector3", "Eyes_IrisSecondaryColour_L")
-        self['pickEyesSC'].Color = getValue(character, "Head", "Vector3", "Eyes_ScleraColour")
-        self['pickEyesSCL'].Color = getValue(character, "Head", "Vector3", "Eyes_ScleraColour_L")
-        self['slEyesCI'].Value = getValue(character, "Head", "Scalar", "SecondaryColourIntensity")
-        self['slEyesCIL'].Value = getValue(character, "Head", "Scalar", "SecondaryColourIntensity_L")
-        self['slEyesEdge'].Value = getValue(character, "Head", "Scalar", "IrisEdgeStrength")
-        self['slEyesEdgeL'].Value = getValue(character, "Head", "Scalar", "IrisEdgeStrength_L")
-        self['slEyesRed'].Value = getValue(character, "Head", "Scalar", "Redness")
-        self['slEyesRedL'].Value = getValue(character, "Head", "Scalar", "Redness_L")
+        self['slEyesHet'].Value = SLOP:getValue(character, "Head", "Scalar", "Heterochromia")
+        self['slEyesBR'].Value = SLOP:getValue(character, "Head", "Scalar", "Blindness")
+        self['slEyesBL'].Value = SLOP:getValue(character, "Head", "Scalar", "Blindness_L")
+        self['pickEyesC'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_IrisColour")
+        self['pickEyesCL'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_IrisColour_L")
+        self['pickEyesC2'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_IrisSecondaryColour")
+        self['pickEyesC2L'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_IrisSecondaryColour_L")
+        self['pickEyesSC'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_ScleraColour")
+        self['pickEyesSCL'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_ScleraColour_L")
+        self['slEyesCI'].Value = SLOP:getValue(character, "Head", "Scalar", "SecondaryColourIntensity")
+        self['slEyesCIL'].Value = SLOP:getValue(character, "Head", "Scalar", "SecondaryColourIntensity_L")
+        self['slEyesEdge'].Value = SLOP:getValue(character, "Head", "Scalar", "IrisEdgeStrength")
+        self['slEyesEdgeL'].Value = SLOP:getValue(character, "Head", "Scalar", "IrisEdgeStrength_L")
+        self['slEyesRed'].Value = SLOP:getValue(character, "Head", "Scalar", "Redness")
+        self['slEyesRedL'].Value = SLOP:getValue(character, "Head", "Scalar", "Redness_L")
     
-        self['slBTatI'].Value = getValue(character, "NakedBody", "Scalar", "AdditionalTattooIntensity")
-        self['pickBTatCR'].Color = getValue(character, "NakedBody", "Vector3", "BodyTattooColor")
-        self['pickBTatCG'].Color = getValue(character, "NakedBody", "Vector3", "BodyTattooColorG")
-        self['pickBTatCB'].Color = getValue(character, "NakedBody", "Vector3", "BodyTattooColorB")
+        self['slBTatI'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "AdditionalTattooIntensity")
+        self['pickBTatCR'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "BodyTattooColor")
+        self['pickBTatCG'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "BodyTattooColorG")
+        self['pickBTatCB'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "BodyTattooColorB")
 
         local bodyTattooIntensity =
-        (getValue(character, "NakedBody", "Vector_1", "BodyTattooIntensity")[1] ~= 0 and getValue(character, "NakedBody", "Vector_1", "BodyTattooIntensity")[1]) or
-        (getValue(character, "NakedBody", "Vector_2", "BodyTattooIntensity")[1] ~= 0 and getValue(character, "NakedBody", "Vector_2", "BodyTattooIntensity")[1]) or
-        getValue(character, "NakedBody", "Vector_3", "BodyTattooIntensity")[1] or 0
+        (SLOP:getValue(character, "NakedBody", "Vector_1", "BodyTattooIntensity")[1] ~= 0 and SLOP:getValue(character, "NakedBody", "Vector_1", "BodyTattooIntensity")[1]) or
+        (SLOP:getValue(character, "NakedBody", "Vector_2", "BodyTattooIntensity")[1] ~= 0 and SLOP:getValue(character, "NakedBody", "Vector_2", "BodyTattooIntensity")[1]) or
+        SLOP:getValue(character, "NakedBody", "Vector_3", "BodyTattooIntensity")[1] or 0
     
         self['slBTatIntR'].Value = {bodyTattooIntensity, 0, 0, 0}
         self['slBTatIntG'].Value = {bodyTattooIntensity, 0, 0, 0}
         self['slBTatIntB'].Value = {bodyTattooIntensity, 0, 0, 0}
         
 
-        self['slBTatMet'].Value = getValue(character, "NakedBody", "Scalar", "TattooMetalness")
-        self['slBTatR'].Value = getValue(character, "NakedBody", "Scalar", "TattooRoughnessOffset")
-        self['slBTatCurve'].Value = getValue(character, "NakedBody", "Scalar", "TattooCurvatureInfluence")
+        self['slBTatMet'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "TattooMetalness")
+        self['slBTatR'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "TattooRoughnessOffset")
+        self['slBTatCurve'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "TattooCurvatureInfluence")
     
-        self['slScalpMinValue'].Value = getValue(character, "Head", "Scalar", "Scalp_MinValue")
-        self['slHornMaskWeight'].Value = getValue(character, "Head", "Scalar", "Scalp_HornMaskWeight")
-        self['slGrayingIntensity'].Value = getValue(character, "Head", "Scalar", "Scalp_Graying_Intensity")
-        self['slColorTransitionMid'].Value = getValue(character, "Head", "Scalar", "Scalp_ColorTransitionMidPoint")
-        self['slColorTransitionSoft'].Value = getValue(character, "Head", "Scalar", "Scalp_ColorTransitionSoftness")
-        self['slDepthColorExponent'].Value = getValue(character, "Head", "Scalar", "Scalp_DepthColorExponent")
-        self['slDepthColorIntensity'].Value = getValue(character, "Head", "Scalar", "Scalp_DepthColorIntensity")
-        self['slIDContrast'].Value = getValue(character, "Head", "Scalar", "Scalp_IDContrast")
-        self['slColorDepthContrast'].Value = getValue(character, "Head", "Scalar", "Scalp_ColorDepthContrast")
-        self['slScalpRoughness'].Value = getValue(character, "Head", "Scalar", "Scalp_Roughness")
-        self['slRoughnessContrast'].Value = getValue(character, "Head", "Scalar", "Scalp_RoughnessContrast")
-        self['slScalpScatter'].Value = getValue(character, "Head", "Scalar", "Scalp_Scatter")
-        self['pickHairScalpColor'].Color = getValue(character, "Head", "Vector3", "Hair_Scalp_Color")
-        self['pickGrayingColor'].Color = getValue(character, "Head", "Vector3", "Hair_Scalp_Graying_Color")
-        self['pickHueShiftWeight'].Color = getValue(character, "Head", "Vector3", "Hair_Scalp_HueShift_Weight")
+        self['slScalpMinValue'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_MinValue")
+        self['slHornMaskWeight'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_HornMaskWeight")
+        self['slGrayingIntensity'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_Graying_Intensity")
+        self['slColorTransitionMid'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_ColorTransitionMidPoint")
+        self['slColorTransitionSoft'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_ColorTransitionSoftness")
+        self['slDepthColorExponent'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_DepthColorExponent")
+        self['slDepthColorIntensity'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_DepthColorIntensity")
+        self['slIDContrast'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_IDContrast")
+        self['slColorDepthContrast'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_ColorDepthContrast")
+        self['slScalpRoughness'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_Roughness")
+        self['slRoughnessContrast'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_RoughnessContrast")
+        self['slScalpScatter'].Value = SLOP:getValue(character, "Head", "Scalar", "Scalp_Scatter")
+        self['pickHairScalpColor'].Color = SLOP:getValue(character, "Head", "Vector3", "Hair_Scalp_Color")
+        self['pickGrayingColor'].Color = SLOP:getValue(character, "Head", "Vector3", "Hair_Scalp_Graying_Color")
+        self['pickHueShiftWeight'].Color = SLOP:getValue(character, "Head", "Vector3", "Hair_Scalp_HueShift_Weight")
 
-        self['pickHairColor'].Color = getValue(character, "Hair", "Vector3", "Hair_Color")
-        self['slSharedNoiseTiling'].Value = getValue(character, "Hair", "Scalar", "SharedNoiseTiling")
-        self['slHairFrizz'].Value = getValue(character, "Hair", "Scalar", "HairFrizz")
-        self['slHairSoupleness'].Value = getValue(character, "Hair", "Scalar", "HairSoupleness")
-        self['slMaxWindMovement'].Value = getValue(character, "Hair", "Scalar", "MaxWindMovementAmount")
-        self['slSoftenTipsAlpha'].Value = getValue(character, "Hair", "Scalar", "SoftenTipsAlpha")
-        self['slBaseColorVar'].Value = getValue(character, "Hair", "Scalar", "BaseColorVar")
-        self['slRootTransitionMid'].Value = getValue(character, "Hair", "Scalar", "RootTransitionMidPoint")
-        self['slRootTransitionSoft'].Value = getValue(character, "Hair", "Scalar", "RootTransitionSoftness")
-        self['slDepthColorExponent'].Value = getValue(character, "Hair", "Scalar", "DepthColorExponent")
-        self['slDepthColorIntensity'].Value = getValue(character, "Hair", "Scalar", "DepthColorIntensity")
-        self['slColorDepthContrast'].Value = getValue(character, "Hair", "Scalar", "ColorDepthContrast")
-        self['slDreadNoiseBaseColor'].Value = getValue(character, "Hair", "Scalar", "DreadNoiseBaseColor")
+        self['pickHairColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Hair_Color")
+        self['slSharedNoiseTiling'].Value = SLOP:getValue(character, "Hair", "Scalar", "SharedNoiseTiling")
+        self['slHairFrizz'].Value = SLOP:getValue(character, "Hair", "Scalar", "HairFrizz")
+        self['slHairSoupleness'].Value = SLOP:getValue(character, "Hair", "Scalar", "HairSoupleness")
+        self['slMaxWindMovement'].Value = SLOP:getValue(character, "Hair", "Scalar", "MaxWindMovementAmount")
+        self['slSoftenTipsAlpha'].Value = SLOP:getValue(character, "Hair", "Scalar", "SoftenTipsAlpha")
+        self['slBaseColorVar'].Value = SLOP:getValue(character, "Hair", "Scalar", "BaseColorVar")
+        self['slRootTransitionMid'].Value = SLOP:getValue(character, "Hair", "Scalar", "RootTransitionMidPoint")
+        self['slRootTransitionSoft'].Value = SLOP:getValue(character, "Hair", "Scalar", "RootTransitionSoftness")
+        self['slDepthColorExponent'].Value = SLOP:getValue(character, "Hair", "Scalar", "DepthColorExponent")
+        self['slDepthColorIntensity'].Value = SLOP:getValue(character, "Hair", "Scalar", "DepthColorIntensity")
+        self['slColorDepthContrast'].Value = SLOP:getValue(character, "Hair", "Scalar", "ColorDepthContrast")
+        self['slDreadNoiseBaseColor'].Value = SLOP:getValue(character, "Hair", "Scalar", "DreadNoiseBaseColor")
 
-        self['pickHairGrayingColor'].Color = getValue(character, "Hair", "Vector3", "Hair_Graying_Color")
-        self['slGrayingIntensity'].Value = getValue(character, "Hair", "Scalar", "Graying_Intensity")
-        self['slGrayingSeed'].Value = getValue(character, "Hair", "Scalar", "Graying_Seed")
+        self['pickHairGrayingColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Hair_Graying_Color")
+        self['slGrayingIntensity'].Value = SLOP:getValue(character, "Hair", "Scalar", "Graying_Intensity")
+        self['slGrayingSeed'].Value = SLOP:getValue(character, "Hair", "Scalar", "Graying_Seed")
 
-        self['pickHighlightColor'].Color = getValue(character, "Hair", "Vector3", "Highlight_Color")
-        self['slHighlightFalloff'].Value = getValue(character, "Hair", "Scalar", "Highlight_Falloff")
-        self['slHighlightIntensity'].Value = getValue(character, "Hair", "Scalar", "Highlight_Intensity")
+        self['pickHighlightColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Highlight_Color")
+        self['slHighlightFalloff'].Value = SLOP:getValue(character, "Hair", "Scalar", "Highlight_Falloff")
+        self['slHighlightIntensity'].Value = SLOP:getValue(character, "Hair", "Scalar", "Highlight_Intensity")
 
-        self['pickHornsColor'].Color = getValue(character, "Horns", "Vector3", "NonSkinColor")
-        self['pickHornsTipColor'].Color = getValue(character, "Horns", "Vector3", "NonSkinTipColor")
-        self['slHornReflectance'].Value = getValue(character, "Horns", "Scalar", "Reflectance")
-        self['slHornIntensity'].Value = getValue(character, "Horns", "Scalar", "Intensity")
+        self['pickHornsColor'].Color = SLOP:getValue(character, "Horns", "Vector3", "NonSkinColor")
+        self['pickHornsTipColor'].Color = SLOP:getValue(character, "Horns", "Vector3", "NonSkinTipColor")
+        self['slHornReflectance'].Value = SLOP:getValue(character, "Horns", "Scalar", "Reflectance")
+        self['slHornIntensity'].Value = SLOP:getValue(character, "Horns", "Scalar", "Intensity")
 
-        pcikEyeLC.Color = getValue(character, "Head", "Vector3", "Eyelashes_Color")
-        pickEyeBC.Color = getValue(character, "Head", "Vector3", "Eyebrow_Color")
+        pcikEyeLC.Color = SLOP:getValue(character, "Head", "Vector3", "Eyelashes_Color")
+        pickEyeBC.Color = SLOP:getValue(character, "Head", "Vector3", "Eyebrow_Color")
 
     else
 
@@ -1322,3 +1371,59 @@ end
 
 UI:Init()
 
+           
+            -- {'picker', pickBeardColor, 'Beard Color', parent, {}, function(var)
+            --     CallFunction('Vector3', 'Beard_Color', var) end},
+
+
+             -- {nil, slPixelDepthOffsetRoot, 'Pixel Depth Offset Root', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'PixelDepthOffsetRoot', var) end},
+        
+            -- {nil, slPixelDepthOffset, 'Pixel Depth Offset', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'PixelDepthOffset', var) end},
+        
+            -- {nil, slDepthTransitionMidPoint, 'Depth Transition Mid', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'DepthTransitionMidPoint', var) end},
+        
+            -- {nil, slDepthTransitionSoftness, 'Depth Transition Soft', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'DepthTransitionSoftness', var) end},
+
+            -- {nil, slBeardAlpha, 'Beard Alpha', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'DontTouchMe_Beard_Alpha', var) end},
+
+
+            -- {nil, slIsBeard, 'Is Beard', parent, {min = -10, max = 10}, function(var)
+        --     CallFunction('Scalar', 'DontTouchMe_isBeard', var) end},
+    
+            -- {nil, slBeardGrayingIntensity, 'Beard Graying Intensity', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'Beard_Graying_Intensity', var) end},
+
+            -- {nil, slIDContrast, 'ID Contrast', parent, {min = -10, max = 10}, function(var)
+        --     CallFunction('Scalar', 'IDContrast', var) end},
+
+            -- {nil, slDirtWetness, 'Dirt Wetness', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'Dirt_Wetness', var) end},
+        
+            -- {nil, slBlood, 'Blood', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'Blood', var) end},
+        
+            -- {nil, slDirt, 'Dirt', parent, {min = -10, max = 10}, function(var)
+            --     CallFunction('Scalar', 'Dirt', var) end},
+
+        
+            -- {'picker', pickBeardGrayingColor, 'Beard Graying Color', parent, {}, function(var)
+        --     CallFunction('Vector3', 'Beard_Graying_Color', var) end},
+            
+
+                
+            -- {'picker', pickBeardHighlightColor, 'Beard Highlight Color', parent, {}, function(var)
+            --     CallFunction('Vector3', 'Beard_Highlight_Color', var) end},
+                
+            -- {'picker', pickHueShiftWeight, 'Hue Shift Weight', parent, {}, function(var)
+            --     CallFunction('Vector3', 'HueShiftColorWeight', var) end},
+                
+            -- {'picker', pickDirtColor, 'Dirt Color', parent, {}, function(var)
+            --     CallFunction('Vector3', 'DirtColor', var) end},
+                
+            -- {'picker', pickBloodColor, 'Blood Color', parent, {}, function(var)
+            --     CallFunction('Vector3', 'Blood_Color', var) end}

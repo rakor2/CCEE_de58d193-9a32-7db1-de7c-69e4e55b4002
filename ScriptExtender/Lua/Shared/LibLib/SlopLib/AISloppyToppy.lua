@@ -1,4 +1,7 @@
-function getValue(t, ...)
+--VibeLib is real 
+SLOP = SLOP or {}
+
+function SLOP:getValue(t, ...)
     local keys = {...}
     local cur = t
     for _, key in ipairs(keys) do

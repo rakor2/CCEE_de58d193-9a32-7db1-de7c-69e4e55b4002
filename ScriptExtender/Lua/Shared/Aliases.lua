@@ -155,3 +155,11 @@
 ---| 'doDrawTattoo'
 ---| 'isBody'
 ---| 'isGenitals'
+
+---@alias MyOwnParemeterTypes
+---| 'Scalar' ScalarParameters
+---| 'Vector3' Vector3Parameters
+---| 'Vector_1' VectorParameters
+---| 'Vector_2' VectorParameters
+---| 'Vector_3' VectorParameters
+---| 'Vector_4' VectorParameters

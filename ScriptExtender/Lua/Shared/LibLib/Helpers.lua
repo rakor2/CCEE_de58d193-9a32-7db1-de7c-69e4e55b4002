@@ -153,3 +153,22 @@ end
 
 
 
+-- function SafeSaveToFile(fileName, data)
+--     local nameDef = LocalSettings.FileName
+--     Helpers.Timer:OnTicks(3, function ()
+--         LocalSettings.FileName = fileName
+--         LocalSettings:AddOrChange(fileName, data)
+--         LocalSettings:SaveToFile()
+--         DPrint('SaveToFile()')
+--         LocalSettings.FileName = nameDef
+--         LocalSettings:Remove(fileName)
+--     end)
+-- end
+
+-- function SafeLoadFile(fileName)
+--     local nameOld = LocalSettings.FileName
+--     LocalSettings.FileName = fileName
+--     local localData = LocalSettings:Get(fileName)
+--     LocalSettings.FileName = nameOld
+--     return localData
+-- end

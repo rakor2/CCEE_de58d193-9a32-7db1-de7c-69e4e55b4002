@@ -31,6 +31,8 @@
 ---@param single boolean # Apply parameters to the entity or all entities in ModVars
 function UpdateParameters(ticks, entity, single)
 
+    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE)
+
     local uuid
 
     if entity ~= nil then

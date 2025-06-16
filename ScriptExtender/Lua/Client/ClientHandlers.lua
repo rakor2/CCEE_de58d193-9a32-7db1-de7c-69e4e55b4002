@@ -29,48 +29,51 @@ function GetKeybind(type, bindingIndex)
     end
 end
 
+
+
 ---Counts all available tats, makes, scars
 --tbd: pairs ipairs or some shit 
 function MoneyCounter(type)
     tattooCount = 0
     makeupCount = 0
     scarCount = 0
-    -- customCount = 0 
+    customCount = 0 
     -- local kavtCount = 0
 
         for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
-            local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
-            if name:lower():find('tattoo') then
-                tattooCount = tattooCount + 1
-                -- if name:lower():find('kaz') then
-                --     kavtCount = kavtCount + 1
-                -- end
-                -- tattoes = tattooCount - kavtCount
+            local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
+                if name:lower():find('tattoo') then
+                    tattooCount = tattooCount + 1
+                    -- if name:lower():find('kaz') then
+                    --     kavtCount = kavtCount + 1
+                    -- end
+                    -- tattoes = tattooCount - kavtCount
             end
         end
 
         for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
-            local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
+            local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
             if name:lower():find('make') then
                 makeupCount = makeupCount + 1
             end
         end
 
         for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
-            local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
+            local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
             if name:lower():find('scar') then
                 scarCount = scarCount + 1
             end
         end
 
-        -- for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
-        --     local name = Ext.Loca.GetTranslatedString(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').DisplayName.Handle.Handle)
-        --     if name:lower():find('custom') then
-        --         customCount = customCount + 1
-        --     end
-        -- end
+        for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
+            local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
+            if name:lower():find('passive') then
+                customCount = customCount + 1
+            end
+        end
 
         -- DPrint(customCount)
+        -- DPrint(tattooCount)
 end
 MoneyCounter()
 
@@ -129,45 +132,72 @@ MoneyCounter()
 -- end
 
 
----temp abomination
+---temp abomination (temp?)
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment
 function FindAttachment(entity, attachment)
-    if entity then
-        for i = 1, #entity.Visual.Visual.Attachments do
-            if attachment == 'Tail' then
-                if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then
-                    local visuals = entity.Visual.Visual.Attachments[i].Visual
-                    return visuals
-                end
 
-            elseif attachment == 'Head' then
-                if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) or
-                entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
-                    local visuals = entity.Visual.Visual.Attachments[i].Visual
-                    return visuals
-                end
-
-            --whoever uses custom body as attachment gotta [REDACTED]. Hooooooooooly Im so mad
-            elseif attachment == 'NakedBody' then
-                local foundVisuals = {}
-                for i = 1, #entity.Visual.Visual.Attachments do
-                    if entity.Visual.Visual.Attachments[i].Visual.VisualResource and 
-                       entity.Visual.Visual.Attachments[i].Visual.ObjectDescs[1].Renderable.ActiveMaterial.MaterialName == '1594b4da-6db1-471b-9a1a-c1ad4ecf721b' then
+    -- Ext.IO.SaveFile("Visuals_test.json", Ext.DumpExport(entity.Visual))
+    if entity and entity.Visual.Visual then
+        -- Helpers.Timer:OnTicks(50, function ()
+            -- DPrint(attachment)
+            for i = 1, #entity.Visual.Visual.Attachments do
+                if attachment == 'Tail' then
+                    if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then
                         local visuals = entity.Visual.Visual.Attachments[i].Visual
-                        table.insert(foundVisuals, visuals)
+                        -- DPrint('--------------------------------')
+                        -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot)
+                        return visuals
+
+                    end
+
+                elseif attachment == 'Head' then
+                    if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) or
+                    entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
+                        local visuals = entity.Visual.Visual.Attachments[i].Visual
+                        -- DPrint('--------------------------------')
+                        -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
+                        return visuals
+                    end
+
+                --whoever uses custom body as attachment gotta [REDACTED]. Hooooooooooly Im so mad
+                elseif attachment == 'NakedBody' then
+                    local foundVisuals = {}
+                    for i = 1, #entity.Visual.Visual.Attachments do
+                        if entity.Visual.Visual.Attachments[i].Visual.VisualResource then 
+                        for _, objects in pairs(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Objects) do
+                            if objects.ObjectID:lower():find('body') then
+                                -- DDump(objects.ObjectID)
+                                local visuals = entity.Visual.Visual.Attachments[i].Visual
+                                table.insert(foundVisuals, visuals)
+                            end 
+                        end
                     end
                 end
-                
-                return foundVisuals
-
-            else
-                if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) then
-                    local visuals = entity.Visual.Visual.Attachments[i].Visual
-                    return visuals
+                    for i = 1, #entity.Visual.Visual.Attachments do
+                        if entity.Visual.Visual.Attachments[i].Visual.VisualResource then
+                            if entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find('body') then
+                                local visuals = entity.Visual.Visual.Attachments[i].Visual
+                                -- DDump(visuals.VisualResource.Template)
+                                -- DDump(customBody)
+                                table.insert(foundVisuals, visuals)
+                            -- elseif entity.Visual.Visual.Attachments[i].Visual.ObjectDescs[1].Renderable.ActiveMaterial.MaterialName == '80567441-dafe-b6c6-4873-aa67bff518bc' then  --default
+                            --     local visuals = entity.Visual.Visual.Attachments[i].Visual
+                            --     table.insert(foundVisuals, visuals)
+                            end
+                        end
+                    end
+                    return foundVisuals
+                else
+                    if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) then
+                        local visuals = entity.Visual.Visual.Attachments[i].Visual
+                        -- DPrint('--------------------------------')
+                        -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
+                        return visuals
+                    end
                 end
             end
-        end
+        -- end)
     end
 end
 
@@ -332,6 +362,9 @@ function GetPMDummies()
             and visual[i]:GetAllComponentNames(false)[2] == "ecl::dummy::AnimationStateComponent"
         then
             table.insert(dummies, visual[i])
+            -- for ent, _ in pairs(dummies) do
+            --     DPrint(Helpers.Format.GetEntityName(ent))
+            -- end
         end
     end
 end
@@ -360,7 +393,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
         
         if visualsTable then
             -- Если это не таблица визуалов, а один визуал - делаем из него таблицу
-            if type(visualsTable) ~= "table" or visualsTable.ObjectDescs then
+            if type(visualsTable) ~= "table" then
                 visualsTable = {visualsTable}
             end
 
@@ -469,23 +502,26 @@ end
 ---Appplies the things to the entity
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment
----@param parameterType
+---@param parameterType MyOwnParemeterTypes
 ---@param parameterName MaterialParameterName
 ---@param value number | -- for parameterType:
 --- - Scalar: number
 --- - Vector3: number{3}
 --- - Vector_1..4: number{4} (bs)
 function ApplyParameters(entity, attachment, parameterName, parameterType, value)
+    -- DPrint(entity)
+
     local visualsTable = FindAttachment(entity, attachment)
     
     if visualsTable then
-        if type(visualsTable) ~= "table" or visualsTable.ObjectDescs then
+        if type(visualsTable) ~= "table" then
             visualsTable = {visualsTable}
         end
         
         for _, visuals in pairs(visualsTable) do
             
             for _, desc in pairs(visuals.ObjectDescs) do
+                -- DPrint(desc.LOD)
                 local am = desc.Renderable.ActiveMaterial
                 local am1 = desc.Renderable.AppliedMaterials[1]
                 local amp = desc.Renderable.ActiveMaterial.Material.Parent
@@ -498,11 +534,11 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetScalar(parameterName, value)
-                                    am1:SetScalar(parameterName, value)
-                                    amp:SetScalar(parameterName, value)
-                                    am.Material:SetScalar(parameterName, value)
-                                    am1.Material:SetScalar(parameterName, value)
-                                    am1p:SetScalar(parameterName, value)
+                                    -- am1:SetScalar(parameterName, value)
+                                    -- amp:SetScalar(parameterName, value)
+                                    -- am.Material:SetScalar(parameterName, value)
+                                    -- am1.Material:SetScalar(parameterName, value)
+                                    -- am1p:SetScalar(parameterName, value)
                                 end
                             end
                         end
@@ -512,11 +548,11 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    am1:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    amp:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    am1p:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    am.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    am1.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    -- am1:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    -- amp:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    -- am1p:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    -- am.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    -- am1.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
                                 end
                             end
                         end
@@ -526,11 +562,11 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {value, 0, 0, 0})
-                                    am1:SetVector4(parameterName, {value, 0, 0, 0})
-                                    amp:SetVector4(parameterName, {value, 0, 0, 0})
-                                    am1p:SetVector4(parameterName, {value, 0, 0, 0})
-                                    am.Material:SetVector4(parameterName, {value, 0, 0, 0})
-                                    am1.Material:SetVector4(parameterName, {value, 0, 0, 0})
+                                    -- am1:SetVector4(parameterName, {value, 0, 0, 0})
+                                    -- amp:SetVector4(parameterName, {value, 0, 0, 0})
+                                    -- am1p:SetVector4(parameterName, {value, 0, 0, 0})
+                                    -- am.Material:SetVector4(parameterName, {value, 0, 0, 0})
+                                    -- am1.Material:SetVector4(parameterName, {value, 0, 0, 0})
                                 end
                             end
                         end
@@ -540,11 +576,11 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    am1:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    amp:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    am1p:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    am.Material:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    am1.Material:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    -- am1:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    -- amp:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    -- am1p:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    -- am.Material:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    -- am1.Material:SetVector4(parameterName, {0, value, 0, 0}) 
                                 end
                             end
                         end
@@ -554,11 +590,11 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    am1:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    amp:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    am1p:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    am.Material:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    am1.Material:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    -- am1:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    -- amp:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    -- am1p:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    -- am.Material:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    -- am1.Material:SetVector4(parameterName, {0, 0, value, 0}) 
                                 end
                             end
                         end
@@ -568,11 +604,11 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    am1:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    amp:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    am1p:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    am.Material:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    am1.Material:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    -- am1:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    -- amp:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    -- am1p:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    -- am.Material:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    -- am1.Material:SetVector4(parameterName, {0, 0, 0, value}) 
                                 end
                             end
                         end
@@ -604,10 +640,32 @@ end
 
 
 function ApplyParametersToDolls()
-    -- DPrint('ApplyParametersToDolls')
+    DPrint('ApplyParametersToDolls')
     for uuid, attachments in pairs(lastParameters) do
+        -- DPrint(uuid)
+        -- DDump(attachments)
         local owner = Ext.Entity.Get(uuid)
         local entity = Paperdoll.GetOwnersDoll(owner)
+
+        DPrint('Owner: ' .. owner.DisplayName.Name:Get())
+        -- DPrint(entity)
+
+        for attachment, parameterTypes in pairs(attachments) do
+            for parameterType, parameterNames in pairs(parameterTypes) do
+                for parameterName, value in pairs(parameterNames) do
+                    ApplyParameters(entity, attachment, parameterName, parameterType, value)
+                end
+            end
+        end
+    end
+end
+
+function ApplyParametersToDollsTest(entity, uuid)
+    DPrint('ApplyParametersToDollsTest')
+    -- DPrint('ApplyParametersToDolls')
+    local attachments = lastParameters[uuid]
+        -- DPrint(Helpers.Format.GetEntityName(entity))
+    if attachments then 
         for attachment, parameterTypes in pairs(attachments) do
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
@@ -623,30 +681,26 @@ end
 
 
 
+-- function SaveParamsToFile()
 
-function SaveParamsToFile()
-
-    local data = lastParameters
-
-    local name = LocalSettings.FileName
-    LocalSettings.FileName = "CCEE"
-    LocalSettings:AddOrChange('CCEE', data)
-    LocalSettings:SaveToFile()
-    LocalSettings.FileName = name
-
-end
-
-function LoadParamsFromFile()
-
-    Ext.Net.PostMessageToServer('LoadLocalSettings', '')
-
-end
+--     local data = lastParameters
+--     SafeSaveToFile('CCEE', data)
+--     -- local name = LocalSettings.FileName
+--     -- LocalSettings.FileName = "CCEE"
+--     -- LocalSettings:AddOrChange('CCEE', data)
+--     -- LocalSettings:SaveToFile()
+--     -- LocalSettings.FileName = name
 
 
 
 
+-- end
 
+-- function LoadParamsFromFile()
 
+--     Ext.Net.PostMessageToServer('LoadLocalSettings', '')
+
+-- end
 
 function PMKeybind()
     KeybindingManager:Bind({
@@ -689,6 +743,9 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
 
     lastParametersMV = data.lastParameters
     lastParameters = data.lastParameters
+    -- DDump(lastParametersMV)
+    -- DPrint('123')
+    -- DDump(lastParameters)
     local TICKS_TO_WAIT = data.TICKS_TO_WAIT
     
     --LoadElementsValues()
@@ -767,7 +824,7 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                         
                         for uuid, attachments in pairs(lastParametersMV) do
                             local entity = Ext.Entity.Get(uuid)
-                            if entity then
+                            if entity and entity.DisplayName then
                                 DPrint('Char: ' .. entity.DisplayName.Name:Get()) ---entity.Uuid.EntityUuid
                                 for attachment, parameterTypes in pairs(attachments) do
                                     for parameterType, parameterNames in pairs(parameterTypes) do
@@ -802,6 +859,9 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
             end)
         end)
     end)
+    if _C() then 
+        Elements:UpdateElements(_C().Uuid.EntityUuid)
+    end
 end)
 
 
@@ -861,3 +921,26 @@ function DumpCurrentParameters(entity, parameterName, parameterType)
 end
 
 
+function SavePreset(fileName)
+    DPrint('savePreset')
+    local uuid = _C().Uuid.EntityUuid
+    local dataSave = lastParameters[uuid]
+    Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
+    dataSave = nil
+end
+
+
+function LoadPreset(fileName)
+    local uuidedData = {}
+    local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
+    local dataLoad = Ext.Json.Parse(json)
+    local uuid = _C().Uuid.EntityUuid
+
+    uuidedData[uuid] = dataLoad
+
+    Helpers.Timer:OnTicks(3, function ()
+        Ext.Net.PostMessageToServer('LoadPreset', Ext.Json.Stringify(uuidedData))
+    end)
+
+
+end

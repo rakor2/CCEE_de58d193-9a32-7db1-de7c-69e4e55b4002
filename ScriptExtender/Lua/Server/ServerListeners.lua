@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch
 
 TICKS_TO_WAIT = 2
 TICKS_TO_LOAD = 10
@@ -7,7 +8,9 @@ TICKS_TO_LOAD = 10
 Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
     DPrint('LevelGameplayStarted')
     UpdateParameters(1, nil, false)
-    -- Ext.Net.BroadcastMessage('WhenLevelGameplayStarted', '')
+    Ext.Net.BroadcastMessage('WhenLevelGameplayStarted', '')
+    Helpers.ModVars.Get(ModuleUUID).CCEE = Helpers.ModVars.Get(ModuleUUID).CCEE or {}
+    DPrint('beep')  
 end)
 
 
@@ -16,20 +19,27 @@ end)
 
 Ext.Osiris.RegisterListener("Equipped", 2, "after", function(item, character)
     DPrint('Equipped')
-    UpdateParameters(4, Ext.Entity.Get(character), true)
+    UpdateParameters(40, Ext.Entity.Get(character), true)
 end)
 
 Ext.Osiris.RegisterListener("Unequipped", 2, "after", function(item, character)
     DPrint('Unequipped')
-    UpdateParameters(4, Ext.Entity.Get(character), true)
+    UpdateParameters(40, Ext.Entity.Get(character), true)
 end)
 
 Ext.Entity.Subscribe("ArmorSetState", function(entity)
-    UpdateParameters(4, Ext.Entity.Get(entity), true)
+    UpdateParameters(40, Ext.Entity.Get(entity), true)
     DPrint('ArmorSetState')
 end)
 
 
+
+--    Ext.Entity.OnSystemUpdate("ServerSpell", function()
+--         local unprep = Ext.System.ServerSpell.PlayerUnprepareSpell
+--         for entity, spells in pairs(unprep) do
+--             ReAddSpellsOnHotBar(entity, Ext.Types.Serialize(spells))
+--         end
+--     end)
 
 -- Ext.Osiris.RegisterListener("AutomatedDialogStarted", 2, "after", function(dialog, instanceId)
 --     -- DPrint('AutomatedDialogStarted')
@@ -40,10 +50,13 @@ end)
 
 
 Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog, instanceId)
-    -- DPrint('DialogStarted')
-    Ext.Net.BroadcastMessage('LoadDollParameters', '')
-    -- UpdateParameters(10, nil, false)
+
     DPrint('DialogStarted')
+
+        Ext.Net.BroadcastMessage('LoadDollParameters', '')
+        -- UpdateParameters(10, nil, false)
+
+
 end)
 
 
@@ -75,21 +88,16 @@ end)
 
 Ext.RegisterNetListener('LoadLocalSettings', function (channel, payload, user)
 
-    local name = LocalSettings.FileName
-    LocalSettings.FileName = "CCEE"
-    local localData = LocalSettings:Get('CCEE')
-    LocalSettings.FileName = name
+    local data = SafeLoadFile('CCEE')
 
     local payload = {
         TICKS_TO_WAIT = 4,
-        lastParameters = localData
+        lastParameters = data
     }
 
     Helpers.Timer:OnTicks(TICKS_TO_LOAD, function ()
         Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
     end)
-
-
 
 
 end)
@@ -117,6 +125,60 @@ Ext.RegisterNetListener('ResetCurrentCharacter', function (channel, payload, use
 end)
 
 
+
+Ext.RegisterNetListener('LoadPreset', function (channel, payload, user)
+
+    _C():Replicate('GameObjectVisual')
+    _C():Replicate("CharacterCreationAppearance")
+    _C():Replicate("ItemDye")
+    
+    -- local parametersUuided = {}
+    -- local parameters = {}
+
+    local data = Ext.Json.Parse(payload)
+    DDump(data)
+    for uuid, params in pairs(data) do
+
+
+        Helpers.ModVars.Get(ModuleUUID).CCEE[uuid] = params
+        local vars = Helpers.ModVars.Get(ModuleUUID).CCEE
+        Helpers.ModVars.Get(ModuleUUID).CCEE = vars
+
+        -- DDump(parameters)
+        Helpers.Timer:OnTicks(1, function ()
+            UpdateParameters(3, _C(), true)
+        end)
+
+
+    end
+end)
+
+--if new game - create vars[uuid]
+
+
+
+
+
+
+
+
+-- Ext.Osiris.RegisterListener("CharacterCreationStarted", 0, "after", function(character)
+--     DPrint('CharacterCreationStarted')
+--     DPrint(character)
+-- end)
+
+-- Ext.Osiris.RegisterListener("CharacterCreationFinished", 0, "after", function(character) 
+--     DPrint('CharacterCreationFinished')
+--     DPrint(character)
+-- end)
+
+-- Ext.Osiris.RegisterListener("ChangeAppearanceCompleted", 1, "after", function(character) 
+--     DPrint('ChangeAppearanceCompleted')
+--     DPrint(character)
+-- end)
+
+
+
 -- Ext.Entity.Subscribe("ItemDye", function(entity)
 --     UpdateParameters(3, nil, false)
 -- end)
@@ -139,3 +201,4 @@ end)
 --     DPrint(entity)
 --     DPrint('ItemDye')
 -- end)
+

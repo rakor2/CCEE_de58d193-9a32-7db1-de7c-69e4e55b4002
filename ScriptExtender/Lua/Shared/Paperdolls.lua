@@ -28,12 +28,14 @@ end
 ---@return EntityHandle|nil
 function Paperdoll.GetDollOwner(doll)
     local slotTemplates = {}
-    for _, entry in pairs(doll.ClientEquipmentVisuals.Equipment) do
-        if entry.Item ~= nil then
-            local slot = GetItemSlot(entry.Item)
-            local template = GetItemTemplate(entry.Item)
-            if slot and template then
-                slotTemplates[slot] = template
+    if doll.ClientEquipmentVisuals then 
+        for _, entry in pairs(doll.ClientEquipmentVisuals.Equipment) do
+            if entry.Item ~= nil then
+                local slot = GetItemSlot(entry.Item)
+                local template = GetItemTemplate(entry.Item)
+                if slot and template then
+                    slotTemplates[slot] = template
+                end
             end
         end
     end
