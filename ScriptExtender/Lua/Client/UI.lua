@@ -103,7 +103,7 @@ function Window:CCEEWindow()
         --     Elements:UpdateElements(_C().Uuid.EntityUuid)
         -- end
 
-        local resetCharacter = p:AddButton('Reset selected character')
+        local resetCharacter = p:AddButton('Reset character')
         resetCharacter.SameLine = true
         resetCharacter.OnClick = function ()
 
@@ -116,10 +116,6 @@ function Window:CCEEWindow()
             end)
 
         end
-
-        local tp = resetCharacter:Tooltip()
-        tp:AddText([[
-        Tats/Makes/Eyes don't visually reset, you need to save and load the game]])
 
 
         confirmResetChar = p:AddButton('Confirm')
@@ -158,6 +154,21 @@ function Window:CCEEWindow()
         local tp5 = backupPM:Tooltip()
         tp5:AddText([[
         If parameters haven't applied to PM characters]])
+
+
+        
+        local forceLoad = p:AddButton('Force load')
+        forceLoad.SameLine = true
+        forceLoad.OnClick = function ()
+            Ext.Net.PostMessageToServer('UpdateParameters', '')
+        end
+
+        local tp3 = forceLoad:Tooltip()
+        tp3:AddText([[
+        Loads stored data from the save file for every character in scene
+        Useful if visually parameters got reset]])
+
+
             
         local sepa = p:AddSeparatorText('')
 
@@ -260,6 +271,54 @@ function Window:CCEEWindow()
                 end end},
         },
 
+        ['UnsortedB'] = {
+            {'picker', 'pickNonSkinColor', 'NonSkinColor', parent, {}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'NonSkinColor', 'Vector3', var.Color)
+                end end},
+
+            {nil, 'slNonSkinWeight', 'NonSkin_Weight', parent, {max = 7}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'NonSkin_Weight', 'Scalar', var.Value[1])
+                end end},
+
+            {nil, 'slNonSkinMetalness', 'NonSkinMetalness', parent, {max = 7}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'NonSkinMetalness', 'Scalar', var.Value[1])
+                end end},
+
+            {nil, 'slFreckles', 'Freckles', parent, {max = 7}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'Freckles', 'Scalar', var.Value[1])
+                end end},
+
+            {nil, 'slFrecklesWeight', 'FrecklesWeight', parent, {max = 7}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'FrecklesWeight', 'Scalar', var.Value[1])
+                end end},
+
+                
+            {nil, 'slVitiligo', 'Vitiligo', parent, {max = 7}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'Vitiligo', 'Scalar', var.Value[1])
+                end end},
+
+            {nil, 'slVitiligoWeight', 'VitiligoWeight', parent, {max = 7}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'VitiligoWeight', 'Scalar', var.Value[1])
+                end end},
+
+            {nil, 'slSweat', 'Sweat (smh)', parent, {max = 2}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'Sweat', 'Scalar', var.Value[1])
+                end end},
+
+            {nil, 'slBlood', 'Blood', parent, {max = 2}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'Blood', 'Scalar', var.Value[1])
+                end end},
+        },
+
         ['Eyes makeup'] = {
             {'int', 'slIntMakeupIndex', 'Index', parent, {max = makeupCount}, function(var)
                 SaveAndApply(_C(), 'Head', 'MakeUpIndex', 'Scalar', var.Value[1]) end},
@@ -306,13 +365,23 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'TattooColorB', 'Vector3', var.Color) end},
         
             {nil, 'pickTattooIntR', 'Intensity R', parent, {min = -5, max = 5}, function(var)
-                SaveAndApply(_C(), 'Head', 'TattooIntensity', 'Vector_1', var.Value[1]) end},
+                SaveAndApply(_C(), 'Head', 'TattooIntensity', 'Vector_1', var.Value[1]) 
+                Elements['pickTattooIntG'].Value = {0,0,0,0}
+                Elements['pickTattooIntB'].Value = {0,0,0,0}
+                end},
+                
         
             {nil, 'pickTattooIntG', 'Intensity G', parent, {min = -5, max = 5}, function(var)
-                SaveAndApply(_C(), 'Head', 'TattooIntensity', 'Vector_2', var.Value[1]) end},
+                SaveAndApply(_C(), 'Head', 'TattooIntensity', 'Vector_2', var.Value[1]) 
+                Elements['pickTattooIntR'].Value = {0,0,0,0}
+                Elements['pickTattooIntB'].Value = {0,0,0,0}
+                end},
         
             {nil, 'pickTattooIntB', 'Intensity B', parent, {min = -5, max = 5}, function(var)
-                SaveAndApply(_C(), 'Head', 'TattooIntensity', 'Vector_3', var.Value[1]) end},
+                SaveAndApply(_C(), 'Head', 'TattooIntensity', 'Vector_3', var.Value[1]) 
+                Elements['pickTattooIntR'].Value = {0,0,0,0}
+                Elements['pickTattooIntG'].Value = {0,0,0,0}
+                end},
         
             {nil, 'slTattooMet', 'Metalness', parent, {min = 0, max = 1}, function(var)
                 SaveAndApply(_C(), 'Head', 'TattooMetalness', 'Scalar', var.Value[1]) end},
@@ -335,7 +404,7 @@ function Window:CCEEWindow()
             {'int', 'slIntScarIndex', 'Index', parent, {max = scarCount}, function(var)
                 SaveAndApply(_C(), 'Head', 'ScarIndex', 'Scalar', var.Value[1]) end},
         
-            {nil, 'slIntScarIndex', 'Intensity', parent, {min = -10, max = 10}, function(var)
+            {nil, 'slScarWeight', 'Intensity', parent, {min = -10, max = 10}, function(var)
                 SaveAndApply(_C(), 'Head', 'Scar_Weight', 'Scalar', var.Value[1]) end},
         },
         
@@ -347,7 +416,7 @@ function Window:CCEEWindow()
             {'picker', 'pickScaleColor', 'Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'CustomColor', 'Vector3', var.Color) end},
         
-            {nil, 'pickScaleInt', 'Intensity', parent, {min = -10, max = 10}, function(var)
+            {nil, 'slScaleInt', 'Intensity', parent, {min = -10, max = 10}, function(var)
                 SaveAndApply(_C(), 'Head', 'CustomIntensity', 'Scalar', var.Value[1]) end},
         },
 
@@ -416,51 +485,82 @@ function Window:CCEEWindow()
 
         ['Body tattoos'] = {
             {'int', 'slBTatI', 'Index', parent, {max = tattooCount}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooIndex', 'Scalar', var.Value[1])
+            for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'BodyTattooIndex', 'Scalar', var.Value[1])
+            end
             end},
             
             {'picker', 'pickBTatCR', 'Color R', parent, {}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooColor', 'Vector3', var.Color)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    DPrint(attachment)
+                    SaveAndApply(_C(), attachment, 'BodyTattooColor', 'Vector3', var.Color);
+                end
             end},
             
             {'picker', 'pickBTatCG', 'Color G', parent, {}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooColorG', 'Vector3', var.Color)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'BodyTattooColorG', 'Vector3', var.Color)
+                end
             end},
             
             {'picker', 'pickBTatCB', 'Color B', parent, {}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooColorB', 'Vector3', var.Color)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'BodyTattooColorB', 'Vector3', var.Color)
+                end
             end},
             
             {nil, 'slBTatIntR', 'Intensity R', parent, {min = -5, max = 5}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooIntensity', 'Vector_1', var.Value[1])
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'BodyTattooIntensity', 'Vector_1', var.Value[1])
+                    -- SaveAndApply(_C(), attachment, 'TattooIntensity', 'Vector_1', var.Value[1])
+                end
+                Elements['slBTatIntG'].Value = {0,0,0,0}
+                Elements['slBTatIntB'].Value = {0,0,0,0}
             end},
             
             {nil, 'slBTatIntG', 'Intensity G', parent, {min = -5, max = 5}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooIntensity', 'Vector_2', var.Value[1])
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'BodyTattooIntensity', 'Vector_2', var.Value[1])
+                end
+                Elements['slBTatIntR'].Value = {0,0,0,0}
+                Elements['slBTatIntB'].Value = {0,0,0,0}
             end},
             
             {nil, 'slBTatIntB', 'Intensity B', parent, {min = -5, max = 5}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'BodyTattooIntensity', 'Vector_3', var.Value[1])
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'BodyTattooIntensity', 'Vector_3', var.Value[1])
+                end
+                Elements['slBTatIntR'].Value = {0,0,0,0}
+                Elements['slBTatIntG'].Value = {0,0,0,0}
             end},
             
             {nil, 'slBTatMet', 'Metalness', parent, {max = 1}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'TattooMetalness', 'Scalar', var.Value[1])
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'TattooMetalness', 'Scalar', var.Value[1])
+                end
             end},
         
             {nil, 'slBTatR', 'Roughness', parent, {min = -1, max = 1}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'TattooRoughnessOffset', 'Scalar', var.Value[1])
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'TattooRoughnessOffset', 'Scalar', var.Value[1])
+                end
             end},
               
             {nil, 'slBTatCurve', 'Curvature influence', parent, {max = 100}, function(var)
-                SaveAndApply(_C(), 'NakedBody', 'TattooCurvatureInfluence', 'Scalar', var.Value[1])
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    SaveAndApply(_C(), attachment, 'TattooCurvatureInfluence', 'Scalar', var.Value[1])
+                end
             end}
         },
 
+        ['Private parts'] = {             
+            {'int', 'slIntPPOpac', 'Toggle', parent, {def = 1}, function(var)
+                SaveAndApply(_C(), 'Private parts', 'InvertOpacity', 'Scalar', var.Value[1])
+            end},
+        },
 
 
-        ['Scalp'] = {
-
-                        
+        ['Scalp'] = {             
             {'picker', 'pickHairScalpColor', 'Hair Scalp Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Hair_Scalp_Color', 'Vector3', var.Color)
             end},
@@ -478,7 +578,7 @@ function Window:CCEEWindow()
             end},
             
             {nil, 'slHornMaskWeight', 'Horn Mask Weight', parent, {min = -1, max = 1}, function(var)
-                SaveAndApply(_C(), 'HaHeadir', 'Scalp_HornMaskWeight', 'Scalar', var.Value[1])
+                SaveAndApply(_C(), 'Head', 'Scalp_HornMaskWeight', 'Scalar', var.Value[1])
             end},
 
             {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1}, function(var)
@@ -609,6 +709,57 @@ function Window:CCEEWindow()
             end}
         },
 
+        ['Beard'] = {
+            {'int', 'slIntBeardIndex', 'BeardIndex', parent, {min = -1, max = 100}, function(var)
+                SaveAndApply(_C(), 'Head', 'BeardIndex', 'Scalar', var.Value[1])
+            end},
+
+            {'picker', 'pickBeardScalpColor', 'Beard_Scalp_Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Hair', 'Beard_Scalp_Color', 'Vector3', var.Color)
+            end},
+
+            {'picker', 'pickBeardColor', 'Beard_Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Hair', 'Beard_Color', 'Vector3', var.Color)
+            end},
+
+            {'picker', 'pickBeardGrayingColor', 'Beard_Graying_Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Hair', 'Beard_Graying_Color', 'Vector3', var.Color)
+            end},
+
+            {'picker', 'pickBeardHighlightColor', 'Beard_Highlight_Color', parent, {}, function(var)
+                SaveAndApply(_C(), 'Hair', 'Beard_Highlight_Color', 'Vector3', var.Color)
+            end},
+        
+            {nil, 'slBeardMinValue', 'BeardMinValue', parent, {min = -10, max = 10}, function(var)
+                SaveAndApply(_C(), 'Head', 'BeardMinValue', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slBeardInt', 'BeardIntesity', parent, {min = -100, max = 100}, function(var)
+                SaveAndApply(_C(), 'Hair', 'BeardIntesity', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slBeardDesat', 'BeardDesaturation', parent, {min = -100, max = 100}, function(var)
+                SaveAndApply(_C(), 'Head', 'BeardDesaturation', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slBeardDarken', 'BeardDarken', parent, {min = -100, max = 100}, function(var)
+                SaveAndApply(_C(), 'Head', 'BeardDarken', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slBeardGrayingInt', 'Beard_Graying_Intensity', parent, {min = -100, max = 100}, function(var)
+                SaveAndApply(_C(), 'Hair', 'Beard_Graying_Intensity', 'Scalar', var.Value[1])
+            end},
+        },
+
+
+        ['BodyHair'] = {
+            {'picker', 'pickBodyHairC', 'Color', parent, {}, function(var)
+                for _, attachment in ipairs({'NakedBody', 'Private Parts'}) do
+                SaveAndApply(_C(), attachment, 'Body_Hair_Color', 'Vector3', var.Color)
+                end
+            end},
+        },
+
 
         ['Horns'] = {
             {'picker', 'pickHornsColor', 'Color', parent, {}, function(var)
@@ -625,7 +776,68 @@ function Window:CCEEWindow()
         
             {nil, 'slHornIntensity', 'Glow? intensity', parent, {log = true}, function(var)
                 SaveAndApply(_C(), 'Horns', 'Intensity', 'Scalar', var.Value[1])
-            end}
+            end},
+
+            {nil, 'slHornLength', 'Length', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Length', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornamplitude', 'amplitude', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'amplitude', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornBPM', 'BPM', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'BPM', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornamp2', 'amp2', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'amp2', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornUse_HeartBeat', 'Use_HeartBeat', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Use_HeartBeat', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornBlackbody_PreRamp_Power', 'Blackbody_PreRamp_Power', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Blackbody_PreRamp_Power', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornColour_BlackBody', 'Colour_BlackBody', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Colour_BlackBody', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornEmissive_Mult', 'Emissive_Mult', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Emissive_Mult', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornContrast', 'Contrast', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Contrast', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornPreRampIntensity', 'PreRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'PreRampIntensity', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornPostRampIntensity', 'PostRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'PostRampIntensity', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornUse_ColorRamp', 'Use_ColorRamp', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Use_ColorRamp', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slHornPreRampIntensity', 'PreRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'PreRampIntensity', 'Scalar', var.Value[1])
+            end},
+
+            {'picker', 'slHornBlackBody_Colour', 'BlackBody_Colour', parent, {}, function(var)
+                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns'}) do
+                    DPrint(attachment)
+                    SaveAndApply(_C(), attachment, 'BlackBody_Colour', 'Vector3', var.Color)
+                end
+            end},
+
+
         },
 
         ['GlowHead'] = {
@@ -679,6 +891,17 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'GlowBrightnessPupil', 'Scalar', var.Value[1])
             end},
 
+
+            {nil, 'slEyesFxMasking', 'Fx masking', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Head', 'GlowBrightnessPupil', 'Scalar', var.Value[1])
+            end},
+
+            {nil, 'slEyesFxMaskingL', 'Fx masking L', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Head', 'GlowBrightnessPupil', 'Scalar', var.Value[1])
+            end},
+
+            
+
             
             {'picker', 'slEyesGlowColor', 'Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Eyes_GlowColour', 'Vector3', var.Color)
@@ -716,6 +939,11 @@ function Window:CCEEWindow()
         Elements:PopulateTab(ahhTable['Yellowing'], parent, 'Yellowing')
 
         Elements:PopulateTab(ahhTable['Vein'], parent, 'Vein')
+
+
+        Elements:PopulateTab(ahhTable['UnsortedB'], parent, 'UnsortedB')
+
+
 
         local sepa = skinColorCollapse:AddSeparatorText('')
 
@@ -768,6 +996,7 @@ function Window:CCEEWindow()
 
         Elements:PopulateTab(ahhTable['Body tattoos'], parent, 'Tattoes')
 
+        Elements:PopulateTab(ahhTable['Private parts'], parent, 'Private parts')
 
         local sepa133 = bodyCollapse:AddSeparatorText('')
 
@@ -807,6 +1036,12 @@ function Window:CCEEWindow()
         Elements:PopulateTab(ahhTable['Graying'], parent, 'Graying')
 
         Elements:PopulateTab(ahhTable['Highlights'], parent, 'Highlights')
+
+        Elements:PopulateTab(ahhTable['Beard'], parent, 'Beard')
+
+        Elements:PopulateTab(ahhTable['BodyHair'], parent, 'Body hair')
+
+
 
 
         local sepa1333 = hairCollapse:AddSeparatorText('')
@@ -878,6 +1113,23 @@ function Window:CCEEWindow()
             presetLoadName.Text = ''
         end
 
+
+        local loadPreset2 = presetsTab:AddButton('ReLoad')
+        loadPreset2.SameLine = true
+        loadPreset2.IDContext = 'loadPrese2'
+        loadPreset2.OnClick = function ()
+            LoadPreset2(presetLoadName.Text)
+            presetLoadName.Text = ''
+        end
+        
+
+        local tp6 = loadPreset2:Tooltip()
+        tp6:AddText([[
+        If you changed/added an attachment (hair, horns, dick hair, etc) in the Mirror,
+        load your preset using this button, so the added attachment doesn't get overridden.
+        And after saving it, you can use Load]])
+
+
     end
 
     function CCEE:Reset()
@@ -920,17 +1172,6 @@ function Window:CCEEWindow()
         end
 
 
-        local forceLoad = devTab:AddButton('Force load')
-        forceLoad.SameLine = true
-        forceLoad.OnClick = function ()
-            Ext.Net.PostMessageToServer('UpdateParameters', '')
-        end
-
-        local tp3 = forceLoad:Tooltip()
-        tp3:AddText([[
-        Loads stored data from the save file for every character in scene
-        Useful if visually parameters got reset]])
-
 
 
         local testsCheck = devTab:AddCheckbox('All parameters (they do not save)')
@@ -961,7 +1202,7 @@ function Window:CCEEWindow()
     
             function TestAllBodyScalarParameters()
                 for _,v in ipairs(Parameters.NakedBody.Scalar) do
-                    local testSlider = treeTestParams:AddSliderInt(v, 0, -100, 100)
+                    local testSlider = treeTestParams:AddSlider(v, 0, -100, 100)
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'NakedBody'}) do
@@ -975,6 +1216,7 @@ function Window:CCEEWindow()
             function TestAllBodyVec3Parameters()
                 for _,v in ipairs(Parameters.NakedBody.Vector3) do
                     local testPicker = treeTestParams2:AddColorEdit(v)
+                    testPicker.NoAlpha = true
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'NakedBody'}) do
@@ -1013,7 +1255,7 @@ function Window:CCEEWindow()
 
             function TestAllHeadScalarParameters()
                 for _,v in ipairs(Parameters.Head.Scalar) do
-                    local testSlider = treeTestParams4:AddSliderInt(v, 0, -100, 100)
+                    local testSlider = treeTestParams4:AddSlider(v, 0, -100, 100)
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Head'}) do
@@ -1026,6 +1268,7 @@ function Window:CCEEWindow()
             function TestAllHeadVec3Parameters()
                 for _,v in ipairs(Parameters.Head.Vector3) do
                     local testPicker = treeTestParams5:AddColorEdit(v)
+                    testPicker.NoAlpha = true
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Head'}) do
@@ -1041,7 +1284,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Head'}) do
-                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector_1', testSlider2.Value[1])
                         end
                     end
                 end
@@ -1064,7 +1307,7 @@ function Window:CCEEWindow()
             if Parameters['Private Parts'] then 
             function TestAllGenitalScalarParameters()
                 for _,v in ipairs(Parameters['Private Parts'].Scalar) do
-                    local testSlider = treeTestParamsGenital_5821:AddSliderInt(v, 0, -100, 100)
+                    local testSlider = treeTestParamsGenital_5821:AddSlider(v, 0, -100, 100)
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Private Parts'}) do
@@ -1075,8 +1318,9 @@ function Window:CCEEWindow()
             end
         
             function TestAllGenitalVec3Parameters()
-                for _,v in ipairs(Parameters['Private Parts'].Scalar)do
-                    local testPicker = treeTestParamsGenital_1293:AddColorEdit(v)
+                for _,v in ipairs(Parameters['Private Parts'].Vector3)do
+                    local testPicker = treeTestParamsGenital_1293:AddColorEdit(v .. Ext.Math.Random(1, 10000))
+                    testPicker.NoAlpha = true
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Private Parts'}) do
@@ -1087,12 +1331,12 @@ function Window:CCEEWindow()
             end
         
             function TestAllGenitalVecParameter()
-                for _,v in ipairs(Parameters['Private Parts'].Scalar) do
+                for _,v in ipairs(Parameters['Private Parts'].Vector) do
                     local testSlider2 = treeTestParamsGenital_7640:AddSlider(v)
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Private Parts'}) do
-                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector_1', testSlider2.Value[1])
                         end
                     end
                 end
@@ -1114,7 +1358,7 @@ function Window:CCEEWindow()
 
             function TestAllTailScalarParameters()
                 for _,v in ipairs(Parameters.Tail.Scalar) do
-                    local testSlider = treeTestParamsTail_8732:AddSliderInt(v, 0, -100, 100)
+                    local testSlider = treeTestParamsTail_8732:AddSlider(v, 0, -100, 100)
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Tail'}) do
@@ -1127,6 +1371,7 @@ function Window:CCEEWindow()
             function TestAllTailVec3Parameters()
                 for _,v in ipairs(Parameters.Tail.Vector3) do
                     local testPicker = treeTestParamsTail_3281:AddColorEdit(v)
+                    testPicker.NoAlpha = true
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Tail'}) do
@@ -1142,7 +1387,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Tail'}) do
-                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector_1', testSlider2.Value[1])
                         end
                     end
                 end
@@ -1165,7 +1410,7 @@ function Window:CCEEWindow()
 
             function TestAllHornsScalarParameters()
                 for _,v in ipairs(Parameters.Horns.Scalar) do
-                    local testSlider = treeTestParamsHorns_4472:AddSliderInt(v, 0, -100, 100)
+                    local testSlider = treeTestParamsHorns_4472:AddSlider(v, 0, -100, 100)
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'Horns'}) do
@@ -1178,6 +1423,7 @@ function Window:CCEEWindow()
             function TestAllHornsVec3Parameters()
                 for _,v in ipairs(Parameters.Horns.Vector3) do
                     local testPicker = treeTestParamsHorns_9823:AddColorEdit(v)
+                    testPicker.NoAlpha = true
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({'Horns'}) do
@@ -1193,7 +1439,7 @@ function Window:CCEEWindow()
                     testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider2.OnChange = function()
                         for _, part in ipairs({'Horns'}) do
-                            ApplyParameters(_C(), part, v, 'Vector', testSlider2.Value[1])
+                            ApplyParameters(_C(), part, v, 'Vector_1', testSlider2.Value[1])
                         end
                     end
                 end
@@ -1214,6 +1460,9 @@ function Window:CCEEWindow()
 
 
     end
+
+
+
 
 
 ---temp abomination 
@@ -1351,6 +1600,53 @@ function Elements:UpdateElements(uuid)
 
         pcikEyeLC.Color = SLOP:getValue(character, "Head", "Vector3", "Eyelashes_Color")
         pickEyeBC.Color = SLOP:getValue(character, "Head", "Vector3", "Eyebrow_Color")
+
+        self['pickNonSkinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "NonSkinColor")
+        self['slNonSkinWeight'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "NonSkin_Weight")
+        self['slNonSkinMetalness'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "NonSkinMetalness")
+        self['slFreckles'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "Freckles")
+        self['slFrecklesWeight'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "FrecklesWeight")
+        self['slVitiligo'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "Vitiligo")
+        self['slVitiligoWeight'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "VitiligoWeight")
+        self['slSweat'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "Sweat")
+        self['slBlood'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "Blood")
+
+        self['slIntScaleIndex'].Value = SLOP:getValue(character, "Head", "Scalar", "CustomIndex")
+        self['pickScaleColor'].Color = SLOP:getValue(character, "Head", "Vector3", "CustomColor")
+        self['slScaleInt'].Value = SLOP:getValue(character, "Head", "Scalar", "CustomIntensity")
+
+        self['slScarWeight'].Value = SLOP:getValue(character, "Head", "Scalar", "Scar_Weight")
+
+        self['slIntBeardIndex'].Value = SLOP:getValue(character, "Head", "Scalar", "BeardIndex")
+        self['pickBeardScalpColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Beard_Scalp_Color")
+        self['pickBeardColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Beard_Color")
+        self['pickBeardGrayingColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Beard_Graying_Color")
+        self['pickBeardHighlightColor'].Color = SLOP:getValue(character, "Hair", "Vector3", "Beard_Highlight_Color")
+        self['slBeardMinValue'].Value = SLOP:getValue(character, "Head", "Scalar", "BeardMinValue")
+        self['slBeardInt'].Value = SLOP:getValue(character, "Head", "Scalar", "BeardIntesity")
+        self['slBeardDesat'].Value = SLOP:getValue(character, "Head", "Scalar", "BeardDesaturation")
+        self['slBeardDarken'].Value = SLOP:getValue(character, "Head", "Scalar", "BeardDarken")
+        self['slBeardGrayingInt'].Value = SLOP:getValue(character, "Head", "Scalar", "Beard_Graying_Intensity")
+
+        self['pickHeadGlowColor'].Color = SLOP:getValue(character, "Head", "Vector3", "GlowColor")
+        self['slHeadGlowMult'].Value = SLOP:getValue(character, "Head", "Scalar", "GlowMultiplier")
+        self['slHeadAnimdSpeed'].Value = SLOP:getValue(character, "Head", "Scalar", "AnimationSpeed")
+
+        self['pickBodyGlowColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "GlowColor")
+        self['slBodyGlowMult'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "GlowMultiplier")
+        self['slBodyAnimdSpeed'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "AnimationSpeed")
+
+        self['slEyesGlowBright'].Value = SLOP:getValue(character, "Head", "Scalar", "GlowBrightness")
+        self['slEyesGlowBrightL'].Value = SLOP:getValue(character, "Head", "Scalar", "GlowBrightness_L")
+        self['slEyesGlowBrightPup'].Value = SLOP:getValue(character, "Head", "Scalar", "GlowBrightnessPupil")
+        self['slEyesFxMasking'].Value = SLOP:getValue(character, "Head", "Scalar", "FxMasking")
+        self['slEyesFxMaskingL'].Value = SLOP:getValue(character, "Head", "Scalar", "FxMasking_L")
+        self['slEyesGlowColor'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_GlowColour")
+        self['slEyesGlowColorL'].Color = SLOP:getValue(character, "Head", "Vector3", "Eyes_GlowColour_L")
+
+        self['pickBodyHairC'].Color = SLOP:getValue(character, "Body", "Vector3", "Body_Hair_Color")
+
+        self['slIntPPOpac'].Value = SLOP:getValue(character, "Private parts", "Scalar", "InvertOpacity")
 
     else
 
