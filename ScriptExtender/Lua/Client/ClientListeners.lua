@@ -16,6 +16,13 @@ Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, 
         DPrint('Elements:UpdateElements')
         Elements:UpdateElements(_C().Uuid.EntityUuid)
     end)
+    if _C() then
+        GetAllParameterNames(_C())
+        Helpers.Timer:OnTicks(200, function ()
+            DPrint('Elements:UpdateElements')
+            Elements:UpdateElements(_C().Uuid.EntityUuid)
+        end)
+    end
 end)
 
 
