@@ -208,6 +208,7 @@ function GetAllParameterNames(entity)
     local entity = entity or _C()
 
     for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair'}) do
+    for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair', 'DragonbornChin','DragonbornJaw','DragonbornTop'}) do
         for _, parameterType in ipairs({'Scalar', 'Vector3', 'Vector'}) do
             local visualsTable = FindAttachment(entity, attachment)
 
