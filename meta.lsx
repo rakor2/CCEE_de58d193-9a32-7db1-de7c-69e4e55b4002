@@ -21,10 +21,10 @@
                     <attribute id="Author" type="LSString" value="rakor"/>
                     <attribute id="CharacterCreationLevelName" type="FixedString" value=""/>
                     <attribute id="Description" type="LSString" value="Change appearence of your characters. Now."/>
-                    <attribute id="FileSize" type="uint64" value="3728490"/>
+                    <attribute id="FileSize" type="uint64" value="4103126"/>
                     <attribute id="Folder" type="LSString" value="CCEE_de58d193-9a32-7db1-de7c-69e4e55b4002"/>
                     <attribute id="LobbyLevelName" type="FixedString" value=""/>
-                    <attribute id="MD5" type="LSString" value="f5a54945bcf194430ea3619d11cb36a2"/>
+                    <attribute id="MD5" type="LSString" value="067c17f448308ead21abc597a32e604d"/>
                     <attribute id="MenuLevelName" type="FixedString" value=""/>
                     <attribute id="Name" type="LSString" value="CharacteryCharacterEditoryEditor"/>
                     <attribute id="NumPlayers" type="uint8" value="4"/>
@@ -32,7 +32,7 @@
                     <attribute id="PublishHandle" type="uint64" value="0"/>
                     <attribute id="StartupLevelName" type="FixedString" value=""/>
                     <attribute id="UUID" type="FixedString" value="de58d193-9a32-7db1-de7c-69e4e55b4002"/>
-                    <attribute id="Version64" type="int64" value="36028797018963986"/>
+                    <attribute id="Version64" type="int64" value="36028807756382209"/>
                     <children>
                         <node id="PublishVersion">
                             <attribute id="Version64" type="int64" value="144255927718543409"/>
