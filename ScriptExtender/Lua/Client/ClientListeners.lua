@@ -68,6 +68,16 @@ Ext.RegisterNetListener('LoadDollParameters',function (channel, payload, user)
 end)
 
 
+Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, component)
+    Helpers.Timer:OnTicks(40, function ()
+        if entity:GetAllComponentNames(false)[2] == 'ecl::dummy::AnimationStateComponent' then
+            DPrint('CEV|PM dummies')
+            ApplyParametersToDummies()
+        end
+    end)
+end)
+
+
 --TLPreviewDummy
 -- Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity)
 --     DPrint(entity)
