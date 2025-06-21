@@ -15,9 +15,10 @@ Parameters = Parameters or {}
 lastParameters = lastParameters or {}
 currentParameters = currentParameters or {}
 
-
+---No longer needed
 ---@param type integer # 1 - keyborad / 0 - controller
----@param bindingIndex integer 
+---@param bindingIndex integer
+---@return string
 function GetKeybind(type, bindingIndex) 
     for _, bind in pairs(Ext.Input.GetInputManager().InputScheme.RawToBinding) do
         for i = 1, 2 do
@@ -135,6 +136,7 @@ MoneyCounter()
 ---temp abomination (temp?)
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment
+---@return 
 function FindAttachment(entity, attachment)
 
     -- Ext.IO.SaveFile("Visuals_test.json", Ext.DumpExport(entity.Visual))
@@ -196,6 +198,7 @@ function FindAttachment(entity, attachment)
                         return visuals
                     end
                 end
+                -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
             end
         -- end)
     end
@@ -207,14 +210,14 @@ function GetAllParameterNames(entity)
     Parameters = {}
     local entity = entity or _C()
 
-    for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair'}) do
     for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair', 'DragonbornChin','DragonbornJaw','DragonbornTop'}) do
         for _, parameterType in ipairs({'Scalar', 'Vector3', 'Vector'}) do
+
             local visualsTable = FindAttachment(entity, attachment)
 
             if visualsTable then
 
-                if type(visualsTable) ~= "table" or visualsTable.ObjectDescs then
+                if type(visualsTable) ~= "table" then
                     visualsTable = {visualsTable}
                 end
 
@@ -338,6 +341,7 @@ end
 ---Matches character and its photo mode dummy
 ---Workaround until photo mode is mapped
 ---@param charUuid uuid
+---@return EntityHandle
 function MatchCharacterAndPMDummy(charUuid)
     local originEnt = Ext.Entity.Get(charUuid)
     for i = 1, #dummies do
@@ -382,6 +386,15 @@ function SaveAndApply(entity, attachment, parameterName, parameterType, value)
 end
 
 --tbd: unhardcode the table
+---Appplies the things to the entity
+---@param entity EntityHandle
+---@param attachment VisualAttachment
+---@param parameterType MyOwnParemeterTypes
+---@param parameterName MaterialParameterName
+---@param value number | -- for parameterType:
+--- - Scalar: number
+--- - Vector3: number{3}
+--- - Vector_1..4: number{4} (bs)
 function SaveLastChanges(entity, attachment, parameterName, parameterType, value)
     if entity.Uuid then
         local entityUuid = entity.Uuid.EntityUuid
@@ -393,18 +406,15 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
         local visualsTable = FindAttachment(entity, attachment)
         
         if visualsTable then
-            -- Если это не таблица визуалов, а один визуал - делаем из него таблицу
             if type(visualsTable) ~= "table" then
                 visualsTable = {visualsTable}
             end
 
-            local parameterFound = false  -- Флаг для отслеживания найденного параметра
-
-            -- Проходим по всем визуалам в таблице
+            local parameterFound = false
             for _, visuals in pairs(visualsTable) do
                 if visuals and visuals.ObjectDescs and not parameterFound then
                     for _, desc in pairs(visuals.ObjectDescs) do
-                        if parameterFound then break end  -- Выходим, если параметр уже найден
+                        if parameterFound then break end
                         
                         local am = desc.Renderable.ActiveMaterial   
                         local am1m = desc.Renderable.AppliedMaterials[1] and desc.Renderable.AppliedMaterials[1].Material
@@ -499,6 +509,9 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
     Ext.Net.PostMessageToServer('SendModVars', Ext.Json.Stringify(lastParameters))
     -- DDump(lastParameters)
 end
+
+
+
 
 ---Appplies the things to the entity
 ---@param entity EntityHandle
@@ -620,6 +633,8 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
     end
 end
 
+
+---Appplies the things to the PM dummies
 function ApplyParametersToDummies()
     -- DPrint('ApplyParametersToDummies')
     GetPMDummies()
@@ -640,6 +655,7 @@ function ApplyParametersToDummies()
 end
 
 
+---Appplies the things to the paperdolls
 function ApplyParametersToDolls()
     DPrint('ApplyParametersToDolls')
     for uuid, attachments in pairs(lastParameters) do
@@ -661,6 +677,8 @@ function ApplyParametersToDolls()
     end
 end
 
+
+---Appplies the things to the paperdolls v2
 function ApplyParametersToDollsTest(entity, uuid)
     DPrint('ApplyParametersToDollsTest')
     -- DPrint('ApplyParametersToDolls')
@@ -703,40 +721,40 @@ end
 
 -- end
 
-function PMKeybind()
-    KeybindingManager:Bind({
-        ScanCode = tostring(GetKeybind(1,320)):upper(),
-        Callback = function()
+-- function PMKeybind()
+--     KeybindingManager:Bind({
+--         ScanCode = tostring(GetKeybind(1,320)):upper(),
+--         Callback = function()
     
-            Helpers.Timer:OnTicks(50, function ()
-            --no double calls on my watch
-            local s, _ = pcall(function()
-                return Ext.UI.GetRoot():Find("ContentRoot"):Child(21).DataContext.DOFStrength
-            end)
+--             Helpers.Timer:OnTicks(50, function ()
+--             --no double calls on my watch
+--             local s, _ = pcall(function()
+--                 return Ext.UI.GetRoot():Find("ContentRoot"):Child(21).DataContext.DOFStrength
+--             end)
     
-                if s then
-                    Helpers.Timer:OnTicks(13, function ()
-                        ApplyParametersToDummies()
-                    end)
-                end
+--                 if s then
+--                     Helpers.Timer:OnTicks(13, function ()
+--                         ApplyParametersToDummies()
+--                     end)
+--                 end
     
-            end)
+--             end)
     
-        end,
-    })
-end
+--         end,
+--     })
+-- end
 
 
 
 
 
-
+---Main thingy
 Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
 
     DPrint('LoadModVars')
     -- DPrint(user)
     GetAllParameterNames(_C())
-    PMKeybind()
+    -- PMKeybind()
 
 
     
@@ -883,7 +901,7 @@ function TempThingy()
 
         end)
         
-        PMKeybind()
+        -- PMKeybind()
         
         timer = nil
 
@@ -898,7 +916,7 @@ end)
 
 
 
---- Dumps all parameterType for 
+--- Dumps all parameterName
 --- 'ScalarParameters' , 'Vector3Parameters' , 'VectorParameters'
 function DumpCurrentParameters(entity, parameterName, parameterType)
    for i = 1, #entity.Visual.Visual.Attachments do
@@ -943,7 +961,6 @@ end
 function SavePreset(fileName)
     DPrint('savePreset')
     local uuid = _C().Uuid.EntityUuid
-    local dataSave = lastParameters[uuid]
     local cca = GetCharacterCreationAppearance(_C())
     local dataSave = {
         lastParameters[uuid] or {},
@@ -954,10 +971,12 @@ function SavePreset(fileName)
 end
 
 
+---@param fileName string
 function LoadPreset(fileName)
     local uuidedData = {}
     local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
     local dataLoad = Ext.Json.Parse(json)
+
     local uuid = _C().Uuid.EntityUuid
 
     uuidedData[uuid] = dataLoad
@@ -965,9 +984,9 @@ function LoadPreset(fileName)
     Helpers.Timer:OnTicks(3, function ()
         Ext.Net.PostMessageToServer('LoadPreset', Ext.Json.Stringify(uuidedData))
     end)
-
-
 end
+
+
 
 ---temporary
 ---@param fileName string

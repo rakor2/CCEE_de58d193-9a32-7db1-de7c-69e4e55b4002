@@ -11,11 +11,6 @@ end)
 
 
 Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, user)
-    GetAllParameterNames(_C())
-    Helpers.Timer:OnTicks(100, function ()
-        DPrint('Elements:UpdateElements')
-        Elements:UpdateElements(_C().Uuid.EntityUuid)
-    end)
     if _C() then
         GetAllParameterNames(_C())
         Helpers.Timer:OnTicks(200, function ()
@@ -39,7 +34,7 @@ end)
 
 --Paperdoll --make a check for transparent attack doll
 Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component)
-    DPrint('ClientPaperdollOnCreate')
+    DPrint('ClientPaperdoll|OnCreate')
     Helpers.Timer:OnTicks(5, function ()
         local owner = Paperdoll.GetDollOwner(entity)
         if owner then
