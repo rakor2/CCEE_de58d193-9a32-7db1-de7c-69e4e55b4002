@@ -921,10 +921,33 @@ function DumpCurrentParameters(entity, parameterName, parameterType)
 end
 
 
+---@param entity EntityHandle
+function GetCharacterCreationAppearance(entity)
+
+    local cca = {}
+    local ccaArray = entity.CharacterCreationAppearance.Visuals
+
+    for i = 1, #ccaArray do
+        cca[i] = ccaArray[i]
+    end
+    
+    DDump(cca)
+
+    return cca
+end
+
+
+
+---@param fileName string
 function SavePreset(fileName)
     DPrint('savePreset')
     local uuid = _C().Uuid.EntityUuid
     local dataSave = lastParameters[uuid]
+    local cca = GetCharacterCreationAppearance(_C())
+    local dataSave = {
+        lastParameters[uuid] or {},
+        cca,
+    }
     Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
     dataSave = nil
 end
@@ -943,4 +966,20 @@ function LoadPreset(fileName)
     end)
 
 
+end
+
+---temporary
+---@param fileName string
+function LoadPreset2(fileName)
+    local uuidedData = {}
+    local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
+    local dataLoad = Ext.Json.Parse(json)
+
+    local uuid = _C().Uuid.EntityUuid
+
+    uuidedData[uuid] = dataLoad
+
+    Helpers.Timer:OnTicks(3, function ()
+        Ext.Net.PostMessageToServer('LoadPreset2', Ext.Json.Stringify(uuidedData))
+    end)
 end

@@ -128,32 +128,102 @@ end)
 
 Ext.RegisterNetListener('LoadPreset', function (channel, payload, user)
 
-    _C():Replicate('GameObjectVisual')
-    _C():Replicate("CharacterCreationAppearance")
-    _C():Replicate("ItemDye")
-    
-    -- local parametersUuided = {}
-    -- local parameters = {}
-
     local data = Ext.Json.Parse(payload)
-    DDump(data)
+
     for uuid, params in pairs(data) do
+        -- DDump(uuid)
+        -- DPrint('------------')
+        -- DDump(params)
+        local entity = Ext.Entity.Get(uuid)
 
 
-        Helpers.ModVars.Get(ModuleUUID).CCEE[uuid] = params
+        entity:Replicate('GameObjectVisual')
+        entity:Replicate("CharacterCreationAppearance")
+        entity:Replicate("ItemDye")
+    
+
+        Helpers.ModVars.Get(ModuleUUID).CCEE[uuid] = params[1]
         local vars = Helpers.ModVars.Get(ModuleUUID).CCEE
         Helpers.ModVars.Get(ModuleUUID).CCEE = vars
 
-        -- DDump(parameters)
-        Helpers.Timer:OnTicks(1, function ()
-            UpdateParameters(3, _C(), true)
+
+        local ent = Ext.Entity.Get(uuid)
+
+
+        Helpers.Timer:OnTicks(4, function ()
+            
+            for _,v in pairs(ent.CharacterCreationAppearance.Visuals) do
+                Osi.RemoveCustomVisualOvirride(uuid, v)
+                DPrint('RemoveCustomVisualOvirride')
+            end
+    
         end)
 
 
+        Helpers.Timer:OnTicks(8, function ()
+
+            Helpers.Timer:OnTicks(20, function ()
+
+                if params[2] then 
+
+                    for _, visUuid in pairs(params[2]) do
+                        if visUuid then
+                            Osi.AddCustomVisualOverride(uuid, visUuid)
+                            DPrint('AddCustomVisualOverride')
+                        end
+                    end
+
+                    UpdateParameters(60, entity, true)
+
+                end
+
+            end)
+        end)
     end
 end)
 
---if new game - create vars[uuid]
+--temp
+Ext.RegisterNetListener('LoadPreset2', function (channel, payload, user)
+
+    local data = Ext.Json.Parse(payload)
+
+    for uuid, params in pairs(data) do
+
+        local entity = Ext.Entity.Get(uuid)
+
+
+        entity:Replicate('GameObjectVisual')
+        entity:Replicate("CharacterCreationAppearance")
+        entity:Replicate("ItemDye")
+    
+
+        Helpers.ModVars.Get(ModuleUUID).CCEE[uuid] = params[1]
+        local vars = Helpers.ModVars.Get(ModuleUUID).CCEE
+        Helpers.ModVars.Get(ModuleUUID).CCEE = vars
+
+
+        local ent = Ext.Entity.Get(uuid)
+
+        Helpers.Timer:OnTicks(8, function ()
+
+            Helpers.Timer:OnTicks(20, function ()
+
+                if params[2] then 
+
+                    for _, visUuid in pairs(params[2]) do
+                        if visUuid then
+                            Osi.AddCustomVisualOverride(uuid, visUuid)
+                        end
+                    end
+
+                    UpdateParameters(60, entity, true)
+
+                end
+
+            end)
+        end)
+    end
+end)
 
 
 
