@@ -7,9 +7,7 @@ Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
 end)
 
 
-
-
-
+--LevelGameplayStarted
 Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, user)
     if _C() then
         GetAllParameterNames(_C())
@@ -18,30 +16,6 @@ Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, 
             Elements:UpdateElements(_C().Uuid.EntityUuid)
         end)
     end
-end)
-
-
-Ext.Entity.OnCreate("ClientControl", function(entity, ct, c)
-    -- DPrint(entity.Uuid.EntityUuid)
-     Elements:UpdateElements(entity.Uuid.EntityUuid)
-end)
-
-
-Ext.Entity.OnChange("ItemDye", function(entity)
-    TempThingy()
-end)
-
-
---Paperdoll --make a check for transparent attack doll
-Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component)
-    DPrint('ClientPaperdoll|OnCreate')
-    Helpers.Timer:OnTicks(5, function ()
-        local owner = Paperdoll.GetDollOwner(entity)
-        if owner then
-            DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
-            ApplyParametersToDollsTest(entity, owner.Uuid.EntityUuid)
-        end
-    end)
 end)
 
 
@@ -70,6 +44,36 @@ Ext.RegisterNetListener('LoadDollParameters',function (channel, payload, user)
 end)
 
 
+--Preset reload on mirror exit
+Ext.RegisterNetListener('CAC', function (channel, payload, user)
+    RealodPreset()
+end)
+
+
+--Client Control
+Ext.Entity.OnCreate("ClientControl", function(entity, ct, c)
+    ClientControl = true
+    -- DPrint(entity.Uuid.EntityUuid)
+     Elements:UpdateElements(entity.Uuid.EntityUuid)
+     
+     Helpers.Timer:OnTicks(5, function ()
+        ClientControl = false
+     end)
+end)
+
+--Paperdoll --make a check for transparent attack doll
+Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component)
+    -- DPrint('ClientPaperdoll|OnCreate')
+    Helpers.Timer:OnTicks(5, function ()
+        local owner = Paperdoll.GetDollOwner(entity)
+        if owner then
+            DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
+            ApplyParametersToDollsTest(entity, owner.Uuid.EntityUuid)
+        end
+    end)
+end)
+
+--PM dummies
 Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, component)
     Helpers.Timer:OnTicks(40, function ()
         if entity:GetAllComponentNames(false)[2] == 'ecl::dummy::AnimationStateComponent' then
@@ -80,79 +84,45 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
 end)
 
 
---TLPreviewDummy
--- Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity)
---     DPrint(entity)
---     local dummy = entity.TLPreviewDummy
---     if dummy ~= nil and entity.ClientTimelineActorControl ~= nil then
---         DPrint('ClientEquipmentVisuals')
---         -- Match and find owner
---         local actorLink = entity.ClientTimelineActorControl.field_0
---         local owner
---         -- DPrint(actorLink)
---         for i, v in ipairs(Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")) do
---             -- Owner character should have TimelineActorData but not ClientTimelineActorControl
---             if v.TimelineActorData ~= nil and not v.ClientTimelineActorControl and v.TimelineActorData.field_0 == actorLink then
---                 owner = v
---                 -- DPrint('-------------')
---                 -- DPrint(owner)
---                 Helpers.Timer:OnTicks(30, function ()
---                     DPrint(owner.DisplayName.Name:Get())
---                     ApplyParametersToDollsTest(entity, owner.Uuid.EntityUuid)
---                 end)
+--bruh
+Ext.Entity.OnChange("Unsheath", function(entity)
 
---             end
---         end
---     end
+    if ClientControl == true then --bruh x2
+        return
+    end
 
+    -- DPrint(entity.DisplayName.Name:Get())
+    -- DPrint('Unsheath all')
+    local origins = Ext.Entity.GetAllEntitiesWithComponent('Origin')
 
---     local tl = Ext.Entity.GetAllEntitiesWithComponent('TLPreviewDummy')
---     DDump(tl)
+    for bruh = 1, #origins do
+        if entity == origins[bruh] then
 
--- end)
+            -- DPrint(entity.DisplayName.Name:Get())
+            -- DPrint('Unsheath')
 
--- Ext.Entity.OnCreate("TLPreviewDummy", function(entity, componentType, component)
---     DPrint('TLPreviewDummy')
---     local dummy = entity.TLPreviewDummy
---     DPrint(entity)
---     DDump(entity.ClientTimelineActorControl)
+            --tbd: AT LEAST only skin color resets, so I just need to update only it 
+            Helpers.Timer:OnTicks(30, function () --giga bruh
+                Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
+            end)
 
---     if dummy ~= nil and entity.ClientTimelineActorControl ~= nil then
---         DPrint('ClientEquipmentVisuals')
---         -- Match and find owner
---         local actorLink = entity.ClientTimelineActorControl.field_0
---         local owner
---         -- DPrint(actorLink)
---         for i, v in ipairs(Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")) do
---             -- Owner character should have TimelineActorData but not ClientTimelineActorControl
---             if v.TimelineActorData ~= nil and not v.ClientTimelineActorControl and v.TimelineActorData.field_0 == actorLink then
---                 owner = v
---                 -- DPrint('-------------')
---                 -- DPrint(owner)
---                 Helpers.Timer:OnTicks(30, function ()
---                     DPrint(owner.DisplayName.Name:Get())
---                     ApplyParametersToDollsTest(entity, owner.Uuid.EntityUuid)
---                 end)
-
---             end
---         end
---     end
-
--- end)
+            Helpers.Timer:OnTicks(84, function () --giga bruh x2
+                Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
+            end)
+        end
+    end
+end)
 
 
+Ext.Entity.OnChange("ItemDye", function(entity)
+    TempThingy()
+end)
 
 
--- Ext.Entity.OnChange("CharacterCreationAppearance", function(entity)
---     DPrint(entity)
---     DPrint('CharacterCreationAppearance')
--- end)
-
-
-
-
-
-
+Ext.Events.ResetCompleted:Subscribe(function()
+    TempThingy()
+    Elements:UpdateElements(_C().Uuid.EntityUuid)
+end)
 
 --Systems
 
@@ -167,16 +137,20 @@ end)
 -- end)
 
 
--- Ext.Entity.OnSystemUpdate("ClientEquipmentVisuals", function()
 
---     local visuals = Ext.System.ClientEquipmentVisuals.InventoryEvents
+-- Ext.Entity.OnSystemUpdate("ClientCharacterManager", function()
+    
+--     local visuals = Ext.System.ClientVisualsVisibilityState.UnloadVisuals
 --     for entity, v in pairs(visuals) do
+--         DPrint('1')
+--         DDump(v)
+--         -- DPrint('ClientCharacterManager')
 --         DPrint(entity)
 --     end
 
 -- end)
 
---Maybe this instead of ArmorState, Equiped, Uneqipped, but it doesn't show which entity requested 
+-- Maybe this instead of ArmorState, Equiped, Uneqipped, but it doesn't show which entity requested 
 -- Ext.Entity.OnSystemUpdate("ClientEquipmentVisuals", function()
 
 --     local visuals = Ext.System.ClientEquipmentVisuals.UnloadRequests

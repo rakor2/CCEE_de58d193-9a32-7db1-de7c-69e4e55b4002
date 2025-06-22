@@ -19,19 +19,13 @@ end
 
 
 function Window:CCEEMCM()
-
     local function CreateCCEEMCMTab(tab)
-
         local openButton = tab:AddButton("Open")
         openButton.OnClick = function()
-
             cceeWindow.Open = not cceeWindow.Open
-
         end
     end
-    
     Mods.BG3MCM.IMGUIAPI:InsertModMenuTab(ModuleUUID, "CCEE", CreateCCEEMCMTab)
-
 end
 
 
@@ -117,19 +111,23 @@ function Window:CCEEWindow()
 
         end
 
+        local tp103 = resetCharacter:Tooltip()
+        tp103:AddText([[
+        Resets MOD'S parameters (THE ones in THE WINDOW) for current character]])
+
 
         confirmResetChar = p:AddButton('Confirm')
 
         confirmResetChar:SetColor("Button", {0.55, 0.0, 0.0, 1.00})
         confirmResetChar:SetColor("ButtonHovered", {0.35, 0.0, 0.0, 1.0})
         confirmResetChar:SetColor("ButtonActive", {0.25, 0.0, 0.0, 1.0})
+        confirmResetChar.Size = {159,35}
 
         confirmResetChar.SameLine = true
         confirmResetChar.Visible = false
         confirmResetChar.OnClick = function ()
 
             Ext.Timer.Cancel(confirmTimer)
-
 
             Ext.Net.PostMessageToServer('ResetCurrentCharacter', '')
             if _C().Uuid then
@@ -144,7 +142,6 @@ function Window:CCEEWindow()
 
         end
 
-
         local backupPM = p:AddButton('PM backup')
         backupPM.SameLine = true
         backupPM.OnClick = function ()
@@ -153,10 +150,8 @@ function Window:CCEEWindow()
 
         local tp5 = backupPM:Tooltip()
         tp5:AddText([[
-        If parameters haven't applied to PM characters]])
+        If parameters didn't apply to PM characters]])
 
-
-        
         local forceLoad = p:AddButton('Force load')
         forceLoad.SameLine = true
         forceLoad.OnClick = function ()
@@ -166,32 +161,25 @@ function Window:CCEEWindow()
         local tp3 = forceLoad:Tooltip()
         tp3:AddText([[
         Loads stored data from the save file for every character in scene
-        Useful if visually parameters got reset]])
+        Useful if visually MOD'S parameters (THE ones in THE WINDOW) got reset]])
 
-
-            
         local sepa = p:AddSeparatorText('')
-
     end
 
 
     ---@param fn function # loooooooooooook it's colored! 
     function Elements:CreateElements(type, var, name, parent, options, fn)
-
         if type == 'int' then 
             self[var] = parent:AddSliderInt(name, options.def or 0, options.min or 0, options.max or 1, 0)
             self[var].Logarithmic = options.log or false
-    
         elseif type == 'picker' then
             self[var] = parent:AddColorEdit(name)
             self[var].Float = true
             self[var].NoAlpha = true
-    
         else
             self[var] = parent:AddSlider(name, options.default or 0, options.min or 0, options.max or 1, 0)
             self[var].Logarithmic = options.log or false
         end
-    
         self[var].IDContext = Ext.Math.Random(1,1000000)
         self[var].OnChange = function (e)
             fn(e)
@@ -320,7 +308,7 @@ function Window:CCEEWindow()
         },
 
         ['Eyes makeup'] = {
-            {'int', 'slIntMakeupIndex', 'Index', parent, {max = makeupCount}, function(var)
+            {'int', 'slIntMakeupIndex', 'Index', parent, {max = 31}, function(var) --makeupCount
                 SaveAndApply(_C(), 'Head', 'MakeUpIndex', 'Scalar', var.Value[1]) end},
         
             {'picker', 'pickMakeupColor', 'Color', parent, {}, function(var)
@@ -352,7 +340,7 @@ function Window:CCEEWindow()
 
         ['Tattoo'] = {
 
-            {'int', 'slIntTattooIndex', 'Index', parent, {max = tattooCount}, function(var)
+            {'int', 'slIntTattooIndex', 'Index', parent, {max = 31}, function(var) --tattooCount
                 SaveAndApply(_C(), 'Head', 'TattooIndex', 'Scalar', var.Value[1]) end},
         
             {'picker', 'pickTattooColorR', 'Color R', parent, {}, function(var)
@@ -401,7 +389,7 @@ function Window:CCEEWindow()
         
         ['Scars'] = {
         
-            {'int', 'slIntScarIndex', 'Index', parent, {max = scarCount}, function(var)
+            {'int', 'slIntScarIndex', 'Index', parent, {max = 24}, function(var) --scarCount
                 SaveAndApply(_C(), 'Head', 'ScarIndex', 'Scalar', var.Value[1]) end},
         
             {nil, 'slScarWeight', 'Intensity', parent, {min = -10, max = 10}, function(var)
@@ -769,20 +757,55 @@ function Window:CCEEWindow()
             {'picker', 'pickHornsTipColor', 'Tip color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Horns', 'NonSkinTipColor', 'Vector3', var.Color)
             end},
-        
+
             {nil, 'slHornReflectance', 'Reflectance', parent, {}, function(var)
                 SaveAndApply(_C(), 'Horns', 'Reflectance', 'Scalar', var.Value[1])
             end},
-        
-            {nil, 'slHornIntensity', 'Glow? intensity', parent, {log = true}, function(var)
+
+            {'int', 'slHornGlow', 'Toggle glow ', parent, {}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Use_BlackBody', 'Scalar', var.Value[1])
+                SaveAndApply(_C(), 'Horns', 'Colour_BlackBody', 'Scalar', var.Value[1])
+                SaveAndApply(_C(), 'Horns', 'Use_ColorRamp', 'Scalar', var.Value[1]*-1)
+            end},
+
+            -- {'int', 'slHornColour_BlackBody', 'Use glow 2', parent, {}, function(var)
+            --     SaveAndApply(_C(), 'Horns', 'Colour_BlackBody', 'Scalar', var.Value[1])
+            -- end},
+
+            -- {'int', 'slHornUse_ColorRamp', 'Use_ColorRamp', parent, {def = 1}, function(var)
+            --     SaveAndApply(_C(), 'Horns', 'Use_ColorRamp', 'Scalar', var.Value[1])
+            -- end},
+
+            {'picker', 'slHornBlackBody_Colour', 'Glow color', parent, {}, function(var)
+                    SaveAndApply(_C(), 'Horns', 'BlackBody_Colour', 'Vector3', var.Color)
+            end},
+
+            {nil, 'slHornIntensity', 'Glow intensity', parent, {max = 200, log = true}, function(var)
                 SaveAndApply(_C(), 'Horns', 'Intensity', 'Scalar', var.Value[1])
+            end},
+
+            
+            {nil, 'slHornBlackbody_PreRamp_Power', 'Also glow int', parent, {}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Blackbody_PreRamp_Power', 'Scalar', var.Value[1])
+            end},
+
+            -- {nil, 'slHornamp2', 'amp2', parent, {min = -100, max = 100, log = true}, function(var)
+            --     SaveAndApply(_C(), 'Horns', 'amp2', 'Scalar', var.Value[1])
+            -- end},
+
+            {nil, 'slHornEmissive_Mult', 'Emissive_Mult', parent, {min = -100, max = 100, log = true}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Emissive_Mult', 'Scalar', var.Value[1])
+            end},
+
+            {'int', 'slHornUse_HeartBeat', 'Use_HeartBeat', parent, {}, function(var)
+                SaveAndApply(_C(), 'Horns', 'Use_HeartBeat', 'Scalar', var.Value[1])
             end},
 
             {nil, 'slHornLength', 'Length', parent, {min = -100, max = 100, log = true}, function(var)
                 SaveAndApply(_C(), 'Horns', 'Length', 'Scalar', var.Value[1])
             end},
 
-            {nil, 'slHornamplitude', 'amplitude', parent, {min = -100, max = 100, log = true}, function(var)
+            {nil, 'slHornamplitude', 'Amplitude', parent, {min = -100, max = 100, log = true}, function(var)
                 SaveAndApply(_C(), 'Horns', 'amplitude', 'Scalar', var.Value[1])
             end},
 
@@ -790,52 +813,17 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Horns', 'BPM', 'Scalar', var.Value[1])
             end},
 
-            {nil, 'slHornamp2', 'amp2', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'amp2', 'Scalar', var.Value[1])
-            end},
+            -- {nil, 'slHornContrast', 'Contrast', parent, {min = -100, max = 100, log = true}, function(var)
+            --     SaveAndApply(_C(), 'Horns', 'Contrast', 'Scalar', var.Value[1])
+            -- end},
 
-            {nil, 'slHornUse_HeartBeat', 'Use_HeartBeat', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'Use_HeartBeat', 'Scalar', var.Value[1])
-            end},
+            -- {nil, 'slHornPreRampIntensity', 'PreRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
+            --     SaveAndApply(_C(), 'Horns', 'PreRampIntensity', 'Scalar', var.Value[1])
+            -- end},
 
-            {nil, 'slHornBlackbody_PreRamp_Power', 'Blackbody_PreRamp_Power', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'Blackbody_PreRamp_Power', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornColour_BlackBody', 'Colour_BlackBody', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'Colour_BlackBody', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornEmissive_Mult', 'Emissive_Mult', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'Emissive_Mult', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornContrast', 'Contrast', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'Contrast', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornPreRampIntensity', 'PreRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'PreRampIntensity', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornPostRampIntensity', 'PostRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'PostRampIntensity', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornUse_ColorRamp', 'Use_ColorRamp', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'Use_ColorRamp', 'Scalar', var.Value[1])
-            end},
-
-            {nil, 'slHornPreRampIntensity', 'PreRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
-                SaveAndApply(_C(), 'Horns', 'PreRampIntensity', 'Scalar', var.Value[1])
-            end},
-
-            {'picker', 'slHornBlackBody_Colour', 'BlackBody_Colour', parent, {}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns'}) do
-                    DPrint(attachment)
-                    SaveAndApply(_C(), attachment, 'BlackBody_Colour', 'Vector3', var.Color)
-                end
-            end},
+            -- {nil, 'slHornPostRampIntensity', 'PostRampIntensity', parent, {min = -100, max = 100, log = true}, function(var)
+            --     SaveAndApply(_C(), 'Horns', 'PostRampIntensity', 'Scalar', var.Value[1])
+            -- end},
 
 
         },
@@ -1161,6 +1149,8 @@ function Window:CCEEWindow()
         tp2:AddText([[
         The mod stores data in game save file, this button resets the data]])
 
+
+
     end
 
     function CCEE:Dev()
@@ -1206,7 +1196,6 @@ function Window:CCEEWindow()
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({'NakedBody'}) do
-                            
                             ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
                         end
                     end
@@ -1451,11 +1440,65 @@ function Window:CCEEWindow()
             end
         end
 
+        function Tests:Nails()
+
+            local testParamsNails = testParams:AddTree('Nailsd')
+            local treeTestParamsNails_4472 = testParamsNails:AddTree('Scalar')
+            local treeTestParamsNails_9823 = testParamsNails:AddTree('Vec3')
+            local treeTestParamsNails_3106 = testParamsNails:AddTree('Vec')
+            
+            if Parameters.DragonbornTop then
+
+            function TestAllNailsScalarParameters()
+                for _,v in ipairs(Parameters.DragonbornTop.Scalar) do
+                    local testSlider = treeTestParamsNails_4472:AddSlider(v, 0, -100, 100)
+                    testSlider.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider.OnChange = function()
+                        for _, part in ipairs({'DragonbornTop'}) do
+                            ApplyParameters(_C(), part, v, 'Scalar', testSlider.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            function TestAllNailsVec3Parameters()
+                for _,v in ipairs(Parameters.DragonbornTop.Vector3) do
+                    local testPicker = treeTestParamsNails_9823:AddColorEdit(v)
+                    testPicker.NoAlpha = true
+                    testPicker.IDContext = v .. Ext.Math.Random(1,10000)
+                    testPicker.OnChange = function()
+                        for _, part in ipairs({'DragonbornTop'}) do
+                            ApplyParameters(_C(), part, v, 'Vector3', testPicker.Color)
+                        end
+                    end
+                end
+            end
+        
+            function TestAllNailsVecParameter()
+                for _,v in ipairs(Parameters.DragonbornTop.Vector) do
+                    local testSlider2 = treeTestParamsNails_3106:AddSlider(v)
+                    testSlider2.IDContext = v .. Ext.Math.Random(1,10000)
+                    testSlider2.OnChange = function()
+                        for _, part in ipairs({'DragonbornTop'}) do
+                            ApplyParameters(_C(), part, v, 'Vector_1', testSlider2.Value[1])
+                        end
+                    end
+                end
+            end
+        
+            TestAllNailsScalarParameters()
+            TestAllNailsVec3Parameters()
+            TestAllNailsVecParameter()
+
+            end
+        end
+
         Tests:Body()
         Tests:Head()  
         Tests:Genital()
         Tests:Tail()
         Tests:Horns()
+        Tests:Nails()
 
 
 
@@ -1469,11 +1512,11 @@ function Window:CCEEWindow()
 function Elements:UpdateElements(uuid)
     
 
-
     if lastParameters[uuid] then
         
         local character = lastParameters[uuid]
         -- DPrint(uuid)
+
 
         self['pickMelaninColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "MelaninColor")
         self['slMelaninAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninAmount")
@@ -1536,7 +1579,7 @@ function Elements:UpdateElements(uuid)
         self['slEyesRed'].Value = SLOP:getValue(character, "Head", "Scalar", "Redness")
         self['slEyesRedL'].Value = SLOP:getValue(character, "Head", "Scalar", "Redness_L")
     
-        self['slBTatI'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "AdditionalTattooIntensity")
+        self['slBTatI'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "BodyTattooIndex")
         self['pickBTatCR'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "BodyTattooColor")
         self['pickBTatCG'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "BodyTattooColorG")
         self['pickBTatCB'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "BodyTattooColorB")
@@ -1597,6 +1640,21 @@ function Elements:UpdateElements(uuid)
         self['pickHornsTipColor'].Color = SLOP:getValue(character, "Horns", "Vector3", "NonSkinTipColor")
         self['slHornReflectance'].Value = SLOP:getValue(character, "Horns", "Scalar", "Reflectance")
         self['slHornIntensity'].Value = SLOP:getValue(character, "Horns", "Scalar", "Intensity")
+        self['slHornGlow'].Value = SLOP:getValue(character, "Horns", "Scalar", "Use_BlackBody")
+        -- self['slHornColour_BlackBody'].Value = SLOP:getValue(character, "Horns", "Scalar", "Colour_BlackBody")
+        -- self['slHornUse_ColorRamp'].Value = SLOP:getValue(character, "Horns", "Scalar", "Use_ColorRamp")
+        self['slHornBlackBody_Colour'].Color = SLOP:getValue(character, "Horns", "Vector3", "BlackBody_Colour")
+        self['slHornLength'].Value = SLOP:getValue(character, "Horns", "Scalar", "Length")
+        self['slHornamplitude'].Value = SLOP:getValue(character, "Horns", "Scalar", "amplitude")
+        self['slHornBPM'].Value = SLOP:getValue(character, "Horns", "Scalar", "BPM")
+        -- self['slHornamp2'].Value = SLOP:getValue(character, "Horns", "Scalar", "amp2")
+        self['slHornUse_HeartBeat'].Value = SLOP:getValue(character, "Horns", "Scalar", "Use_HeartBeat")
+        self['slHornBlackbody_PreRamp_Power'].Value = SLOP:getValue(character, "Horns", "Scalar", "Blackbody_PreRamp_Power")
+        self['slHornEmissive_Mult'].Value = SLOP:getValue(character, "Horns", "Scalar", "Emissive_Mult")
+        -- self['slHornContrast'].Value = SLOP:getValue(character, "Horns", "Scalar", "Contrast")
+        -- self['slHornPreRampIntensity'].Value = SLOP:getValue(character, "Horns", "Scalar", "PreRampIntensity")
+        -- self['slHornPostRampIntensity'].Value = SLOP:getValue(character, "Horns", "Scalar", "PostRampIntensity")
+
 
         pcikEyeLC.Color = SLOP:getValue(character, "Head", "Vector3", "Eyelashes_Color")
         pickEyeBC.Color = SLOP:getValue(character, "Head", "Vector3", "Eyebrow_Color")

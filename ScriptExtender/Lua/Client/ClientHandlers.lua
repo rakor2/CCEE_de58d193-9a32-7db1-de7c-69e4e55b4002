@@ -30,8 +30,6 @@ function GetKeybind(type, bindingIndex)
     end
 end
 
-
-
 ---Counts all available tats, makes, scars
 --tbd: pairs ipairs or some shit 
 function MoneyCounter(type)
@@ -51,86 +49,28 @@ function MoneyCounter(type)
                     -- tattoes = tattooCount - kavtCount
             end
         end
-
         for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
             local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
             if name:lower():find('make') then
                 makeupCount = makeupCount + 1
             end
         end
-
         for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
             local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
             if name:lower():find('scar') then
                 scarCount = scarCount + 1
             end
         end
-
         for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
             local name = Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial').Name
             if name:lower():find('passive') then
                 customCount = customCount + 1
             end
         end
-
         -- DPrint(customCount)
         -- DPrint(tattooCount)
 end
 MoneyCounter()
-
-
--- function FunctionsGenerator()
---     for attachment, paramTypes in pairs(Parameters) do
---         -- DPrint(attachment)
---         for parameterType, parameterNames in pairs(paramTypes) do
---             if parameterType == 'Scalar' then
---                 for _, parameterName in ipairs(parameterNames) do
---                     Functions[parameterType] = Functions[parameterType] or {}
---                     Functions[parameterType][parameterName] = Functions[parameterType][parameterName] or {}
-
---                     table.insert(Functions[parameterType][parameterName], function(slider)
---                         SaveAndApply(_C(), attachment, parameterName, parameterType, slider.Value[1])
---                     end)
---                 end
-                
---             elseif parameterType == 'Vector3' then
---                 for _, parameterName in ipairs(parameterNames) do
---                     Functions[parameterType] = Functions[parameterType] or {}
---                     Functions[parameterType][parameterName] = Functions[parameterType][parameterName] or {}
-
---                     table.insert(Functions[parameterType][parameterName], function(slider)
---                         SaveAndApply(_C(), attachment, parameterName, parameterType, slider.Color)
---                     end)
---                 end
-                
---             elseif parameterType == 'Vector' then
---                 for _, parameterName in ipairs(parameterNames) do
---                     for i = 1, 4 do
---                         local vectorType = 'Vector_' .. i
-                        
---                         Functions[vectorType] = Functions[vectorType] or {}
---                         Functions[vectorType][parameterName] = Functions[vectorType][parameterName] or {}
-
---                         table.insert(Functions[vectorType][parameterName], function(slider)
---                             SaveAndApply(_C(), attachment, parameterName, vectorType, slider.Value[1])
---                         end)
---                     end
---                 end   
---             end
---         end
---         -- DPrint('Ended')
---     end
--- end
-
--- --just a test, probably gonna stick to SaveAndApply because there are repetitve parameters. To lazy rn Deadge
--- function CallFunction(paramType, paramName, var)
---     local funcs = Functions[paramType] and Functions[paramType][paramName]
---     if funcs then
---         for _, fn in ipairs(funcs) do
---             fn(var)
---         end
---     end
--- end
 
 
 ---temp abomination (temp?)
@@ -138,7 +78,6 @@ MoneyCounter()
 ---@param attachment VisualAttachment
 ---@return 
 function FindAttachment(entity, attachment)
-
     -- Ext.IO.SaveFile("Visuals_test.json", Ext.DumpExport(entity.Visual))
     if entity and entity.Visual.Visual then
         -- Helpers.Timer:OnTicks(50, function ()
@@ -150,9 +89,7 @@ function FindAttachment(entity, attachment)
                         -- DPrint('--------------------------------')
                         -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot)
                         return visuals
-
                     end
-
                 elseif attachment == 'Head' then
                     if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) or
                     entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
@@ -161,7 +98,6 @@ function FindAttachment(entity, attachment)
                         -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
                         return visuals
                     end
-
                 --whoever uses custom body as attachment gotta [REDACTED]. Hooooooooooly Im so mad
                 elseif attachment == 'NakedBody' then
                     local foundVisuals = {}
@@ -209,18 +145,13 @@ end
 function GetAllParameterNames(entity)
     Parameters = {}
     local entity = entity or _C()
-
     for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair', 'DragonbornChin','DragonbornJaw','DragonbornTop'}) do
         for _, parameterType in ipairs({'Scalar', 'Vector3', 'Vector'}) do
-
             local visualsTable = FindAttachment(entity, attachment)
-
             if visualsTable then
-
                 if type(visualsTable) ~= "table" then
                     visualsTable = {visualsTable}
                 end
-
                 Parameters[attachment] = Parameters[attachment] or {}
                 Parameters[attachment][parameterType] = Parameters[attachment][parameterType] or {}
 
@@ -231,7 +162,6 @@ function GetAllParameterNames(entity)
                         end
                     end
                 end
-
                 for _, visuals in pairs(visualsTable) do
                     if visuals and visuals.ObjectDescs then
                         for od = 1, #visuals.ObjectDescs do
@@ -248,7 +178,6 @@ function GetAllParameterNames(entity)
                                         end
                                     end
                                 end
-                                
                                 if parameterType == 'Vector3' then
                                     if am.Material.Parameters.Vector3Parameters then
                                         for _, v3p in ipairs(am.Material.Parameters.Vector3Parameters) do
@@ -259,7 +188,6 @@ function GetAllParameterNames(entity)
                                         end
                                     end
                                 end
-                                
                                 if parameterType == 'Vector' then
                                     if am.Material.Parameters.VectorParameters then
                                         for _, v in ipairs(am.Material.Parameters.VectorParameters) do
@@ -398,18 +326,14 @@ end
 function SaveLastChanges(entity, attachment, parameterName, parameterType, value)
     if entity.Uuid then
         local entityUuid = entity.Uuid.EntityUuid
-
         lastParameters[entityUuid] = lastParameters[entityUuid] or {}
         lastParameters[entityUuid][attachment] = lastParameters[entityUuid][attachment] or {}
         lastParameters[entityUuid][attachment][parameterType] = lastParameters[entityUuid][attachment][parameterType] or {}
-
         local visualsTable = FindAttachment(entity, attachment)
-        
         if visualsTable then
             if type(visualsTable) ~= "table" then
                 visualsTable = {visualsTable}
             end
-
             local parameterFound = false
             for _, visuals in pairs(visualsTable) do
                 if visuals and visuals.ObjectDescs and not parameterFound then
@@ -431,7 +355,6 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-
                             elseif parameterType == 'Vector3' then
                                 if am.Material.Parameters.Vector3Parameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
@@ -442,7 +365,6 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-
                             elseif parameterType == 'Vector_1' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
@@ -456,7 +378,6 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-
                             elseif parameterType == 'Vector_2' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
@@ -470,7 +391,6 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-
                             elseif parameterType == 'Vector_3' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
@@ -484,7 +404,6 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-
                             elseif parameterType == 'Vector_4' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
@@ -511,8 +430,6 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
 end
 
 
-
-
 ---Appplies the things to the entity
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment
@@ -524,105 +441,107 @@ end
 --- - Vector_1..4: number{4} (bs)
 function ApplyParameters(entity, attachment, parameterName, parameterType, value)
     -- DPrint(entity)
-
+    local brute = true
     local visualsTable = FindAttachment(entity, attachment)
-    
     if visualsTable then
         if type(visualsTable) ~= "table" then
             visualsTable = {visualsTable}
         end
-        
         for _, visuals in pairs(visualsTable) do
-            
             for _, desc in pairs(visuals.ObjectDescs) do
                 -- DPrint(desc.LOD)
                 local am = desc.Renderable.ActiveMaterial
                 local am1 = desc.Renderable.AppliedMaterials[1]
                 local amp = desc.Renderable.ActiveMaterial.Material.Parent
                 local am1p = desc.Renderable.AppliedMaterials[1].Material.Parent
-
                 if am ~= nil and am.Material ~= nil then
-
                     if parameterType == 'Scalar' then
                         if am.Material.Parameters.ScalarParameters then
                             for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetScalar(parameterName, value)
-                                    -- am1:SetScalar(parameterName, value)
-                                    -- amp:SetScalar(parameterName, value)
-                                    -- am.Material:SetScalar(parameterName, value)
-                                    -- am1.Material:SetScalar(parameterName, value)
-                                    -- am1p:SetScalar(parameterName, value)
+                                    if brute then 
+                                        am1:SetScalar(parameterName, value)
+                                        amp:SetScalar(parameterName, value)
+                                        am.Material:SetScalar(parameterName, value)
+                                        am1.Material:SetScalar(parameterName, value)
+                                        am1p:SetScalar(parameterName, value)
+                                    end
                                 end
                             end
                         end
-
                     elseif parameterType == 'Vector3' then
                         if am.Material.Parameters.Vector3Parameters then
                             for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    -- am1:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    -- amp:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    -- am1p:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    -- am.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    -- am1.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    if brute then 
+                                        am1:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                        amp:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                        am1p:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                        am.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                        am1.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
+                                    end
                                 end
                             end
                         end
-
                     elseif parameterType == 'Vector_1' then
                         if am.Material.Parameters.VectorParameters then
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {value, 0, 0, 0})
-                                    -- am1:SetVector4(parameterName, {value, 0, 0, 0})
-                                    -- amp:SetVector4(parameterName, {value, 0, 0, 0})
-                                    -- am1p:SetVector4(parameterName, {value, 0, 0, 0})
-                                    -- am.Material:SetVector4(parameterName, {value, 0, 0, 0})
-                                    -- am1.Material:SetVector4(parameterName, {value, 0, 0, 0})
+                                    if brute then 
+                                        am1:SetVector4(parameterName, {value, 0, 0, 0})
+                                        amp:SetVector4(parameterName, {value, 0, 0, 0})
+                                        am1p:SetVector4(parameterName, {value, 0, 0, 0})
+                                        am.Material:SetVector4(parameterName, {value, 0, 0, 0})
+                                        am1.Material:SetVector4(parameterName, {value, 0, 0, 0})
+                                    end
                                 end
                             end
                         end
-
                     elseif parameterType == 'Vector_2' then
                         if am.Material.Parameters.VectorParameters then
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
-                                    am:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    -- am1:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    -- amp:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    -- am1p:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    -- am.Material:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    -- am1.Material:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    if brute then 
+                                        am:SetVector4(parameterName, {0, value, 0, 0}) 
+                                        am1:SetVector4(parameterName, {0, value, 0, 0}) 
+                                        amp:SetVector4(parameterName, {0, value, 0, 0}) 
+                                        am1p:SetVector4(parameterName, {0, value, 0, 0}) 
+                                        am.Material:SetVector4(parameterName, {0, value, 0, 0}) 
+                                        am1.Material:SetVector4(parameterName, {0, value, 0, 0}) 
+                                    end
                                 end
                             end
                         end
-
                     elseif parameterType == 'Vector_3' then
                         if am.Material.Parameters.VectorParameters then
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    -- am1:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    -- amp:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    -- am1p:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    -- am.Material:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    -- am1.Material:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    if brute then 
+                                        am1:SetVector4(parameterName, {0, 0, value, 0}) 
+                                        amp:SetVector4(parameterName, {0, 0, value, 0}) 
+                                        am1p:SetVector4(parameterName, {0, 0, value, 0}) 
+                                        am.Material:SetVector4(parameterName, {0, 0, value, 0}) 
+                                        am1.Material:SetVector4(parameterName, {0, 0, value, 0}) 
+                                    end
                                 end
                             end
                         end
-
                     elseif parameterType == 'Vector_4' then
                         if am.Material.Parameters.VectorParameters then
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    -- am1:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    -- amp:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    -- am1p:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    -- am.Material:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    -- am1.Material:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    if brute then 
+                                        am1:SetVector4(parameterName, {0, 0, 0, value}) 
+                                        amp:SetVector4(parameterName, {0, 0, 0, value}) 
+                                        am1p:SetVector4(parameterName, {0, 0, 0, value}) 
+                                        am.Material:SetVector4(parameterName, {0, 0, 0, value}) 
+                                        am1.Material:SetVector4(parameterName, {0, 0, 0, value}) 
+                                    end
                                 end
                             end
                         end
@@ -663,10 +582,8 @@ function ApplyParametersToDolls()
         -- DDump(attachments)
         local owner = Ext.Entity.Get(uuid)
         local entity = Paperdoll.GetOwnersDoll(owner)
-
         DPrint('Owner: ' .. owner.DisplayName.Name:Get())
         -- DPrint(entity)
-
         for attachment, parameterTypes in pairs(attachments) do
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
@@ -696,100 +613,31 @@ function ApplyParametersToDollsTest(entity, uuid)
 end
 
 
-
-
-
-
--- function SaveParamsToFile()
-
---     local data = lastParameters
---     SafeSaveToFile('CCEE', data)
---     -- local name = LocalSettings.FileName
---     -- LocalSettings.FileName = "CCEE"
---     -- LocalSettings:AddOrChange('CCEE', data)
---     -- LocalSettings:SaveToFile()
---     -- LocalSettings.FileName = name
-
-
-
-
--- end
-
--- function LoadParamsFromFile()
-
---     Ext.Net.PostMessageToServer('LoadLocalSettings', '')
-
--- end
-
--- function PMKeybind()
---     KeybindingManager:Bind({
---         ScanCode = tostring(GetKeybind(1,320)):upper(),
---         Callback = function()
-    
---             Helpers.Timer:OnTicks(50, function ()
---             --no double calls on my watch
---             local s, _ = pcall(function()
---                 return Ext.UI.GetRoot():Find("ContentRoot"):Child(21).DataContext.DOFStrength
---             end)
-    
---                 if s then
---                     Helpers.Timer:OnTicks(13, function ()
---                         ApplyParametersToDummies()
---                     end)
---                 end
-    
---             end)
-    
---         end,
---     })
--- end
-
-
-
-
-
 ---Main thingy
 Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
-
     DPrint('LoadModVars')
     -- DPrint(user)
     GetAllParameterNames(_C())
     -- PMKeybind()
-
-
-    
     local data = Ext.Json.Parse(payload)
-
     lastParametersMV = data.lastParameters
     lastParameters = data.lastParameters
     -- DDump(lastParametersMV)
     -- DPrint('123')
     -- DDump(lastParameters)
     local TICKS_TO_WAIT = data.TICKS_TO_WAIT
-    
     --LoadElementsValues()
-    
     DPrint('Waiting ' ..  TICKS_TO_WAIT .. ' ticks before applying parameters')
-
     firstManToUseProgressBar.Visible = true
     firstManToUseProgressBarLable.Visible = true
-
     local ticksPassedBar = 0
     barID = Ext.Events.Tick:Subscribe(function()
         ticksPassedBar = ticksPassedBar + 1
         firstManToUseProgressBar.Value = ticksPassedBar/TICKS_TO_WAIT
     end)
-
-
     Helpers.Timer:OnTicks(TICKS_TO_WAIT, function()
-
-        -- DPrint('Boom')
-
         Helpers.Timer:OnTicks(TICKS_BEFORE_GAPM, function()
-
-    
             Helpers.Timer:OnTicks(TICKS_BEFORE_LOADING, function()
-
                 --tbd: UNITE the functions L u L 
                 function LoadParametersSingle()
                     -- DPrint('-----------------------------------------------------------------------')
@@ -828,19 +676,14 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                         -- DPrint('-----------------------------------------------------------------------')
                     end)
                 end
-
                 function LoadParameters()
-
                     -- DPrint('-----------------------------------------------------------------------')
                     DPrint('EVERYONE')
                     -- DDump(lastParametersMV)
-
                     Helpers.Timer:OnTicks(TICKS_BEFORE_APPLYING, function()
-
                         Ext.Events.Tick:Unsubscribe(barID)
                         firstManToUseProgressBar.Visible = false
                         firstManToUseProgressBarLable.Visible = false
-                        
                         for uuid, attachments in pairs(lastParametersMV) do
                             local entity = Ext.Entity.Get(uuid)
                             if entity and entity.DisplayName then
@@ -856,7 +699,6 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
 
                                                 ApplyParameters(entity, attachment, parameterName, parameterType, value)
                                             end)
-
                                         end
                                     end
                                 end
@@ -867,14 +709,11 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                         end
                     end)
                 end
-
-
                 if data.single == true then
                     LoadParametersSingle()
                 else
                     LoadParameters()
                 end
-
             end)
         end)
     end)
@@ -887,32 +726,17 @@ end)
 
 local timer = nil
 function TempThingy()
-
     if timer then
         Ext.Timer.Cancel(timer)
     end
-    
-
     timer = Ext.Timer.WaitFor(30, function()
         Ext.Net.PostMessageToServer('UpdateParameters', '')
         GetAllParameterNames(_C())
-        
-        Helpers.Timer:OnTicks(50, function ()
-
-        end)
-        
         -- PMKeybind()
-        
         timer = nil
-
     end)
 end
 
-
-Ext.Events.ResetCompleted:Subscribe(function()
-    TempThingy()
-    Elements:UpdateElements(_C().Uuid.EntityUuid)
-end)
 
 
 
@@ -941,25 +765,21 @@ end
 
 
 ---@param entity EntityHandle
+---@return table
 function GetCharacterCreationAppearance(entity)
-
     local cca = {}
     local ccaArray = entity.CharacterCreationAppearance.Visuals
-
     for i = 1, #ccaArray do
         cca[i] = ccaArray[i]
     end
-    
-    DDump(cca)
-
+    -- DDump(cca)
     return cca
 end
 
 
-
 ---@param fileName string
 function SavePreset(fileName)
-    DPrint('savePreset')
+    DPrint('SavePreset')
     local uuid = _C().Uuid.EntityUuid
     local cca = GetCharacterCreationAppearance(_C())
     local dataSave = {
@@ -973,33 +793,31 @@ end
 
 ---@param fileName string
 function LoadPreset(fileName)
+    DPrint('LoadPreset')
     local uuidedData = {}
     local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
     local dataLoad = Ext.Json.Parse(json)
-
     local uuid = _C().Uuid.EntityUuid
-
     uuidedData[uuid] = dataLoad
-
     Helpers.Timer:OnTicks(3, function ()
         Ext.Net.PostMessageToServer('LoadPreset', Ext.Json.Stringify(uuidedData))
     end)
 end
 
 
-
----temporary
----@param fileName string
-function LoadPreset2(fileName)
-    local uuidedData = {}
-    local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
-    local dataLoad = Ext.Json.Parse(json)
-
+function RealodPreset()
+    DPrint('RealodPreset')
     local uuid = _C().Uuid.EntityUuid
-
-    uuidedData[uuid] = dataLoad
-
-    Helpers.Timer:OnTicks(3, function ()
-        Ext.Net.PostMessageToServer('LoadPreset2', Ext.Json.Stringify(uuidedData))
+    local cca = GetCharacterCreationAppearance(_C())
+    Helpers.Timer:OnTicks(5, function ()
+        local uuidedData = {}
+        uuidedData[uuid] = {
+            lastParameters[uuid] or {},
+            cca,
+        }
+        Helpers.Timer:OnTicks(3, function ()
+            Ext.Net.PostMessageToServer('LoadPreset', Ext.Json.Stringify(uuidedData))
+            uuidedData = {}
+        end)
     end)
 end

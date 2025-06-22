@@ -6,53 +6,27 @@
 -- Ext.RegisterConsoleCommand('tS', testS)
 
 
-
--- function ForceLoad(TICKS_TO_WAIT, entity)
-
-
---     DPrint(entity)
-
---     local payload = {
---         ArmorUpdate = 1,
---         entityUuid = entity.Uuid.EntityUuid,
---         TICKS_TO_WAIT = TICKS_TO_WAIT,
---         lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
---     }
-
---     if Helpers.ModVars.Get(ModuleUUID).CCEE then 
---         Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
---     end
-    
--- end
-
-
 ---@param ticks integer # Ticks to wait befor applying parameters 
 ---@param entity EntityHandle
----@param single boolean # Apply parameters to the entity or all entities in ModVars
-function UpdateParameters(ticks, entity, single)
-
+---@param singleEntity boolean # Apply parameters to single character or all characters
+function UpdateParameters(ticks, entity, singleEntity)
     -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE)
-
     local uuid
-
     if entity ~= nil then
         uuid = entity.Uuid.EntityUuid
     else
-        uuid = 0
+        uuid = ''
     end
-
     local payload = {
-        single = single,
+        single = singleEntity,
         entityUuid = uuid,
         TICKS_TO_WAIT = ticks,
         lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
     }
-    
     DPrint('UpdateParameters')
     if Helpers.ModVars.Get(ModuleUUID).CCEE then 
         Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
     end
-
 end
 
 -- eventID = Ext.Events.Tick:Subscribe(function()

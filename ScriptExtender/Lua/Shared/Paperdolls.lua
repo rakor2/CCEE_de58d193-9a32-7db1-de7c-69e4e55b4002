@@ -99,11 +99,9 @@ end
 
 ---@return {Doll:EntityHandle, Owner:EntityHandle, OwnerName:string}[]
 function Paperdoll.GetAllDollOwners()
-    DPrint('1')
     local dolls = {}
     for _, entity in pairs(Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")) do
         if EntityIsPaperDoll(entity) then
-            DPrint('2')
             local owner = Paperdoll.GetDollOwner(entity)
             if owner ~= nil then
                 table.insert(dolls, {
