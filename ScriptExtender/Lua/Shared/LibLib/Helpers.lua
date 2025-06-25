@@ -1,5 +1,5 @@
 Hellpers = {}
-
+Utils =  Utils or {}
 
 --Extracts name from a template, S_Player_ShadowHeart_3ed74f06-3c60-42dc-83f6-f034cb47c679 will return Player ShadowHeart
 --Osi.DisplayName or whatever is bad, becasuse for some templates (most of them) it returns simple names like Elf or Goblin
@@ -149,6 +149,21 @@ function  Hellpers:GetRotationUUID(UUID)
         y = ry or 0,
         z = rz or 0
     }
+end
+
+
+local antiSpam = nil
+function Utils:AntiSpam(time, fn)
+
+    if antiSpam then
+        Ext.Timer.Cancel(antiSpam)
+    end
+
+    antiSpam = Ext.Timer.WaitFor(time, function()
+        fn()
+        antiSpam = nil
+    end)
+
 end
 
 
