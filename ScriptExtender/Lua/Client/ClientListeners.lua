@@ -19,6 +19,8 @@ Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, 
 end)
 
 
+
+
 --TLPreviewDummy
 Ext.RegisterNetListener('LoadDollParameters',function (channel, payload, user)
     -- Helpers.Timer:OnTicks(1, function ()
@@ -84,36 +86,6 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
 end)
 
 
---bruh
-Ext.Entity.OnChange("Unsheath", function(entity)
-
-    if ClientControl == true then --bruh x2
-        return
-    end
-
-    -- DPrint(entity.DisplayName.Name:Get())
-    -- DPrint('Unsheath all')
-    local origins = Ext.Entity.GetAllEntitiesWithComponent('Origin')
-
-    for bruh = 1, #origins do
-        if entity == origins[bruh] then
-
-            -- DPrint(entity.DisplayName.Name:Get())
-            -- DPrint('Unsheath')
-
-            --tbd: AT LEAST only skin color resets, so I just need to update only it 
-            Helpers.Timer:OnTicks(30, function () --giga bruh
-                Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
-            end)
-
-            Helpers.Timer:OnTicks(84, function () --giga bruh x2
-                Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
-            end)
-        end
-    end
-end)
-
-
 Ext.Entity.OnChange("ItemDye", function(entity)
     TempThingy()
 end)
@@ -158,4 +130,33 @@ end)
 --         DDump(vis)
 --     end
 
+-- end)
+
+
+
+--bruh
+-- Ext.Entity.OnChange("Unsheath", function(entity)
+--     if ClientControl == true then --bruh x2
+--         return
+--     end
+--     -- DPrint(entity.DisplayName.Name:Get())
+--     -- DPrint('Unsheath all')
+--     local origins = Ext.Entity.GetAllEntitiesWithComponent('Origin')
+
+--     for bruh = 1, #origins do
+--         if entity == origins[bruh] then
+
+--             -- DPrint(entity.DisplayName.Name:Get())
+--             -- DPrint('Unsheath')
+
+--             --tbd: AT LEAST only skin color resets, so I just need to update only it 
+--             Helpers.Timer:OnTicks(30, function () --giga bruh
+--                 Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
+--             end)
+
+--             Helpers.Timer:OnTicks(84, function () --giga bruh x2
+--                 Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
+--             end)
+--         end
+--     end
 -- end)

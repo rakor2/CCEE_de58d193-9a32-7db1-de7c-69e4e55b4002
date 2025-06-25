@@ -8,10 +8,70 @@ TICKS_TO_LOAD = 10
 Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
     DPrint('LevelGameplayStarted')
     UpdateParameters(3, nil, false)
-    Ext.Net.BroadcastMessage('WhenLevelGameplayStarted', '')
+
     Helpers.ModVars.Get(ModuleUUID).CCEE = Helpers.ModVars.Get(ModuleUUID).CCEE or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT = Helpers.ModVars.Get(ModuleUUID).CCEE_MT or {}
+    Ext.Net.BroadcastMessage('WhenLevelGameplayStarted', '')
+    Ext.Net.BroadcastMessage('CCEE_MT', Ext.Json.Stringify(Helpers.ModVars.Get(ModuleUUID).CCEE_MT))
     DPrint('beep')
 end)
+
+
+Ext.RegisterNetListener('ResetAllData', function (channel, payload, user)
+    Helpers.ModVars:Get(ModuleUUID).CCEE = {}
+    Helpers.ModVars:Get(ModuleUUID).CCEE_MT = {}
+end)
+
+
+
+Ext.RegisterNetListener('Replicate', function (channel, payload, user)
+    local entity = Ext.Json.Parse(payload)
+     Ext.Entity.Get(entity):Replicate('GameObjectVisual')
+     Helpers.Timer:OnTicks(10, function ()
+        Utils:AntiSpam(500, function ()
+            UpdateParameters(4, Ext.Entity.Get(entity), true, true)
+        end)
+     end)
+end)
+
+
+
+Ext.RegisterNetListener('SendModVars', function (channel, payload, user)
+    local lastParameters = Ext.Json.Parse(payload)
+    Helpers.ModVars.Get(ModuleUUID).CCEE = lastParameters
+    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE)
+end)
+
+
+Ext.RegisterNetListener('SendMatVars', function (channel, payload, user)
+    DPrint('SendMatVars')
+    local matParameters = Ext.Json.Parse(payload)
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT.MatData = matParameters
+    local vars = Helpers.ModVars.Get(ModuleUUID).CCEE_MT
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT = vars
+end)
+
+function WatchingMrForsenRn()
+    Ext.Net.BroadcastMessage('ForceMatData', Ext.Json.Stringify(Helpers.ModVars.Get(ModuleUUID).CCEE_MT.MatData))
+end
+
+Ext.RegisterConsoleCommand('f', WatchingMrForsenRn)
+
+Ext.RegisterNetListener('UsedMatVars', function (channel, payload, user)
+    DPrint('UsedMatVars')
+
+    local data = Ext.Json.Parse(payload)
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT['UsedSkinUUID'] = data.UsedSkinUUID
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT['SkinMap'] = data.SkinMap
+    local vars = Helpers.ModVars.Get(ModuleUUID).CCEE_MT
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT = vars
+end)
+
+
+Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
+    UpdateParameters(4, nil, false, false)
+end)
+
 
 
 Ext.Osiris.RegisterListener("Equipped", 2, "after", function(item, character)
@@ -48,16 +108,8 @@ Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog, instan
 end)
 
 
-Ext.RegisterNetListener('SendModVars', function (channel, payload, user)
-    local lastParameters = Ext.Json.Parse(payload)
-    Helpers.ModVars.Get(ModuleUUID).CCEE = lastParameters
-    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE)
-end)
 
 
-Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
-    UpdateParameters(4, nil, false)
-end)
 
 
 Ext.RegisterNetListener('UpdateParametersSingle', function (channel, payload, user)

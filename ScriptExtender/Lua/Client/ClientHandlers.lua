@@ -6,6 +6,10 @@ Tests = {}
 Elements = {}
 Functions = {}
 
+MatData = {}
+UsedSkinUUID = {}
+SkinMap = {}
+local matParametes = {}
 
 TICKS_BEFORE_GAPM = 0
 TICKS_BEFORE_LOADING = 0
@@ -345,7 +349,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
 
                         if am ~= nil and am.Material ~= nil then
 
-                            if parameterType == 'Scalar' then
+                            if parameterType == 'ScalarParameters' then
                                 if am.Material.Parameters.ScalarParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                                         if scalarParam.ParameterName == parameterName then
@@ -355,7 +359,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-                            elseif parameterType == 'Vector3' then
+                            elseif parameterType == 'Vector3Parameters' then
                                 if am.Material.Parameters.Vector3Parameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                                         if scalarParam.ParameterName == parameterName then
@@ -365,7 +369,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-                            elseif parameterType == 'Vector_1' then
+                            elseif parameterType == 'Vector_1Parameters' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
@@ -378,7 +382,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-                            elseif parameterType == 'Vector_2' then
+                            elseif parameterType == 'Vector_2Parameters' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
@@ -391,7 +395,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-                            elseif parameterType == 'Vector_3' then
+                            elseif parameterType == 'Vector_3Parameters' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
@@ -404,7 +408,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                         end
                                     end
                                 end
-                            elseif parameterType == 'Vector_4' then
+                            elseif parameterType == 'Vector_4Parameters' then
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
@@ -439,7 +443,7 @@ end
 --- - Scalar: number
 --- - Vector3: number{3}
 --- - Vector_1..4: number{4} (bs)
-function ApplyParameters(entity, attachment, parameterName, parameterType, value)
+function ApplyParameters(entity, attachment, parameterName, parameterType, value, materialPreset)
     -- DPrint(entity)
     local brute = true
     local visualsTable = FindAttachment(entity, attachment)
@@ -460,13 +464,6 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetScalar(parameterName, value)
-                                    if brute then 
-                                        am1:SetScalar(parameterName, value)
-                                        amp:SetScalar(parameterName, value)
-                                        am.Material:SetScalar(parameterName, value)
-                                        am1.Material:SetScalar(parameterName, value)
-                                        am1p:SetScalar(parameterName, value)
-                                    end
                                 end
                             end
                         end
@@ -475,13 +472,6 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    if brute then 
-                                        am1:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                        amp:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                        am1p:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                        am.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                        am1.Material:SetVector3(parameterName, {value[1], value[2], value[3]})
-                                    end
                                 end
                             end
                         end
@@ -490,13 +480,6 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {value, 0, 0, 0})
-                                    if brute then 
-                                        am1:SetVector4(parameterName, {value, 0, 0, 0})
-                                        amp:SetVector4(parameterName, {value, 0, 0, 0})
-                                        am1p:SetVector4(parameterName, {value, 0, 0, 0})
-                                        am.Material:SetVector4(parameterName, {value, 0, 0, 0})
-                                        am1.Material:SetVector4(parameterName, {value, 0, 0, 0})
-                                    end
                                 end
                             end
                         end
@@ -504,14 +487,6 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                         if am.Material.Parameters.VectorParameters then
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
-                                    if brute then 
-                                        am:SetVector4(parameterName, {0, value, 0, 0}) 
-                                        am1:SetVector4(parameterName, {0, value, 0, 0}) 
-                                        amp:SetVector4(parameterName, {0, value, 0, 0}) 
-                                        am1p:SetVector4(parameterName, {0, value, 0, 0}) 
-                                        am.Material:SetVector4(parameterName, {0, value, 0, 0}) 
-                                        am1.Material:SetVector4(parameterName, {0, value, 0, 0}) 
-                                    end
                                 end
                             end
                         end
@@ -520,13 +495,6 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    if brute then 
-                                        am1:SetVector4(parameterName, {0, 0, value, 0}) 
-                                        amp:SetVector4(parameterName, {0, 0, value, 0}) 
-                                        am1p:SetVector4(parameterName, {0, 0, value, 0}) 
-                                        am.Material:SetVector4(parameterName, {0, 0, value, 0}) 
-                                        am1.Material:SetVector4(parameterName, {0, 0, value, 0}) 
-                                    end
                                 end
                             end
                         end
@@ -535,13 +503,6 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                             for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                 if scalarParam.ParameterName == parameterName then
                                     am:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    if brute then 
-                                        am1:SetVector4(parameterName, {0, 0, 0, value}) 
-                                        amp:SetVector4(parameterName, {0, 0, 0, value}) 
-                                        am1p:SetVector4(parameterName, {0, 0, 0, value}) 
-                                        am.Material:SetVector4(parameterName, {0, 0, 0, value}) 
-                                        am1.Material:SetVector4(parameterName, {0, 0, 0, value}) 
-                                    end
                                 end
                             end
                         end
@@ -551,6 +512,162 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
         end
     end
 end
+
+
+
+function GetMaterialPreset(entity)
+
+    local skinUuid = AssignSkinToCharacter(entity)
+
+    -- local skin = entity.CharacterCreationAppearance.SkinColor
+    -- DPrint(skin)
+    local matPresetUuid = Ext.StaticData.Get(skinUuid, 'CharacterCreationSkinColor').MaterialPresetUUID
+    -- DPrint(matPresetUuid)
+    
+    local mt = Ext.Resource.Get(matPresetUuid,'MaterialPreset')  --'2cac4615-e3ac-8b17-906b-7fb8b2775981'
+    return mt
+end
+
+
+function CCEE_MT()
+    for charUuid, matUuids in pairs(MatData) do
+        for matUuid, parameterTypes in pairs(matUuids) do
+            for parameterType, parameterNames in pairs(parameterTypes) do
+                for parameterName, value in pairs(parameterNames) do
+                    local mt = Ext.Resource.Get(matUuid,'MaterialPreset')
+                    for _, parameter in pairs(mt.Presets[parameterType]) do
+                        if parameter.Parameter:find(parameterName) then
+                            parameter.Value = value
+                        end
+                    end
+                end
+            end
+        end
+        Helpers.Timer:OnTicks(30, function ()
+            Ext.Entity.Get(charUuid).CharacterCreationAppearance.SkinColor = AssignSkinToCharacter(Ext.Entity.Get(charUuid))
+            Ext.Net.PostMessageToServer('Replicate', Ext.Json.Stringify(charUuid))
+        end)
+    end
+end
+
+Ext.RegisterNetListener('CCEE_MT', function (channel, payload, user)
+    DPrint('CCEE_MT')
+    local data = Ext.Json.Parse(payload)
+    UsedSkinUUID = data.UsedSkinUUID
+    SkinMap = data.SkinMap
+    MatData = data.MatData
+    -- DPrint('-----------')
+    -- DDump(MatData)
+    -- DPrint('-----------')
+    -- DDump(SkinMap)
+    -- DPrint('-----------')
+    -- DDump(UsedSkinUUID)
+    -- DPrint('-----------')
+    CCEE_MT()
+end)
+
+function AssignSkinToCharacter(entity)
+    UsedSkinUUID = UsedSkinUUID or {}
+    SkinMap = SkinMap or {}
+    local entity = Ext.Entity.Get(entity)
+    if SkinMap[entity.Uuid.EntityUuid] then
+        return SkinMap[entity.Uuid.EntityUuid]
+    end
+    for i = 1, #CCSkinUuids do
+        local uuid = CCSkinUuids[i]
+        if not UsedSkinUUID[uuid] then
+            entity.CharacterCreationAppearance.SkinColor = uuid --'58e6b206-4cfc-41f3-af7e-25358a30cf7f'
+            SkinMap[entity.Uuid.EntityUuid] = uuid
+            UsedSkinUUID[uuid] = true --I might even don't need this, since if the skin is mapped to a character then it's in use PonderingCat
+            local data = {
+                SkinMap = SkinMap,
+                UsedSkinUUID = UsedSkinUUID
+            }
+            Ext.Net.PostMessageToServer('UsedMatVars', Ext.Json.Stringify(data))
+            return uuid
+        end
+    end
+end
+
+
+function ApplyParameters2(entity, parameterName, parameterType, value, materialPreset)
+    -- DPrint(materialPreset.Guid)
+    local entityUuid = entity.Uuid.EntityUuid
+    -- DDump(materialPreset.Presets[parameterType])
+    for _, parameter in pairs(materialPreset.Presets[parameterType]) do
+        if parameter.Parameter:find(parameterName) then
+            -- DPrint(parameter.Parameter)
+            parameter.Value = value
+        end
+    end
+    Ext.Net.PostMessageToServer('Replicate', Ext.Json.Stringify(entityUuid))
+end
+
+
+function SaveParameters2(entity, parameterName, parameterType, value, materialPreset)
+    local materialGuid = materialPreset.Guid
+    local entityUuid = entity.Uuid.EntityUuid
+    matParametes[entityUuid] = matParametes[entityUuid] or {}
+    matParametes[entityUuid][materialGuid] = matParametes[entityUuid][materialGuid] or {}
+    matParametes[entityUuid][materialGuid][parameterType] = matParametes[entityUuid][materialGuid][parameterType] or {}
+    matParametes[entityUuid][materialGuid][parameterType][parameterName] = matParametes[entityUuid][materialGuid][parameterType][parameterName] or {}
+    matParametes[entityUuid][materialGuid][parameterType][parameterName] = value
+    Ext.Net.PostMessageToServer('SendMatVars', Ext.Json.Stringify(matParametes))
+end
+
+
+function MaterialPreset(entity, parameterName, parameterType, value, materialPreset)
+    local materialPreset = materialPreset or GetMaterialPreset(entity)
+    ApplyParameters2(entity, parameterName, parameterType, value, materialPreset)
+    SaveParameters2(entity, parameterName, parameterType, value, materialPreset)
+    local entityUuid = entity.Uuid.EntityUuid
+    Ext.Net.PostMessageToServer('Replicate', Ext.Json.Stringify(entityUuid))
+end
+
+Ext.RegisterNetListener('LoadMatVars', function (channel, payload, user)
+    local data = Ext.Json.Parse(payload)
+    if data.matParameters['MatData'] then
+        local matParams = data.matParameters['MatData']
+        if data.single == true then
+            local entity = Ext.Entity.Get(data.entityUuid)
+            local uuid = entity.Uuid.EntityUuid
+            for materialUuids, parameterTypes in pairs(matParams[uuid]) do
+                for parameterType, parameterNames in pairs(parameterTypes) do
+                    for parameterName, value in pairs(parameterNames) do
+                        Helpers.Timer:OnTicks(4, function ()
+                            local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
+                            MaterialPreset(entity, parameterName, parameterType, value, materialPreset)
+                        end)
+                    end
+                end
+            end
+        else    
+            for uuid, _ in pairs(matParams) do
+                local entity = Ext.Entity.Get(uuid)
+                for materialUuids, parameterTypes in pairs(matParams[uuid]) do
+                    for parameterType, parameterNames in pairs(parameterTypes) do
+                        for parameterName, value in pairs(parameterNames) do
+                            Helpers.Timer:OnTicks(4, function ()
+                                local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
+                                MaterialPreset(entity, parameterName, parameterType, value, materialPreset)
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+
+Ext.RegisterConsoleCommand('d', function (cmd, ...)
+    DWarn('MAP DAT -----------------')
+    DDump(MatData)
+    DWarn('SKIN MAP -----------------')
+    DDump(SkinMap)
+    DWarn('USED SKIN -----------------')
+    DDump(UsedSkinUUID)
+end)
 
 
 ---Appplies the things to the PM dummies
@@ -618,23 +735,24 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
     DPrint('LoadModVars')
     -- DPrint(user)
     GetAllParameterNames(_C())
-    -- PMKeybind()
+
     local data = Ext.Json.Parse(payload)
     lastParametersMV = data.lastParameters
     lastParameters = data.lastParameters
+
     -- DDump(lastParametersMV)
     -- DPrint('123')
     -- DDump(lastParameters)
     local TICKS_TO_WAIT = data.TICKS_TO_WAIT
     --LoadElementsValues()
     DPrint('Waiting ' ..  TICKS_TO_WAIT .. ' ticks before applying parameters')
-    firstManToUseProgressBar.Visible = true
-    firstManToUseProgressBarLable.Visible = true
+    -- firstManToUseProgressBar.Visible = true
+    -- firstManToUseProgressBarLable.Visible = true
     local ticksPassedBar = 0
-    barID = Ext.Events.Tick:Subscribe(function()
-        ticksPassedBar = ticksPassedBar + 1
-        firstManToUseProgressBar.Value = ticksPassedBar/TICKS_TO_WAIT
-    end)
+    -- barID = Ext.Events.Tick:Subscribe(function()
+    --     ticksPassedBar = ticksPassedBar + 1
+    --     firstManToUseProgressBar.Value = ticksPassedBar/TICKS_TO_WAIT
+    -- end)
     Helpers.Timer:OnTicks(TICKS_TO_WAIT, function()
         Helpers.Timer:OnTicks(TICKS_BEFORE_GAPM, function()
             Helpers.Timer:OnTicks(TICKS_BEFORE_LOADING, function()
@@ -647,9 +765,9 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
 
                     Helpers.Timer:OnTicks(TICKS_BEFORE_APPLYING, function()
 
-                        Ext.Events.Tick:Unsubscribe(barID)
-                        firstManToUseProgressBar.Visible = false
-                        firstManToUseProgressBarLable.Visible = false
+                        -- Ext.Events.Tick:Unsubscribe(barID)
+                        -- firstManToUseProgressBar.Visible = false
+                        -- firstManToUseProgressBarLable.Visible = false
                         local entity = Ext.Entity.Get(uuid)
                         if entity and lastParametersMV[uuid] then
                         DPrint('Char: ' .. entity.DisplayName.Name:Get())
@@ -665,25 +783,21 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
 
                                             ApplyParameters(entity, attachment, parameterName, parameterType, value)
                                         end)
-        
                                     end
                                 end
                             end
                         end
-                        -- end
-                        -- DPrint('-----------------------------------------------------------------------')
-                        -- DPrint(entity.Uuid.EntityUuid)
-                        -- DPrint('-----------------------------------------------------------------------')
                     end)
                 end
+
                 function LoadParameters()
                     -- DPrint('-----------------------------------------------------------------------')
                     DPrint('EVERYONE')
                     -- DDump(lastParametersMV)
                     Helpers.Timer:OnTicks(TICKS_BEFORE_APPLYING, function()
-                        Ext.Events.Tick:Unsubscribe(barID)
-                        firstManToUseProgressBar.Visible = false
-                        firstManToUseProgressBarLable.Visible = false
+                        -- Ext.Events.Tick:Unsubscribe(barID)
+                        -- firstManToUseProgressBar.Visible = false
+                        -- firstManToUseProgressBarLable.Visible = false
                         for uuid, attachments in pairs(lastParametersMV) do
                             local entity = Ext.Entity.Get(uuid)
                             if entity and entity.DisplayName then
@@ -696,7 +810,6 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                                                 -- DPrint('Applying' .. ' ' ..  parameterName)
                                                 -- DDump(value)
                                                 -- DPrint('-----------------------------------------------------------------------')
-
                                                 ApplyParameters(entity, attachment, parameterName, parameterType, value)
                                             end)
                                         end
@@ -709,6 +822,7 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                         end
                     end)
                 end
+                
                 if data.single == true then
                     LoadParametersSingle()
                 else
@@ -717,9 +831,9 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
             end)
         end)
     end)
-    if _C() then 
-        Elements:UpdateElements(_C().Uuid.EntityUuid)
-    end
+    -- if _C() then 
+    --     Elements:UpdateElements(_C().Uuid.EntityUuid)
+    -- end
 end)
 
 
@@ -729,7 +843,7 @@ function TempThingy()
     if timer then
         Ext.Timer.Cancel(timer)
     end
-    timer = Ext.Timer.WaitFor(30, function()
+    timer = Ext.Timer.WaitFor(500, function()
         Ext.Net.PostMessageToServer('UpdateParameters', '')
         GetAllParameterNames(_C())
         -- PMKeybind()

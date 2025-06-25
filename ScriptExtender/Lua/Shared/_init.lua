@@ -17,3 +17,14 @@ Ext.Require("Shared/Paperdolls.lua")
     SyncOnTick = false,
     SyncOnWrite = true,
 })
+
+
+Helpers.ModVars:Register("CCEE_MT", ModuleUUID, nil, {
+    SyncToClient = false,
+    SyncOnTick = false,
+    SyncOnWrite = true,
+})
+
+
+
+
