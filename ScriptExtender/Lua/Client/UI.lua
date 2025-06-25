@@ -18,6 +18,9 @@ function UI:Init()
 end
 
 
+Apply = {}
+
+
 function Window:CCEEMCM()
     local function CreateCCEEMCMTab(tab)
         local openButton = tab:AddButton("Open")
@@ -72,14 +75,14 @@ function Window:CCEEWindow()
 
 
 
-    firstManToUseProgressBar = p:AddProgressBar()
-    firstManToUseProgressBar.Visible = false
+    -- firstManToUseProgressBar = p:AddProgressBar()
+    -- firstManToUseProgressBar.Visible = false
 
-    firstManToUseProgressBar:SetColor('PlotHistogram', {1.00, 0.7, 0.7, 1.00})
+    -- firstManToUseProgressBar:SetColor('PlotHistogram', {1.00, 0.7, 0.7, 1.00})
 
-    firstManToUseProgressBarLable = p:AddText('Calculating quats')
-    firstManToUseProgressBarLable.SameLine = true
-    firstManToUseProgressBarLable.Visible = false
+    -- firstManToUseProgressBarLable = p:AddText('Calculating quats')
+    -- firstManToUseProgressBarLable.SameLine = true
+    -- firstManToUseProgressBarLable.Visible = false
 
     function CCEE:CoolThings()
 
@@ -188,78 +191,189 @@ function Window:CCEEWindow()
 
 
 
+    ---@param parameterName MaterialParameterName
+    ---@param var ExtuiSliderScalar
+    ---@param type string|nil -- 'mp' = MaterialPreset, nil = SaveAndApply
+    ---@param attachments VisualAttachment
+    function Apply:Scalar(parameterName, var, type, attachments)
+        if type == 'mp' then
+            MaterialPreset(_C(), parameterName, 'ScalarParameters', var.Value[1])
+        else
+            for _, attachment in pairs(attachments) do
+                SaveAndApply(_C(), attachment, parameterName, 'ScalarParameters', var.Value[1])
+            end
+        end
+    end
 
-    local parent
+
+    ---@param parameterName MaterialParameterName
+    ---@param var ExtuiColorEdit | ExtuiColorPicker
+    ---@param type string|nil -- 'mp' = MaterialPreset, nil = SaveAndApply
+    ---@param attachments VisualAttachment
+    function Apply:Vector3(parameterName, var, type, attachments)
+        if type == 'mp' then
+            MaterialPreset(_C(), parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+        else
+            for _, attachment in pairs(attachments) do
+                SaveAndApply(_C(), attachment, parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+            end
+        end
+    end
+
+
+    ---@param parameterName MaterialParameterName
+    ---@param var ExtuiSliderScalar
+    ---@param type number -- 1 = Vecror{Value[1], 0,0,0}, 2 = Vecror{0,Value[1],0,0}, 3 = Vecror{0,0,Value[1],0}
+    ---@param attachments VisualAttachment
+    function Apply:Vector(parameterName, var, type, attachments)
+        if type == 1 then
+            for _, attachment in pairs(attachments) do
+                SaveAndApply(_C(), attachment, parameterName, 'Vector_1Parameters', var.Value[1])
+            end
+        elseif type == 2 then
+            for _, attachment in pairs(attachments) do
+                SaveAndApply(_C(), attachment, parameterName, 'Vector_2Parameters', var.Value[1])
+            end
+        elseif type == 3 then
+            for _, attachment in pairs(attachments) do
+                SaveAndApply(_C(), attachment, parameterName, 'Vector_3Parameters', var.Value[1])
+            end
+        end
+    end
+
+
+    ---@param table table
+    function Elements:CreateMetatables(table)
+        for parameterGroup, _ in pairs(table) do
+            setmetatable(table[parameterGroup], {__index = Apply})
+        end
+    end
+
+    ---@param table table | --aahTable
+    ---@param collapse ExtuiCollapsingHeader
+    ---@param treeName string
+    function Elements:PopulateTab(table, collapse, treeName)
+        local tree = collapse:AddTree(treeName)    
+        tree.IDContext = Ext.Math.Random(1,100000)
+        for _, v in ipairs(table) do
+            v[4] = tree
+            self:CreateElements(table.unpack(v))
+            v[4] = parent
+        end
+    end
+
+
     ---ahh table
-    local ahhTable = {
+    local parent
+    ahhTable = {
 
-    
-        ['Melanin'] = {
+        Melanin = {
 
             {'picker', 'pickMelaninColor', 'Color', parent, {}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'MelaninColor', 'Vector3', var.Color)
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'MelaninColor', 'Vector3', var.Color)
+
+                -- end 
+                -- MaterialPreset(_C(), 'MelaninColor', 'Vector3Parameters',  {var.Color[1],var.Color[2],var.Color[3]})
+
+                ahhTable.Melanin:Vector3('MelaninColor', var, 'mp', nil)
+
+                end},
                 
             {nil, 'slMelaninAmount', 'Amount', parent, {}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'MelaninAmount', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'MelaninAmount', 'Scalar', var.Value[1])
+                -- end 
+                -- MaterialPreset(_C(), 'MelaninAmount', 'ScalarParameters', var.Value[1])
+
+                ahhTable.Melanin:Scalar('MelaninAmount', var, 'mp', nil)
+
+                end},
+
 
             {nil, 'slMelaninRemoval', 'Removal amount', parent, {max = 100, log = true}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'MelaninRemovalAmount', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'MelaninRemovalAmount', 'Scalar', var.Value[1])
+                -- end 
+                -- MaterialPreset(_C(), 'MelaninRemovalAmount', 'ScalarParameters', var.Value[1])
+
+                ahhTable.Melanin:Scalar('MelaninRemovalAmount', var, 'mp', nil)
+
+                end},
+
 
             {nil, 'slMelaninDarkM', 'Dark multiplier', parent, {max = 100, log = true}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'MelaninDarkMultiplier', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'MelaninDarkMultiplier', 'Scalar', var.Value[1])
+                -- end 
+
+                --MaterialPreset(_C(), 'MelaninDarkMultiplier', 'ScalarParameters', var.Value[1])
+                
+                ahhTable.Melanin:Scalar('MelaninDarkMultiplier', var, 'mp', nil)
+
+                end},
 
             {nil, 'slMelaninDarkT', 'Dark threshold', parent, {max = 1}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'MelaninDarkThreshold', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'MelaninDarkThreshold', 'Scalar', var.Value[1])
+                -- end
+                -- MaterialPreset(_C(), 'MelaninDarkThreshold', 'ScalarParameters', var.Value[1])
+
+                ahhTable.Melanin:Scalar('MelaninDarkThreshold', var, 'mp', nil)
+
+                end},
         },
 
-        ['Hemoglobin'] = {
+        Hemoglobin = {
 
             {'picker', 'pickHemoglobinColor', 'Color', parent, {}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'HemoglobinColor', 'Vector3', var.Color)
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'HemoglobinColor', 'Vector3', var.Color)
+                -- end 
+                MaterialPreset(_C(), 'HemoglobinColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+                end},
 
             {nil, 'slHemoglobinAmount', 'Amount', parent, {max = 3}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'HemoglobinAmount', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'HemoglobinAmount', 'Scalar', var.Value[1])
+                -- end 
+                MaterialPreset(_C(), 'HemoglobinAmount', 'ScalarParameters', var.Value[1])
+                end},
         },
 
-        ['Yellowing'] = {
+        Yellowing = {
             {'picker', 'pickYellowingColor', 'Color', parent, {}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'YellowingColor', 'Vector3', var.Color)
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'YellowingColor', 'Vector3', var.Color)
+                -- end 
+                MaterialPreset(_C(), 'YellowingColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+                end},
                 
             {nil, 'slYellowingAmount', 'Amount', parent, {min = -300, max = 300, log = true}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'YellowingAmount', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'YellowingAmount', 'Scalar', var.Value[1])
+                -- end 
+                MaterialPreset(_C(), 'YellowingAmount', 'ScalarParameters', var.Value[1])
+                end},
         },
         
-        ['Vein'] = {
+        Vein = {
             {'picker', 'pickVeinColor', 'Color', parent, {}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'VeinColor', 'Vector3', var.Color)
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'VeinColor', 'Vector3', var.Color)
+                -- end 
+                MaterialPreset(_C(), 'VeinColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+                end},
 
             {nil, 'slVeinAmount', 'Amount', parent, {max = 7}, function(var)
-                for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    SaveAndApply(_C(), attachment, 'VeinAmount', 'Scalar', var.Value[1])
-                end end},
+                -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                --     SaveAndApply(_C(), attachment, 'VeinAmount', 'Scalar', var.Value[1])
+                -- end 
+                MaterialPreset(_C(), 'VeinAmount', 'ScalarParameters', var.Value[1])
+                end},
         },
 
-        ['UnsortedB'] = {
+        UnsortedB = {
             {'picker', 'pickNonSkinColor', 'NonSkinColor', parent, {}, function(var)
                 for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
                     SaveAndApply(_C(), attachment, 'NonSkinColor', 'Vector3', var.Color)
@@ -307,7 +421,7 @@ function Window:CCEEWindow()
                 end end},
         },
 
-        ['Eyes makeup'] = {
+        Eyes_makeup = {
             {'int', 'slIntMakeupIndex', 'Index', parent, {max = 31}, function(var) --makeupCount
                 SaveAndApply(_C(), 'Head', 'MakeUpIndex', 'Scalar', var.Value[1]) end},
         
@@ -324,7 +438,7 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'MakeupRoughness', 'Scalar', var.Value[1]) end},
         },
         
-        ['Lips makeup'] = {
+        Lips_makeup = {
             {'picker', 'pickLipsColor', 'Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Lips_Makeup_Color', 'Vector3', var.Color) end},
         
@@ -338,7 +452,7 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'LipsMakeupRoughness', 'Scalar', var.Value[1]) end},
         },
 
-        ['Tattoo'] = {
+        Tattoo = {
 
             {'int', 'slIntTattooIndex', 'Index', parent, {max = 31}, function(var) --tattooCount
                 SaveAndApply(_C(), 'Head', 'TattooIndex', 'Scalar', var.Value[1]) end},
@@ -381,13 +495,13 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'TattooCurvatureInfluence', 'Scalar', var.Value[1]) end},
         },
         
-        ['Age'] = {
+        Age = {
         
             {nil, 'slAgeInt', 'Intensity', parent, {min = -10, max = 10}, function(var)
                 SaveAndApply(_C(), 'Head', 'Age_Weight', 'Scalar', var.Value[1]) end},
         },
         
-        ['Scars'] = {
+        Scars = {
         
             {'int', 'slIntScarIndex', 'Index', parent, {max = 24}, function(var) --scarCount
                 SaveAndApply(_C(), 'Head', 'ScarIndex', 'Scalar', var.Value[1]) end},
@@ -396,7 +510,7 @@ function Window:CCEEWindow()
                 SaveAndApply(_C(), 'Head', 'Scar_Weight', 'Scalar', var.Value[1]) end},
         },
         
-        ['Scales'] = {
+        Scales = {
         
             {'int', 'slIntScaleIndex', 'Index', parent, {max = 31}, function(var)
                 SaveAndApply(_C(), 'Head', 'CustomIndex', 'Scalar', var.Value[1]) end},
@@ -409,7 +523,7 @@ function Window:CCEEWindow()
         },
 
         
-        ['Eyes'] = {
+        Eyes = {
             {'int', 'slEyesHet', 'Heterochromia', parent, {max = 1}, function(var)
                 SaveAndApply(_C(), 'Head', 'Heterochromia', 'Scalar', var.Value[1])
             end},
@@ -471,18 +585,24 @@ function Window:CCEEWindow()
             end}
         },
 
-        ['Body tattoos'] = {
+        Body_tattoos = {
             {'int', 'slBTatI', 'Index', parent, {max = tattooCount}, function(var)
             for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
                     SaveAndApply(_C(), attachment, 'BodyTattooIndex', 'Scalar', var.Value[1])
             end
+
+            -- MaterialPreset(_C(), 'BodyTattooIndex', 'ScalarParameters', var.Value[1])
+
             end},
             
             {'picker', 'pickBTatCR', 'Color R', parent, {}, function(var)
                 for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-                    DPrint(attachment)
+                    -- DPrint(attachment)
                     SaveAndApply(_C(), attachment, 'BodyTattooColor', 'Vector3', var.Color);
                 end
+
+                -- MaterialPreset(_C(), 'BodyTattooColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+
             end},
             
             {'picker', 'pickBTatCG', 'Color G', parent, {}, function(var)
@@ -510,6 +630,10 @@ function Window:CCEEWindow()
                 for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
                     SaveAndApply(_C(), attachment, 'BodyTattooIntensity', 'Vector_2', var.Value[1])
                 end
+
+                
+                -- MaterialPreset(_C(), 'BodyTattooIntensity', 'Vector3Parameters', {var.Value[1],0,0,0})
+
                 Elements['slBTatIntR'].Value = {0,0,0,0}
                 Elements['slBTatIntB'].Value = {0,0,0,0}
             end},
@@ -541,14 +665,14 @@ function Window:CCEEWindow()
             end}
         },
 
-        ['Private parts'] = {             
+        Private_parts = {             
             {'int', 'slIntPPOpac', 'Toggle', parent, {def = 1}, function(var)
                 SaveAndApply(_C(), 'Private parts', 'InvertOpacity', 'Scalar', var.Value[1])
             end},
         },
 
 
-        ['Scalp'] = {             
+        Scalp = {             
             {'picker', 'pickHairScalpColor', 'Hair Scalp Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Head', 'Hair_Scalp_Color', 'Vector3', var.Color)
             end},
@@ -615,7 +739,7 @@ function Window:CCEEWindow()
 
         },
 
-        ['Hair'] = {
+        Hair = {
             {'picker', 'pickHairColor', 'Hair Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Hair', 'Hair_Color', 'Vector3', var.Color)
             end},
@@ -669,7 +793,7 @@ function Window:CCEEWindow()
             end}
         },
         
-        ['Graying'] = {
+        Graying = {
             {'picker', 'pickHairGrayingColor', 'Hair Graying Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Hair', 'Hair_Graying_Color', 'Vector3', var.Color)
             end},
@@ -683,7 +807,7 @@ function Window:CCEEWindow()
             end}
         },
         
-        ['Highlights'] = {
+        Highlights = {
             {'picker', 'pickHighlightColor', 'Highlight Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Hair', 'Highlight_Color', 'Vector3', var.Color)
             end},
@@ -697,7 +821,7 @@ function Window:CCEEWindow()
             end}
         },
 
-        ['Beard'] = {
+        Beard = {
             {'int', 'slIntBeardIndex', 'BeardIndex', parent, {min = -1, max = 100}, function(var)
                 SaveAndApply(_C(), 'Head', 'BeardIndex', 'Scalar', var.Value[1])
             end},
@@ -740,7 +864,7 @@ function Window:CCEEWindow()
         },
 
 
-        ['BodyHair'] = {
+        BodyHair = {
             {'picker', 'pickBodyHairC', 'Color', parent, {}, function(var)
                 for _, attachment in ipairs({'NakedBody', 'Private Parts'}) do
                 SaveAndApply(_C(), attachment, 'Body_Hair_Color', 'Vector3', var.Color)
@@ -749,7 +873,7 @@ function Window:CCEEWindow()
         },
 
 
-        ['Horns'] = {
+        Horns = {
             {'picker', 'pickHornsColor', 'Color', parent, {}, function(var)
                 SaveAndApply(_C(), 'Horns', 'NonSkinColor', 'Vector3', var.Color)
             end},
@@ -765,7 +889,7 @@ function Window:CCEEWindow()
             {'int', 'slHornGlow', 'Toggle glow ', parent, {}, function(var)
                 SaveAndApply(_C(), 'Horns', 'Use_BlackBody', 'Scalar', var.Value[1])
                 SaveAndApply(_C(), 'Horns', 'Colour_BlackBody', 'Scalar', var.Value[1])
-                SaveAndApply(_C(), 'Horns', 'Use_ColorRamp', 'Scalar', var.Value[1]*-1)
+                SaveAndApply(_C(), 'Horns', 'Use_ColorRamp', 'Scalar', 1 - var.Value[1])
             end},
 
             -- {'int', 'slHornColour_BlackBody', 'Use glow 2', parent, {}, function(var)
@@ -828,7 +952,7 @@ function Window:CCEEWindow()
 
         },
 
-        ['GlowHead'] = {
+        GlowHead = {
 
 
             {'picker', 'pickHeadGlowColor', 'Color', parent, {}, function(var)
@@ -846,7 +970,7 @@ function Window:CCEEWindow()
         },
 
 
-        ['GlowBody'] = {
+        GlowBody = {
 
 
             {'picker', 'pickBodyGlowColor', 'Color', parent, {}, function(var)
@@ -863,7 +987,7 @@ function Window:CCEEWindow()
             end},
         },
 
-        ['GlowEyes'] = {
+        GlowEyes = {
 
             {nil, 'slEyesGlowBright', 'Brightness', parent, {min = -200, max = 200}, function(var)
                 SaveAndApply(_C(), 'Head', 'GlowBrightness', 'Scalar', var.Value[1])
@@ -901,18 +1025,9 @@ function Window:CCEEWindow()
         },
 
     }
-        
 
 
-    function Elements:PopulateTab(tbl, collapse, treeName)
-        local tree = collapse:AddTree(treeName)    
-        tree.IDContext = Ext.Math.Random(1,100000)
-        for _, v in ipairs(tbl) do
-            v[4] = tree
-            self:CreateElements(table.unpack(v))
-            v[4] = parent
-        end
-    end
+    Elements:CreateMetatables(ahhTable)
 
 
     function CCEE:Skin()
@@ -930,7 +1045,6 @@ function Window:CCEEWindow()
 
 
         Elements:PopulateTab(ahhTable['UnsortedB'], parent, 'UnsortedB')
-
 
 
         local sepa = skinColorCollapse:AddSeparatorText('')
@@ -1129,7 +1243,8 @@ function Window:CCEEWindow()
             lastParametersMV = {}
             dummies = {}
             -- Parameters = {}
-            Helpers.ModVars:Get(ModuleUUID).CCEE = {}
+
+            Ext.Net.PostMessageToServer('ResetAllData', '')
 
             for _, element in pairs(Elements) do
                 local s, _ = pcall(function() return element.Value end)
@@ -1518,18 +1633,18 @@ function Elements:UpdateElements(uuid)
         -- DPrint(uuid)
 
 
-        self['pickMelaninColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "MelaninColor")
-        self['slMelaninAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninAmount")
-        self['slMelaninRemoval'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninRemovalAmount")
-        self['slMelaninDarkM'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninDarkMultiplier")
-        self['slMelaninDarkT'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninDarkThreshold")
+        -- self['pickMelaninColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "MelaninColor")
+        -- self['slMelaninAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninAmount")
+        -- self['slMelaninRemoval'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninRemovalAmount")
+        -- self['slMelaninDarkM'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninDarkMultiplier")
+        -- self['slMelaninDarkT'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "MelaninDarkThreshold")
     
-        self['pickHemoglobinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "HemoglobinColor")
-        self['slHemoglobinAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "HemoglobinAmount")
-        self['pickYellowingColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "YellowingColor")
-        self['slYellowingAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "YellowingAmount")
-        self['pickVeinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "VeinColor")
-        self['slVeinAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "VeinAmount")
+        -- self['pickHemoglobinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "HemoglobinColor")
+        -- self['slHemoglobinAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "HemoglobinAmount")
+        -- self['pickYellowingColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "YellowingColor")
+        -- self['slYellowingAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "YellowingAmount")
+        -- self['pickVeinColor'].Color = SLOP:getValue(character, "NakedBody", "Vector3", "VeinColor")
+        -- self['slVeinAmount'].Value = SLOP:getValue(character, "NakedBody", "Scalar", "VeinAmount")
     
         self['slIntMakeupIndex'].Value = SLOP:getValue(character, "Head", "Scalar", "MakeUpIndex")
         self['pickMakeupColor'].Color = SLOP:getValue(character, "Head", "Vector3", "MakeupColor")
