@@ -10,6 +10,7 @@ end)
 --LevelGameplayStarted
 Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, user)
     if _C() then
+        CzechCCState()
         GetAllParameterNames(_C())
         Helpers.Timer:OnTicks(200, function ()
             DPrint('Elements:UpdateElements')
@@ -54,6 +55,7 @@ end)
 
 --Client Control
 Ext.Entity.OnCreate("ClientControl", function(entity, ct, c)
+    Apply.entity = entity
     ClientControl = true
     -- DPrint(entity.Uuid.EntityUuid)
      Elements:UpdateElements(entity.Uuid.EntityUuid)
@@ -80,10 +82,11 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
     Helpers.Timer:OnTicks(40, function ()
         if entity:GetAllComponentNames(false)[2] == 'ecl::dummy::AnimationStateComponent' then
             DPrint('CEV|PM dummies')
-            ApplyParametersToDummies()
+            ApplyParametersToPMDummies()
         end
     end)
 end)
+
 
 
 Ext.Entity.OnChange("ItemDye", function(entity)
@@ -91,8 +94,11 @@ Ext.Entity.OnChange("ItemDye", function(entity)
 end)
 
 
+
 Ext.Events.ResetCompleted:Subscribe(function()
     TempThingy()
+    CCEE_MT()
+    CzechCCState()
     Elements:UpdateElements(_C().Uuid.EntityUuid)
 end)
 

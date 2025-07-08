@@ -922,16 +922,6 @@ function getCharacterCreationAppearance(charEntity)
 end
 
 
-
-
--- Presets = _Class:Create('Preset', 'LocalSettings', {
---     SaveImmediately = true,
---     FolderName = 'CCEE',
---     Data = {},
--- })
-
-
-
 ---@param fileName string
 function SavePreset(fileName)
     DPrint('SavePreset')
@@ -946,15 +936,9 @@ function SavePreset(fileName)
         {CCEEParams = {lastParameters[uuid] or {}}},
         {DefaultCC = cca}
     }
-    -- Presets.FileName = fileName
-    -- Presets:AddOrChange('Preset', dataSave)
-    -- Presets:SaveToFile()
-    -- Presets.Data = {}
     Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
     dataSave = nil
-
 end
-
 
 
 ---@param fileName string
@@ -1020,5 +1004,7 @@ Ext.RegisterConsoleCommand('d', function (cmd, ...)
     DDump(UsedSkinUUID)
 end)
 
+function CzechCCState()
+end
 
 

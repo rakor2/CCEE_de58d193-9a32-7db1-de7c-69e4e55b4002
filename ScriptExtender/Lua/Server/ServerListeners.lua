@@ -7,13 +7,16 @@ TICKS_TO_LOAD = 10
 --Only sp for now
 Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
     DPrint('LevelGameplayStarted')
-    UpdateParameters(3, nil, false)
-
+    UpdateParameters(3, nil, false, false)
     Helpers.ModVars.Get(ModuleUUID).CCEE = Helpers.ModVars.Get(ModuleUUID).CCEE or {}
     Helpers.ModVars.Get(ModuleUUID).CCEE_MT = Helpers.ModVars.Get(ModuleUUID).CCEE_MT or {}
     Ext.Net.BroadcastMessage('WhenLevelGameplayStarted', '')
     Ext.Net.BroadcastMessage('CCEE_MT', Ext.Json.Stringify(Helpers.ModVars.Get(ModuleUUID).CCEE_MT))
     DPrint('beep')
+end)
+
+Ext.Events.ResetCompleted:Subscribe(function()
+    Ext.Net.BroadcastMessage('CCEE_MT', Ext.Json.Stringify(Helpers.ModVars.Get(ModuleUUID).CCEE_MT))
 end)
 
 
@@ -44,7 +47,7 @@ end)
 
 
 Ext.RegisterNetListener('SendMatVars', function (channel, payload, user)
-    DPrint('SendMatVars')
+    -- DPrint('SendMatVars')
     local matParameters = Ext.Json.Parse(payload)
     Helpers.ModVars.Get(ModuleUUID).CCEE_MT.MatData = matParameters
     local vars = Helpers.ModVars.Get(ModuleUUID).CCEE_MT
@@ -58,7 +61,7 @@ end
 Ext.RegisterConsoleCommand('f', WatchingMrForsenRn)
 
 Ext.RegisterNetListener('UsedMatVars', function (channel, payload, user)
-    DPrint('UsedMatVars')
+    -- DPrint('UsedMatVars')
 
     local data = Ext.Json.Parse(payload)
     Helpers.ModVars.Get(ModuleUUID).CCEE_MT['UsedSkinUUID'] = data.UsedSkinUUID
@@ -68,10 +71,18 @@ Ext.RegisterNetListener('UsedMatVars', function (channel, payload, user)
 end)
 
 
-Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
-    UpdateParameters(4, nil, false, false)
+Ext.RegisterNetListener('ApplySkin', function (channel, payload, user)
+    local data = Ext.Json.Parse(payload)
+    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.SkinColor = data.skinUuid
 end)
 
+Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
+    UpdateParameters(4, nil, false, true)
+end)
+
+Ext.RegisterNetListener('UpdateParameters2', function (channel, payload, user)
+    UpdateParameters(4, nil, false, false)
+end)
 
 
 Ext.Osiris.RegisterListener("Equipped", 2, "after", function(item, character)
@@ -137,37 +148,57 @@ end)
 
 
 Ext.RegisterNetListener('LoadPreset', function (channel, payload, user)
+    local SkinMaterialParams
+    local CCEEParams
+    local Attachments
     local data = Ext.Json.Parse(payload)
-    for uuid, params in pairs(data) do
-        -- DDump(uuid)
-        -- DPrint('------------')
-        -- DDump(params)
-        local entity = Ext.Entity.Get(uuid)
-        entity:Replicate('GameObjectVisual')
-        entity:Replicate("CharacterCreationAppearance")
-        Helpers.ModVars.Get(ModuleUUID).CCEE[uuid] = params[1]
-        local vars = Helpers.ModVars.Get(ModuleUUID).CCEE
-        Helpers.ModVars.Get(ModuleUUID).CCEE = vars
-        Helpers.Timer:OnTicks(4, function ()
-            for _, v in pairs(Ext.Entity.Get(uuid).CharacterCreationAppearance.Visuals) do
-                Osi.RemoveCustomVisualOvirride(uuid, v)
-                -- DPrint('RemoveCustomVisualOvirride')
-            end
-        end)
-        Helpers.Timer:OnTicks(8, function ()
-            Helpers.Timer:OnTicks(20, function ()
-                if params[2] then
-                    for _, visUuid in pairs(params[2]) do
-                        if visUuid then
-                            Osi.AddCustomVisualOverride(uuid, visUuid)
-                            -- DPrint('AddCustomVisualOverride')
-                        end
-                    end
-                    UpdateParameters(50, entity, true)
+    local entity = Ext.Entity.Get(data.uuid)
+
+    -- DDump(data.dataLoad[1])
+
+    SkinMaterialParams = data.dataLoad[1].SkinMaterialParams
+    CCEEParams = data.dataLoad[2].CCEEParams
+    DefaultCC = data.dataLoad[3].DefaultCC
+
+    -- DDump(data.dataLoad)
+
+    -- DDump(CCEEParams)
+
+    entity.CharacterCreationAppearance.SkinColor = data.skinUuid
+
+    Helpers.ModVars.Get(ModuleUUID).CCEE[data.uuid] = CCEEParams[1]
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT.MatData[data.uuid][data.skinMatUuid] = SkinMaterialParams[1]
+    local vars = Helpers.ModVars.Get(ModuleUUID).CCEE
+    local varsMT = Helpers.ModVars.Get(ModuleUUID).CCEE_MT
+    Helpers.ModVars.Get(ModuleUUID).CCEE = vars
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MT = varsMT
+
+
+    Helpers.Timer:OnTicks(5, function ()
+        for _, v in pairs(entity.CharacterCreationAppearance.Visuals) do
+            Osi.RemoveCustomVisualOvirride(data.uuid, v)
+            -- DPrint('RemoveCustomVisualOvirride')
+        end
+    end)
+    Helpers.Timer:OnTicks(40, function ()
+        if DefaultCC then
+            for _, visUuid in pairs(DefaultCC.Visuals) do
+                if visUuid then
+                    Osi.AddCustomVisualOverride(data.uuid, visUuid)
+                    -- DPrint('AddCustomVisualOverride')
+                    -- DDump(visUuid)
                 end
+            end
+            Helpers.Timer:OnTicks(10, function ()
+                applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC)
             end)
-        end)
-    end
+            Helpers.Timer:OnTicks(15, function ()
+                entity:Replicate('GameObjectVisual')
+                entity:Replicate("CharacterCreationAppearance")
+            end)
+            UpdateParameters(50, entity, true, false)
+        end
+    end)
 end)
 
 
@@ -178,12 +209,25 @@ Ext.Osiris.RegisterListener("ChangeAppearanceCompleted", 1, "after", function(ch
 end)
 
 
--- Ext.Osiris.RegisterListener("CharacterCreationStarted", 0, "after", function(character)
+Ext.RegisterNetListener('ApplyCCA', function (channel, payload, user)
+    local data = Ext.Json.Parse(payload)
+    applyCharacterCreationAppearance(data.charEntity, data.savedAppearance)
+end)
+
+Ext.Osiris.RegisterListener("CharacterCreationStarted", 0, "after", function()
+    DPrint('CharacterCreationStarted')
+end)
+
+Ext.Osiris.RegisterListener("CharacterCreationFinished", 0, "after", function()
+    DPrint('CharacterCreationFinished')
+end)
+
+
+-- Ext.Osiris.RegisterListener("CharacterCreationStarted", 1, "after", function(character)
 --     DPrint('CharacterCreationStarted')
 --     DPrint(character)
 -- end)
 
--- Ext.Osiris.RegisterListener("CharacterCreationFinished", 0, "after", function(character)
---     DPrint('CharacterCreationFinished')
---     DPrint(character)
--- end)
+
+
+

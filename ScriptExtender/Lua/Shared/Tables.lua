@@ -43,6 +43,14 @@ CCSkinUuids = {
     '94f8315c-452a-4310-a49c-e0767b03a552',
     'a91d04c8-0987-4318-bcf9-e33bf796793a'
 }
+
+CCdummies = {
+    "e2badbf0-159a-4ef5-9e73-7bbeb3d1015a", --S_GLO_CharacterCreationDummy_001
+    "aa772968-b5e0-4441-8d86-2d0506b4aab5", --S_GLO_CharacterCreationDummy_002
+    "81c48711-d7cc-4a3d-9e49-665eb915c15c", --S_GLO_CharacterCreationDummy_003
+    "6bff5419-5a9e-4839-acd4-cac4f6e41bd7", --S_GLO_CharacterCreationDummy_004
+}
+
 -- repeated_params = {
 --     Scalar = {
 --         IsTav = {"Body", "Genital", "Head"},
