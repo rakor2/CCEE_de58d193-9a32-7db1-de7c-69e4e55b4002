@@ -4,10 +4,24 @@
 --- @field Path any[]
 ObjectPath = ObjectPath or {}
 
+---Sloped. Sry, typing by {} is pain.
+function ObjectPath:ParsePath(path)
+    local keys = {}
+    for key in path:gmatch("[^%.%[%]]+") do
+        local n = tonumber(key)
+        if n then
+            table.insert(keys, n)
+        else
+            table.insert(keys, key)
+        end
+    end
+    return keys
+end
+
 ---@return ObjectPath
 function ObjectPath:New(root, path)
     local pathClone = {}
-    for _,key in ipairs(path or {}) do
+    for _,key in ipairs(self:ParsePath(path) or {}) do
         table.insert(pathClone, key)
     end
 
