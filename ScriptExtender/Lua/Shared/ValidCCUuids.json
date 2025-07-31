@@ -1,0 +1,86 @@
+{
+    "Elements" :
+    [
+            {
+                    "Color" : "f148e5ed-7b11-4226-bd7f-ec28b4e25cdc",
+                    "ColorIntensity" : 0.18589571118354797,
+                    "GlossyTint" : 1.0,
+                    "Material" : "00894ccc-31ee-4527-94d5-a408cccb3583",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "f1f685c0-776a-46a5-9f2b-41037f1ed04c",
+                    "ColorIntensity" : 0.67306607961654663,
+                    "GlossyTint" : 0.0,
+                    "Material" : "805e1307-0eec-4cd2-a010-9477e9b802fa",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "00000000-0000-0000-0000-000000000000",
+                    "ColorIntensity" : 1.0,
+                    "GlossyTint" : 1.0,
+                    "Material" : "f03b33ae-5d47-4cb5-80bc-ea06a3c55c96",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "de0d5d04-a223-4024-8f2a-6ccec36af62e",
+                    "ColorIntensity" : 0.0,
+                    "GlossyTint" : 1.0,
+                    "Material" : "dbf4ab14-44c2-4ef9-b8be-35d1dfdd1c0f",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "9b6db99a-29ff-42e1-aa47-252b87297be8",
+                    "ColorIntensity" : 0.30443108081817627,
+                    "GlossyTint" : 1.0,
+                    "Material" : "32f58f2c-525d-4b09-86ba-0c6cb0baca28",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "00000000-0000-0000-0000-000000000000",
+                    "ColorIntensity" : 1.0,
+                    "GlossyTint" : 1.0,
+                    "Material" : "5c6acf4c-0438-48ab-9e04-4dee7e88f8f7",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "5f68c7b1-cc84-4f18-bb42-f403696af142",
+                    "ColorIntensity" : 0.90222460031509399,
+                    "GlossyTint" : 0.14584822952747345,
+                    "Material" : "3c642923-f0ec-4df2-a918-8ac63d7b8d26",
+                    "MetallicTint" : 1039541910
+            },
+            {
+                    "Color" : "1f547d79-8087-47eb-8de4-f6be863095bd",
+                    "ColorIntensity" : 0.0,
+                    "GlossyTint" : 1.0,
+                    "Material" : "23d0f6e2-8491-4e3d-bfd5-73b8e671f80c",
+                    "MetallicTint" : 0
+            },
+            {
+                    "Color" : "4681eb75-97e7-42c9-a681-0a325e9a362a",
+                    "ColorIntensity" : 0.0,
+                    "GlossyTint" : 1.0,
+                    "Material" : "292b191c-7dc3-4bc6-8e92-5b01ff5cf6b3",
+                    "MetallicTint" : 0
+            }
+    ],
+    "EyeColor" : "af03ef73-41f5-4b9a-b440-85b576806084",
+    "HairColor" : "edbb0710-7162-487b-9553-062bece30c1f",
+    "Icon" : "RIFF\u0423",
+    "SecondEyeColor" : "af03ef73-41f5-4b9a-b440-85b576806084",
+    "SkinColor" : "bc372dfb-3a0a-4fc4-a23d-068a12699d78",
+    "Visuals" :
+    [
+            "eba9ee6f-87db-432e-8331-0d77c708e37c",
+            "fb49614f-f223-4ee3-9147-cad22dca2410",
+            "421e9b46-07c4-4b1e-a420-046e0630b693",
+            "8243c321-1869-40be-a166-d80f7f9bfa13",
+            "81a5bfe8-b4fe-6d3a-c13d-32c6da819d88",
+            "f20bd82f-e7b8-4651-a9a9-528f26fe561a",
+            "b203a4af-ce60-464b-aacf-a0debb6d4142",
+            "070eebef-2a89-4628-a703-212795db24ae",
+            "22556f62-66d2-4789-921c-4e62164be8fe",
+            "b2fcf55a-4d4f-4fc1-8f93-39dd92da8dbd"
+    ]
+}

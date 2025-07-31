@@ -13,7 +13,7 @@ local OPENQUESTIONMARK = true
 function UI:Init()
     Window:CCEEMCM()
     Window:CCEEWindow()
-    GetAllParameterNames(_C())
+    getAllParameterNames(_C())
     Skin:Color()
     Head:Face()
     Head:Head()
@@ -115,7 +115,7 @@ function Window:CCEEWindow()
 
     local STOPPPPP = p:AddButton('Idle')
     STOPPPPP.OnClick = function()
-        Ext.Net.PostMessageToServer('stop', '')
+        Ext.Net.PostMessageToServer('CCEE_Stop', '')
     end
 
 
@@ -128,7 +128,7 @@ function Window:CCEEWindow()
     local updateParamTable = p:AddButton('Update params')
     updateParamTable.SameLine = true
     updateParamTable.OnClick = function ()
-        GetAllParameterNames(_C())
+        getAllParameterNames(_C())
     end
 
 

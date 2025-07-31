@@ -15,8 +15,8 @@ TICKS_BEFORE_LOADING = 0
 TICKS_BEFORE_APPLYING = 2
 
 Parameters = Parameters or {}
-lastParameters = lastParameters or {}
-matParameters = matParameters or {}
+LastParameters = LastParameters or {}
+MatParameters = MatParameters or {}
 currentParameters = currentParameters or {}
 
 
@@ -158,7 +158,7 @@ end
 
 ---Gets all available meterial parameters for the entity
 ---@param entity EntityHandle
-function GetAllParameterNames(entity)
+function getAllParameterNames(entity)
     Parameters = {}
     local entity = entity or _C()
     for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair', 'DragonbornChin','DragonbornJaw','DragonbornTop', 'Piercing'}) do
@@ -295,7 +295,7 @@ end
 ---@param charUuid uuid
 ---@return EntityHandle
 function MatchCharacterAndPMDummy(charUuid)
-    local dummies = GetPMDummies()
+    local dummies = getPMDummies()
     local originEnt = Ext.Entity.Get(charUuid)
     for i = 1, #dummies do
         if originEnt.Transform.Transform.Translate[1] == dummies[i].Transform.Transform.Translate[1]
@@ -310,7 +310,7 @@ end
 
 
 ---Gets all PM dummies for currrent scene
-function GetPMDummies()
+function getPMDummies()
     local dummies = {}
     local visual = Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
     for i = 1, #visual do
@@ -363,9 +363,9 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
     -- DPrint(entity)
     if entity and entity.Uuid then
         local entityUuid = entity.Uuid.EntityUuid
-        lastParameters[entityUuid] = lastParameters[entityUuid] or {}
-        lastParameters[entityUuid][attachment] = lastParameters[entityUuid][attachment] or {}
-        lastParameters[entityUuid][attachment][parameterType] = lastParameters[entityUuid][attachment][parameterType] or {}
+        LastParameters[entityUuid] = LastParameters[entityUuid] or {}
+        LastParameters[entityUuid][attachment] = LastParameters[entityUuid][attachment] or {}
+        LastParameters[entityUuid][attachment][parameterType] = LastParameters[entityUuid][attachment][parameterType] or {}
         local visualsTable = FindAttachment(entity, attachment)
         if visualsTable then
             if type(visualsTable) ~= "table" then
@@ -384,7 +384,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                 if am.Material.Parameters.ScalarParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
                                         if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment][parameterType][parameterName] = value
+                                            LastParameters[entityUuid][attachment][parameterType][parameterName] = value
                                             parameterFound = true
                                             break
                                         end
@@ -394,7 +394,7 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                 if am.Material.Parameters.Vector3Parameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
                                         if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment][parameterType][parameterName] = value
+                                            LastParameters[entityUuid][attachment][parameterType][parameterName] = value
                                             parameterFound = true
                                             break
                                         end
@@ -404,10 +404,10 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = {[parameterName] = value}
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_1Parameters"] = {[parameterName] = value}
+                                            LastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
                                             parameterFound = true
                                             break
                                         end
@@ -417,10 +417,10 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = {[parameterName] = value}
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_2Parameters"] = {[parameterName] = value}
+                                            LastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
                                             parameterFound = true
                                             break
                                         end
@@ -430,10 +430,10 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = {[parameterName] = value}
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_3Parameters"] = {[parameterName] = value}
+                                            LastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
                                             parameterFound = true
                                             break
                                         end
@@ -443,10 +443,10 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
                                 if am.Material.Parameters.VectorParameters then
                                     for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
                                         if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = {[parameterName] = value}
+                                            LastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
+                                            LastParameters[entityUuid][attachment]["Vector_4Parameters"] = {[parameterName] = value}
                                             parameterFound = true
                                             break
                                         end
@@ -459,8 +459,8 @@ function SaveLastChanges(entity, attachment, parameterName, parameterType, value
             end
         end
     end
-    Ext.Net.PostMessageToServer('SendModVars', Ext.Json.Stringify(lastParameters))
-    -- DDump(lastParameters)
+    Ext.Net.PostMessageToServer('SendModVars', Ext.Json.Stringify(LastParameters))
+    -- DDump(LastParameters)
 end
 
 
@@ -646,12 +646,12 @@ end
 function SaveParameters2(entity, parameterName, parameterType, value, materialPreset)
     local materialGuid = materialPreset.Guid
     local entityUuid = entity.Uuid.EntityUuid
-    matParameters[entityUuid] = matParameters[entityUuid] or {}
-    matParameters[entityUuid][materialGuid] = matParameters[entityUuid][materialGuid] or {}
-    matParameters[entityUuid][materialGuid][parameterType] = matParameters[entityUuid][materialGuid][parameterType] or {}
-    matParameters[entityUuid][materialGuid][parameterType][parameterName] = matParameters[entityUuid][materialGuid][parameterType][parameterName] or {}
-    matParameters[entityUuid][materialGuid][parameterType][parameterName] = value
-    Ext.Net.PostMessageToServer('SendMatVars', Ext.Json.Stringify(matParameters))
+    MatParameters[entityUuid] = MatParameters[entityUuid] or {}
+    MatParameters[entityUuid][materialGuid] = MatParameters[entityUuid][materialGuid] or {}
+    MatParameters[entityUuid][materialGuid][parameterType] = MatParameters[entityUuid][materialGuid][parameterType] or {}
+    MatParameters[entityUuid][materialGuid][parameterType][parameterName] = MatParameters[entityUuid][materialGuid][parameterType][parameterName] or {}
+    MatParameters[entityUuid][materialGuid][parameterType][parameterName] = value
+    Ext.Net.PostMessageToServer('SendMatVars', Ext.Json.Stringify(MatParameters))
 end
 
 
@@ -669,12 +669,12 @@ end
 
 Ext.RegisterNetListener('LoadMatVars', function (channel, payload, user)
     GLOBALdata = Ext.Json.Parse(payload)
-    if GLOBALdata.matParameters['MatData'] then
-        matParameters = GLOBALdata.matParameters['MatData']
+    if GLOBALdata.MatParameters['MatData'] then
+        MatParameters = GLOBALdata.MatParameters['MatData']
         if GLOBALdata.single == true then
             local entity = Ext.Entity.Get(GLOBALdata.entityUuid)
             local uuid = entity.Uuid.EntityUuid
-            for materialUuids, parameterTypes in pairs(matParameters[uuid]) do
+            for materialUuids, parameterTypes in pairs(MatParameters[uuid]) do
                 for parameterType, parameterNames in pairs(parameterTypes) do
                     for parameterName, value in pairs(parameterNames) do
                         Helpers.Timer:OnTicks(4, function ()
@@ -685,9 +685,9 @@ Ext.RegisterNetListener('LoadMatVars', function (channel, payload, user)
                 end
             end
         else    
-            for uuid, _ in pairs(matParameters) do
+            for uuid, _ in pairs(MatParameters) do
                 local entity = Ext.Entity.Get(uuid)
-                for materialUuids, parameterTypes in pairs(matParameters[uuid]) do
+                for materialUuids, parameterTypes in pairs(MatParameters[uuid]) do
                     for parameterType, parameterNames in pairs(parameterTypes) do
                         for parameterName, value in pairs(parameterNames) do
                             Helpers.Timer:OnTicks(4, function ()
@@ -708,8 +708,8 @@ end)
 
 ---Appplies the things to the PM dummies
 function ApplyParametersToPMDummies()
-    GetPMDummies()
-    for uuid, attachments in pairs(lastParameters) do
+    getPMDummies()
+    for uuid, attachments in pairs(LastParameters) do
         local entity = MatchCharacterAndPMDummy(uuid)
         for attachment, parameterTypes in pairs(attachments) do
             for parameterType, parameterNames in pairs(parameterTypes) do
@@ -725,7 +725,7 @@ end
 function ApplyParametersToDollsTest(entity, uuid)
     DPrint('ApplyParametersToDollsTest')
     -- DPrint('ApplyParametersToDolls')
-    local attachments = lastParameters[uuid]
+    local attachments = LastParameters[uuid]
         -- DPrint(Helpers.Format.GetEntityName(entity))
     if attachments then 
         for attachment, parameterTypes in pairs(attachments) do
@@ -744,7 +744,7 @@ function ApplyParametersToCCDummy(entity)
     for _,dummy in pairs(CCdumies) do
         if entity.DisplayName.Name:Get() == dummy.CCChangeAppearanceDefinition.Appearance.Name then
             entityDummy = dummy.ClientCCDummyDefinition.Dummy
-            for _, attachments in pairs(lastParameters) do
+            for _, attachments in pairs(LastParameters) do
                 for attachment, parameterTypes in pairs(attachments) do
                     for parameterType, parameterNames in pairs(parameterTypes) do
                         for parameterName, value in pairs(parameterNames) do
@@ -764,7 +764,7 @@ end
 ---Appplies the things to the paperdolls
 -- function ApplyParametersToDolls()
 --     DPrint('ApplyParametersToDolls')
---     for uuid, attachments in pairs(lastParameters) do
+--     for uuid, attachments in pairs(LastParameters) do
 --         -- DPrint(uuid)
 --         -- DDump(attachments)
 --         local owner = Ext.Entity.Get(uuid)
@@ -785,10 +785,10 @@ end
 ---Main thingy
 Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
     DPrint('LoadModVars')
-    GetAllParameterNames(_C())
+    getAllParameterNames(_C())
     local data = Ext.Json.Parse(payload)
-    lastParametersMV = data.lastParameters
-    lastParameters = data.lastParameters
+    lastParametersMV = data.LastParameters
+    LastParameters = data.LastParameters
     local TICKS_TO_WAIT = data.TICKS_TO_WAIT
     DPrint('Waiting ' ..  TICKS_TO_WAIT .. ' ticks before applying parameters')
     local ticksPassedBar = 0
@@ -863,7 +863,7 @@ function TempThingy()
     timer = Ext.Timer.WaitFor(500, function()
         -- Ext.Net.PostMessageToServer('UpdateParameters', '')
         Ext.Net.PostMessageToServer('UpdateParameters2', '')
-        GetAllParameterNames(_C())
+        getAllParameterNames(_C())
         -- PMKeybind()
         timer = nil
     end)
@@ -928,12 +928,12 @@ function SavePreset(fileName)
     local uuid = _C().Uuid.EntityUuid
     local cca = getCharacterCreationAppearance(_C())
     local rippedMatParameters = {}
-    for _,v in pairs(matParameters[uuid]) do
+    for _,v in pairs(MatParameters[uuid]) do
         rippedMatParameters = v
     end
     local dataSave = {
         {SkinMaterialParams = {rippedMatParameters or {}}},
-        {CCEEParams = {lastParameters[uuid] or {}}},
+        {CCEEParams = {LastParameters[uuid] or {}}},
         {DefaultCC = cca}
     }
     Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
@@ -972,8 +972,8 @@ function RealodPreset()
     local cca = getCharacterCreationAppearance(_C())
     Helpers.Timer:OnTicks(5, function ()
         local dataLoad = {
-            {SkinMaterialParams = {matParameters[uuid][Ext.StaticData.Get(SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID] or {}}},
-            {CCEEParams = {lastParameters[uuid] or {}}},
+            {SkinMaterialParams = {MatParameters[uuid][Ext.StaticData.Get(SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID] or {}}},
+            {CCEEParams = {LastParameters[uuid] or {}}},
             {DefaultCC = cca},
         }
         local data = {
