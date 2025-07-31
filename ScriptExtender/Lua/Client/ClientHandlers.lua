@@ -78,6 +78,50 @@ end
 MoneyCounter()
 
 
+---Checks if character is in the mirror (for some reason the osi listeners doesn't return characters) and also does some bs
+---@param entity EntityHandle
+---@return EntityHandle #If user in the mirror returns dummy entity, if not - _C()
+function CzechCCState(entity)
+    DPrint('CzechCCState')
+    Helpers.Timer:OnTicks(20, function ()
+        if _C() and _C().CCState and _C().CCState.HasDummy == false then
+            CCState = false
+            Apply.entity = _C()
+            DPrint('HasDummy = ' .. tostring(CCState))
+            DPrint('Apply entity' .. ' - ' .. tostring(Apply.entity))
+            return _C()
+        else
+            local ccDummies = Ext.Entity.GetAllEntitiesWithComponent('CCChangeAppearanceDefinition')
+            for _, dummy in pairs(ccDummies) do
+                local entity = _C()
+                if dummy.CCChangeAppearanceDefinition.Appearance.Name == entity.DisplayName.Name:Get() then
+                    ApplyParametersToCCDummy(entity)
+                    Globals.dummyVisuals = dummy.ClientCCDummyDefinition
+                    Globals.dummyEntity = dummy.ClientCCDummyDefinition.Dummy
+                    CCState = true
+                    Apply.entity = Globals.dummyEntity
+                    --Invalid UUID non-clickable Confirm workaround
+                    --It's just sets valid default UUIDs to CC dummy
+                    --Don't know if the indecies? indexes? are static
+                    local Visual = dummy.ClientCCChangeAppearanceDefinition.Definition.Visual
+                    Visual.HairColor = 'edbb0710-7162-487b-9553-062bece30c1f'
+                    Visual.Elements[1].Material = '00894ccc-31ee-4527-94d5-a408cccb3583' --Face Tattoo
+                    Visual.Elements[2].Material = '503bb196-fee7-4e1b-8a58-c09f48bdc9d1' --MakeUp 
+                    Visual.Elements[3].Material = 'f03b33ae-5d47-4cb5-80bc-ea06a3c55c96' --Scales
+                    Visual.Elements[4].Material = 'dbf4ab14-44c2-4ef9-b8be-35d1dfdd1c0f' --Graying 
+                    Visual.Elements[5].Material = '32f58f2c-525d-4b09-86ba-0c6cb0baca28' --Highlights
+                    Visual.Elements[6].Material = '5c6acf4c-0438-48ab-9e04-4dee7e88f8f7' --Scar
+                    DPrint('HasDummy = ' .. tostring(CCState))
+                    DPrint('Apply entity' .. ' - ' .. tostring(Apply.entity))
+                    return Globals.dummyEntity
+                end
+            end
+        end
+    end)
+end
+
+
+
 ---temp abomination (temp?)
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment
