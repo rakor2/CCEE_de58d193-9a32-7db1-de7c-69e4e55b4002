@@ -1,3 +1,4 @@
+Globals = Globals or {}
 
 CCSkinUuids = {
     'bc372dfb-3a0a-4fc4-a23d-068a12699d78',
@@ -42,6 +43,58 @@ CCSkinUuids = {
     'b5c0a60f-59ca-4640-b06b-538d48f12a4f',
     '94f8315c-452a-4310-a49c-e0767b03a552',
     'a91d04c8-0987-4318-bcf9-e33bf796793a'
+}
+
+CCHairUuids = {
+    '6bfe8eb0-6c80-4edd-9ff4-0ff8f70f1ec1',
+    '5b671c83-4ae4-4aed-874b-1977d353bdd1',
+    'c6b09316-5ccb-4185-918d-d8e42cf95b4e',
+    '637a1f7b-b7a3-4e3d-9195-8668a247beff',
+    'f14efec5-31a8-4198-9189-a385fa1d0199',
+    '0a256177-e68b-40a3-a314-6edb81577125',
+    '5c1a35cb-8f35-41de-b86b-e0c666c85145',
+    'd27955c3-37f7-4ac5-8776-542d8487ad1d',
+    'c1545db0-4d1f-41ce-a8d3-9fd5ab9691ff',
+    'f89219bc-b72d-4a62-a9e8-fb35706b147b',
+    '0c9855a6-0763-40d6-93ee-64575f306859',
+    '2b02ac7c-70d3-410f-a2a2-8db4b50b4af4',
+    '9983c457-a125-4811-92bc-b971f6d47fc3',
+    '7d1cb152-aa14-4bc5-8cbf-a9a88c3cdb55',
+    'c5812f86-b035-4e8a-a632-2ec06f75aa54',
+    '38f7706a-83cc-4083-b1ee-98ef1829b4aa',
+    'f325d1aa-cc36-470d-88ed-b11334598543',
+    '5a5eb3a5-3ee2-4da3-a5fe-d394210d20ec',
+    '7d1cd855-e014-4922-a769-920f8f220260',
+    'd6649330-3e86-4d98-b5c2-8a429a2a9907',
+    'cec8d078-3dbb-4b62-97d7-c736ffd4f3fc',
+    '366cf93b-d45a-470e-907c-08e95833a11c',
+    '59007893-169b-4a9f-a62c-8c5452451481',
+    '9ab03813-24fd-4dc1-b5fb-711e740e026e',
+    'dc6fc2cc-a1b0-494a-bee0-ccf323b4b81d',
+    'f4c7e4a5-dd8f-4ce5-856c-98d283a79b7a',
+    '98e1c0ed-5b53-4cb2-8e3c-26874d04a515',
+    '9c838bbf-22b3-450f-8082-4ab75f1e86db',
+    '617efee4-369b-422f-bdfb-2a4ab7cebb5d',
+    'deeca240-fd09-45cc-b058-001fdf26ac69',
+    '8a0f75be-eb16-48a0-8fa1-5eceb625b4b7',
+    'd30bb24b-bf16-4907-aba1-36798284ea6a',
+    '80ffc3e6-2d0f-48c6-8a5b-a34dc6a076e1',
+    '3bbf74a3-95fb-4c89-b805-67f3c56b5665',
+    '82c28c5c-0503-4bf3-8247-ecb350810bb9',
+    '30dedf4c-0b52-446c-8910-9c3d8660ce50',
+    '3d09dc8c-5345-437b-bc60-265334c708c9',
+    '82da92a2-29a7-4bf4-abea-40dbee77bd51',
+    'c809f626-5d51-4252-a4d9-5efae3205b1e',
+    '49169963-65fd-4fdf-801d-349cfd25fb94'
+}
+
+
+CCTattooUuids = {
+    '7de88341-07bb-4852-8c06-27ffcfdba7ba',
+}
+
+CCMakeUpUuids = {
+    '42f533ab-52f1-2531-72e7-0c2bcff79eaf',
 }
 
 CCdummies = {

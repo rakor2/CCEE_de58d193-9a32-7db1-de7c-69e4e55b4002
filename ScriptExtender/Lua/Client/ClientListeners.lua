@@ -1,54 +1,61 @@
 ---@diagnostic disable: param-type-mismatch
 
 
-Ext.RegisterNetListener('UpdateParameters', function (channel, payload, user)
-    local lastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
-    Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(lastParameters))
-end)
-
-
 --LevelGameplayStarted
-Ext.RegisterNetListener('WhenLevelGameplayStarted', function (channel, payload, user)
+Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
+    Helpers.Timer:OnTicks(100, function ()
+        StartPMSub()
+    end)
+
+
+    Ext.Net.PostMessageToServer('CCEE_RequestMatVars', '')
     if _C() then
         CzechCCState()
-        GetAllParameterNames(_C())
+        getAllParameterNames(_C())
         Helpers.Timer:OnTicks(200, function ()
             DPrint('Elements:UpdateElements')
             Elements:UpdateElements(_C().Uuid.EntityUuid)
         end)
     end
+    ApplyParametersToTLPreview() --in cases like the transponder cutscenes, when cutscene starts right after gameplay started
+end)
+
+
+
+Ext.RegisterNetListener('CCEE_BroadcastMatVars', function (channel, payload, user)
+    Globals.MatVars = Ext.Json.Parse(payload).MatVars
+end)
+
+
+-- Ext.RegisterNetListener('CCEE_UpdateParameters_OnlyVis', function (channel, payload, user)
+--     DPrint('1')
+--     local LastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
+--     Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(LastParameters))
+-- end)
+
+
+Ext.RegisterNetListener('CCEE_MT', function (channel, payload, user)
+    -- local data = Ext.Json.Parse(payload)
+    -- UsedSkinUUID = data.UsedSkinUUID
+    -- SkinMap = data.SkinMap
+    -- MatData = data.MatData
+    LoadMatVars()
 end)
 
 
 
 
 --TLPreviewDummy
-Ext.RegisterNetListener('LoadDollParameters',function (channel, payload, user)
+Ext.RegisterNetListener('CCEE_LoadDollParameters',function (channel, payload, user)
     -- Helpers.Timer:OnTicks(1, function ()
     --     ApplyParametersToDolls()
     -- end)
-    local entity = Ext.Entity.GetAllEntitiesWithComponent("TLPreviewDummy")
-    for q = 1, #entity do
-        local dummy = entity[q].TLPreviewDummy
-        if dummy ~= nil and entity[q].ClientTimelineActorControl ~= nil then
-            local actorLink = entity[q].ClientTimelineActorControl.field_0
-            local owner
-            for i, v in pairs(Ext.Entity.GetAllEntitiesWithComponent("Origin")) do
-                if v.TimelineActorData ~= nil and v.TimelineActorData.field_0 == actorLink then
-                    owner = v
-                    DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
-                    Helpers.Timer:OnTicks(2, function ()
-                        ApplyParametersToDollsTest(entity[q], owner.Uuid.EntityUuid)
-                    end)
-                end
-            end
-        end
-    end
+    ApplyParametersToTLPreview()
 end)
 
 
 --Preset reload on mirror exit
-Ext.RegisterNetListener('CAC', function (channel, payload, user)
+Ext.RegisterNetListener('CCEE_CAC', function (channel, payload, user)
     RealodPreset()
 end)
 
@@ -67,7 +74,7 @@ end)
 
 --Paperdoll --make a check for transparent attack doll
 Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component)
-    -- DPrint('ClientPaperdoll|OnCreate')
+    DPrint('ClientPaperdoll|OnCreate')
     Helpers.Timer:OnTicks(5, function ()
         local owner = Paperdoll.GetDollOwner(entity)
         if owner then
@@ -77,30 +84,48 @@ Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component
     end)
 end)
 
---PM dummies
+--Probably just sub to noesis
 Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, component)
-    Helpers.Timer:OnTicks(40, function ()
-        if entity:GetAllComponentNames(false)[2] == 'ecl::dummy::AnimationStateComponent' then
-            DPrint('CEV|PM dummies')
-            ApplyParametersToPMDummies()
+    Helpers.Timer:OnTicks(10, function ()
+    if _C().CCState and _C().CCState.HasDummy == true then
+            DPrint('CEV|CC dummies')
+            ApplyParametersToCCDummy(entity)
+            table.insert(Globals.CC_Entities, entity)
         end
     end)
+    --#region
+    -- Helpers.Timer:OnTicks(40, function ()
+    --     if entity:GetAllComponentNames(false)[2] == 'ecl::dummy::AnimationStateComponent' then
+    --         DPrint('CEV|PM dummies')
+    --         ApplyParametersToPMDummies()
+    --     end
+    -- end)
+    --#endregion
 end)
 
+--Ext.UI.GetRoot():Child(1):Child(1):Child(24):Child(1).StartCharacterCreation
 
 
-Ext.Entity.OnChange("ItemDye", function(entity)
+
+
+
+Ext.Entity.OnChange('ItemDye', function(entity) --EasyDie
     TempThingy()
+    --DyeUpdates = Ext.System.ClientEquipmentVisuals.DyeUpdates
 end)
 
+Ext.Entity.OnChange('CCState', function (entityCC)
+    CzechCCState(entityCC)
+end)
 
 
 Ext.Events.ResetCompleted:Subscribe(function()
-    TempThingy()
-    CCEE_MT()
     CzechCCState()
+    LoadMatVars()
+    StartPMSub()
     Elements:UpdateElements(_C().Uuid.EntityUuid)
 end)
+
 
 --Systems
 
@@ -128,41 +153,61 @@ end)
 
 -- end)
 
--- Maybe this instead of ArmorState, Equiped, Uneqipped, but it doesn't show which entity requested 
--- Ext.Entity.OnSystemUpdate("ClientEquipmentVisuals", function()
+-- Maybe this instead of ArmorState, Equiped, Uneqipped
+Ext.Entity.OnSystemUpdate("ClientEquipmentVisuals", function()
+    local UnloadRequests = Ext.System.ClientEquipmentVisuals.UnloadRequests
+    for k,v in pairs(UnloadRequests) do
+        -- DPrint('CEV | UnloadRequests')
+        -- DDump(k)
+        -- DDump(v)
+        -- Utils:AntiSpam(500, function ()
+        --     Ext.Net.PostMessageToServer('UpdateParameters', '')
+        -- end)
+    end
+end)
 
---     local visuals = Ext.System.ClientEquipmentVisuals.UnloadRequests
---     for k, vis in pairs(visuals) do
---         DDump(vis)
---     end
+---Fires on CC finish I think
+Ext.Entity.OnSystemUpdate("ClientVisual", function()
+    local ReloadVisuals = Ext.System.ClientVisual.ReloadVisuals
+    for k,v in pairs(ReloadVisuals) do
+        -- DPrint('Sys ClientVisual | ReloadVisuals')
+        -- DDump(k)
+        -- DDump(v)
+    end
+end)
 
--- end)
 
 
+Ext.Entity.OnSystemUpdate("ClientCharacterManager", function()
+    local ReloadVisuals = Ext.System.ClientCharacterManager.ReloadVisuals
+    for k,v in pairs(ReloadVisuals) do
+        -- DPrint('Sys ClientCharacterManager | ReloadVisuals')
+        -- DDump(k)
+        -- DDump(v)
+    end
+end)
+
+
+Ext.Entity.OnSystemUpdate("ClientVisualsVisibilityState", function()
+    local UnloadVisuals = Ext.System.ClientVisualsVisibilityState.UnloadVisuals
+    for k,v in pairs(UnloadVisuals) do
+    end
+end)
 
 --bruh
--- Ext.Entity.OnChange("Unsheath", function(entity)
---     if ClientControl == true then --bruh x2
---         return
---     end
---     -- DPrint(entity.DisplayName.Name:Get())
---     -- DPrint('Unsheath all')
---     local origins = Ext.Entity.GetAllEntitiesWithComponent('Origin')
-
---     for bruh = 1, #origins do
---         if entity == origins[bruh] then
-
---             -- DPrint(entity.DisplayName.Name:Get())
---             -- DPrint('Unsheath')
-
---             --tbd: AT LEAST only skin color resets, so I just need to update only it 
---             Helpers.Timer:OnTicks(30, function () --giga bruh
---                 Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
---             end)
-
---             Helpers.Timer:OnTicks(84, function () --giga bruh x2
---                 Ext.Net.PostMessageToServer('UpdateParametersSingle', entity.Uuid.EntityUuid)
---             end)
---         end
---     end
--- end)
+Ext.Entity.OnChange("Unsheath", function(entity)
+    if ClientControl == true then --bruh x2
+        return
+    end
+    local origins = Ext.Entity.GetAllEntitiesWithComponent('Origin')
+    for bruh = 1, #origins do
+        if entity == origins[bruh] then
+            Helpers.Timer:OnTicks(30, function () --giga bruh
+                Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
+            end)
+            -- Helpers.Timer:OnTicks(84, function () --giga bruh x2
+            --     Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
+            -- end)
+        end
+    end
+end)

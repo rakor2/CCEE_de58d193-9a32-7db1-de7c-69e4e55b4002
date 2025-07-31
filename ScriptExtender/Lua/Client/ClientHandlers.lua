@@ -1,26 +1,81 @@
 
+--[[
+PARAMETERS IN SKIN MATERIAL PRESET:
+HemoglobinColor
+HemoglobinAmount
+MelaninColor
+MelaninAmount
+MelaninDarkThreshold
+MelaninDarkMultiplier
+MelaninRemovalAmount
+VeinColor
+VeinAmount
+YellowingColor
+YellowingAmount
+BodyTattooIndex
+BodyTattooIntensity
+BodyTattooColor
+BodyTattooColorG
+BodyTattooColorB
+TattooIndex
+TattooColor
+TattooColorG
+TattooColorB
+TattooIntensity
+MakeUpIndex
+MakeupIntensity
+MakeupColor
+MakeupRoughness
+LipsMakeupIntensity
+Lips_Makeup_Color
+LipsMakeupRoughness
+CustomIndex
+CustomIntensity
+CustomColor
+Body_Hair_Color
+TattooCurvatureInfluence
+Hair_Color
+Hair_Scalp_Color
+Scalp_HueShiftColorWeight
+Hair_Color
+Beard_Scalp_Color
+Beard_Color
+Body_Hair_Color
+Eyelashes_Color
+Eyebrow_Color
+]]
+
+
 CCEE = {}
 UI = {}
 Window = {}
 Tests = {}
 Elements = {}
 
-MatData = MatData or {}
-UsedSkinUUID = UsedSkinUUID or {}
-SkinMap = SkinMap or {}
+
+
+Parameters = Parameters or {}
+
+Globals.AllParameters = {}
+Globals.AllParameters.LastParameters = {}
+Globals.AllParameters.MatParameters = {}
+
+Globals.MatVars = {}
+Globals.MatVars.MatData = {}
+Globals.MatVars.SkinMap = {}
+Globals.MatVars.HairMap = {}
+Globals.MatVars.UsedSkinUUID = {}
+Globals.MatVars.UsedHairUUID = {}
+
+Globals.CC_Entities = {}
 
 
 TICKS_BEFORE_GAPM = 0
 TICKS_BEFORE_LOADING = 0
 TICKS_BEFORE_APPLYING = 2
 
-Parameters = Parameters or {}
-lastParameters = lastParameters or {}
-matParameters = matParameters or {}
-currentParameters = currentParameters or {}
 
 
----No longer needed
 ---@param type integer # 1 - keyborad / 0 - controller
 ---@param bindingIndex integer
 ---@return string
@@ -124,28 +179,23 @@ end
 
 ---temp abomination (temp?)
 ---@param entity EntityHandle
----@param attachment VisualAttachment
----@return 
+---@param attachment VisualAttachment | string
+---@return Visual[]
 function FindAttachment(entity, attachment)
-    -- Ext.IO.SaveFile("Visuals_test.json", Ext.DumpExport(entity.Visual))
-    if entity and entity.Visual.Visual then
+    if entity and entity.Visual and entity.Visual.Visual then
         -- Helpers.Timer:OnTicks(50, function ()
             -- DPrint(attachment)
             for i = 1, #entity.Visual.Visual.Attachments do
                 if attachment == 'Tail' then
                     if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then
-                        local visuals = entity.Visual.Visual.Attachments[i].Visual
-                        -- DPrint('--------------------------------')
-                        -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot)
-                        return visuals
+                        local taleVisuals = entity.Visual.Visual.Attachments[i].Visual
+                        return taleVisuals
                     end
                 elseif attachment == 'Head' then
                     if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) or
                     entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find(attachment:lower()) then
-                        local visuals = entity.Visual.Visual.Attachments[i].Visual
-                        -- DPrint('--------------------------------')
-                        -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
-                        return visuals
+                        local headVisuals = entity.Visual.Visual.Attachments[i].Visual
+                        return headVisuals
                     end
                 elseif attachment == 'Piercing' then
                     local piercingVisuals = {}
@@ -158,16 +208,14 @@ function FindAttachment(entity, attachment)
                             end
                         end
                     end
-                --whoever uses custom body as attachment gotta [REDACTED]. Hooooooooooly Im so mad
                 elseif attachment == 'NakedBody' then
-                    local foundVisuals = {}
+                    local bodyVisuals = {}
                     for i = 1, #entity.Visual.Visual.Attachments do
                         if entity.Visual.Visual.Attachments[i].Visual.VisualResource then 
                         for _, objects in pairs(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Objects) do
                             if objects.ObjectID:lower():find('body') then
-                                -- DDump(objects.ObjectID)
                                 local visuals = entity.Visual.Visual.Attachments[i].Visual
-                                table.insert(foundVisuals, visuals)
+                                table.insert(bodyVisuals, visuals)
                             end 
                         end
                     end
@@ -176,37 +224,43 @@ function FindAttachment(entity, attachment)
                         if entity.Visual.Visual.Attachments[i].Visual.VisualResource then
                             if entity.Visual.Visual.Attachments[i].Visual.VisualResource.Template:lower():find('body') then
                                 local visuals = entity.Visual.Visual.Attachments[i].Visual
-                                -- DDump(visuals.VisualResource.Template)
-                                -- DDump(customBody)
-                                table.insert(foundVisuals, visuals)
-                            -- elseif entity.Visual.Visual.Attachments[i].Visual.ObjectDescs[1].Renderable.ActiveMaterial.MaterialName == '80567441-dafe-b6c6-4873-aa67bff518bc' then  --default
-                            --     local visuals = entity.Visual.Visual.Attachments[i].Visual
-                            --     table.insert(foundVisuals, visuals)
+                                table.insert(bodyVisuals, visuals)
                             end
                         end
                     end
-                    return foundVisuals
+                    return bodyVisuals
+                elseif attachment == 'Hair' then
+                    local hairVisuals = {}
+                    for i = 1, #entity.Visual.Visual.Attachments do
+                        if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) then
+                            local visuals = entity.Visual.Visual.Attachments[i].Visual
+                            table.insert(hairVisuals, visuals)
+                        end
+                    end
+                    return hairVisuals
+                elseif  attachment == 'Wings' then
+                    if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then
+                        local wingsVisuals = entity.Visual.Visual.Attachments[i].Visual
+                        return wingsVisuals
+                    end
                 else
                     if entity.Visual.Visual.Attachments[i].Visual.VisualResource and entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot:lower():find(attachment:lower()) then
                         local visuals = entity.Visual.Visual.Attachments[i].Visual
-                        -- DPrint('--------------------------------')
-                        -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
                         return visuals
                     end
                 end
-                -- DPrint(entity.Visual.Visual.Attachments[i].Visual.VisualResource.Slot)
             end
         -- end)
     end
 end
 
----Gets all available meterial parameters for the entity
+---Gets entity's all available meterial parameters
 ---@param entity EntityHandle
-function GetAllParameterNames(entity)
+function getAllParameterNames(entity)
     Parameters = {}
     local entity = entity or _C()
-    for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Hair', 'DragonbornChin','DragonbornJaw','DragonbornTop', 'Piercing'}) do
-        for _, parameterType in ipairs({'ScalarParameters', 'Vector3Parameters', 'VectorParameters', 'Texture2DParameters'}) do
+    for _, attachment in ipairs({'Hair', 'Head', 'NakedBody', 'Private Parts', 'Tail', 'Horns', 'Piercing', 'Wings', 'DragonbornChin','DragonbornJaw','DragonbornTop'}) do
+        for _, parameterType in ipairs({'ScalarParameters', 'Vector3Parameters', 'VectorParameters'}) do
             local visualsTable = FindAttachment(entity, attachment)
             if visualsTable then
                 if type(visualsTable) ~= "table" then
@@ -273,9 +327,13 @@ function GetAllParameterNames(entity)
             end
         end
     end
-    -- DDump(Parameters)
+    return Parameters
 end
 
+
+
+
+--#region
 -- ---Gets all available meterial parameters for all origin characters
 -- ---Doesn't really work
 -- function GetAllCurrentParameters()
@@ -333,193 +391,221 @@ end
 --     end
 --     -- DDump(currentParameters['dd0251c9-c9a6-9549-4c5e-09f45f8b9fcf'])
 -- end
+--#endregion
 
----Matches character and its photo mode dummy
----Workaround until photo mode is mapped
----@param charUuid uuid
----@return EntityHandle
-function MatchCharacterAndPMDummy(charUuid)
-    local dummies = GetPMDummies()
-    local originEnt = Ext.Entity.Get(charUuid)
-    for i = 1, #dummies do
-        if originEnt.Transform.Transform.Translate[1] == dummies[i].Transform.Transform.Translate[1]
-            and originEnt.Transform.Transform.Translate[2] == dummies[i].Transform.Transform.Translate[2] 
-            and originEnt.Transform.Transform.Translate[3] == dummies[i].Transform.Transform.Translate[3] then
-            -- DPrint(originEnt)
-            -- DPrint(dummies[i])
-            return dummies[i]
-        end
-    end
-end
 
 
 ---Gets all PM dummies for currrent scene
-function GetPMDummies()
-    local dummies = {}
-    local visual = Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
+function getPMDummies()
+    local Dummies = {}
+    local visual = Ext.Entity.GetAllEntitiesWithComponent("Visual")  --Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
     for i = 1, #visual do
         if visual[i].Visual and visual[i].Visual.Visual
             and visual[i].Visual.Visual.VisualResource
             and visual[i].Visual.Visual.VisualResource.Template == "EMPTY_VISUAL_TEMPLATE"
             and visual[i]:GetAllComponentNames(false)[2] == "ecl::dummy::AnimationStateComponent"
         then
-            table.insert(dummies, visual[i])
-            -- for ent, _ in pairs(dummies) do
-            --     DPrint(Helpers.Format.GetEntityName(ent))
-            -- end
+            table.insert(Dummies, visual[i])
         end
     end
-    return dummies
+    return Dummies
+end
+
+---Matches character and its photo mode dummy
+---Workaround until photo mode is mapped
+---@param charUuid Uuid
+---@return EntityHandle
+function MatchCharacterAndPMDummy(charUuid)
+    local Dummies = getPMDummies()
+    local originEnt = Ext.Entity.Get(charUuid)
+    for i = 1, #Dummies do
+        if originEnt.Transform.Transform.Translate[1] == Dummies[i].Transform.Transform.Translate[1]
+            and originEnt.Transform.Transform.Translate[2] == Dummies[i].Transform.Transform.Translate[2] 
+            and originEnt.Transform.Transform.Translate[3] == Dummies[i].Transform.Transform.Translate[3] then
+            -- DPrint(originEnt)
+            return Dummies[i]
+        end
+    end
 end
 
 
+
+---@param parameterName MaterialParameterName
+---@param var ExtuiSliderScalar
+---@param type string|nil -- 'mp' = MaterialPreset, nil = HandleActiveMaterialParameters
+---@param attachments VisualAttachment
+function Apply:Scalar(entity, parameterName, var, type, attachments, presetType)
+    if type == 'mp' then
+        HandleMaterialPresetParameters(_C(), parameterName, 'ScalarParameters', var.Value[1], nil, presetType)
+        if presetType == 'CharacterCreationSkinColor' then  --temporary
+            for _, attachment in pairs({'Head', 'Hair', 'NakedBody', 'Private Parts', 'Tail'}) do --temporary
+                HandleActiveMaterialParameters(entity, attachment, parameterName, 'ScalarParameters', var.Value[1])
+            end
+        end
+    else
+        for _, attachment in pairs(attachments) do
+            HandleActiveMaterialParameters(entity, attachment, parameterName, 'ScalarParameters', var.Value[1])
+        end
+    end
+end
+
+
+---@param parameterName MaterialParameterName
+---@param var ExtuiColorEdit | ExtuiColorPicker
+---@param type string|nil -- 'mp' = MaterialPreset, nil = HandleActiveMaterialParameters
+---@param attachments VisualAttachment
+function Apply:Vector3(entity, parameterName, var, type, attachments, presetType)
+    if type == 'mp' then
+        HandleMaterialPresetParameters(_C(), parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]}, nil, presetType)
+        if presetType == 'CharacterCreationSkinColor' then --temporary
+            for _, attachment in pairs({'Head', 'Hair', 'NakedBody', 'Private Parts', 'Tail'}) do --temporary
+                HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+            end
+        end
+    else
+        for _, attachment in pairs(attachments) do
+            HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+        end
+    end
+end
+
+
+---@param parameterName MaterialParameterName
+---@param var ExtuiColorEdit
+---@param type number -- 1 = Vecror{Value[1], 0,0,0}, 2 = Vecror{0,Value[1],0,0}, 3 = Vecror{0,0,Value[1],0}
+---@param attachments VisualAttachment
+function Apply:Vector(entity, parameterName, var, type, attachments, presetType)
+    --#region
+    -- if type == 1 then
+    --     for _, attachment in pairs(attachments) do
+    --         HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector_1Parameters', var.Value[1])
+    --     end
+    -- elseif type == 2 then
+    --     for _, attachment in pairs(attachments) do
+    --         HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector_2Parameters', var.Value[1])
+    --     end
+    -- elseif type == 3 then
+    --     for _, attachment in pairs(attachments) do
+    --         HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector_3Parameters', var.Value[1])
+    --     end
+    -- end
+    --#endregion
+    if type == 'mp' then
+        HandleMaterialPresetParameters(_C(), parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]}, nil, presetType)
+        if presetType == 'CharacterCreationSkinColor' then --temporary
+            for _, attachment in pairs({'Head', 'Hair', 'NakedBody', 'Private Parts', 'Tail'}) do --temporary
+                HandleActiveMaterialParameters(entity, attachment, parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]})
+            end
+        end
+    else
+        for _, attachment in pairs(attachments) do
+            HandleActiveMaterialParameters(entity, attachment, parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]})
+        end
+    end
+end
+
+
+
+
+---@param entity EntityHandle
+---@return MaterialPreset
+local function getMaterialPreset(entity, presetType, uuid)
+    if presetType == 'CharacterCreationSkinColor' then
+        local uuid = AssignSkinToCharacter(entity) or uuid
+        local matPresetUuid = Ext.StaticData.Get(uuid, presetType).MaterialPresetUUID
+        local mt = Ext.Resource.Get(matPresetUuid,'MaterialPreset')  --'2cac4615-e3ac-8b17-906b-7fb8b2775981'
+        return mt
+    elseif presetType == 'CharacterCreationHairColor' then
+        local uuid = AssignHairToCharacter(entity) or uuid
+        local matPresetUuid = Ext.StaticData.Get(uuid, presetType).MaterialPresetUUID
+        local mt = Ext.Resource.Get(matPresetUuid,'MaterialPreset')
+        return mt
+    elseif presetType == 'CharacterCreationAppearanceMaterialTattoo' then
+        local uuid = AssignTattooToCharacter(entity) or uuid --'45e0c89f-6301-bf90-309c-365892670294'
+        local matPresetUuid = Ext.StaticData.Get(uuid, 'CharacterCreationAppearanceMaterial').MaterialPresetUUID
+        local mt = Ext.Resource.Get(matPresetUuid,'MaterialPreset')
+        return mt
+    end
+end
+
+
+
+
+function printAllElementNames(entity)
+    entity = entity or _C()
+    local Elements = entity.CharacterCreationAppearance.Elements
+    for i = 1, #Elements do
+        DPrint(' ' .. 'Name: ' .. Ext.StaticData.Get(entity.CharacterCreationAppearance.Elements[i].Material, 'CharacterCreationAppearanceMaterial').Name)
+    end
+end
 
 
 
 --messy mess, no judge ^_^
 
-function SaveAndApply(entity, attachment, parameterName, parameterType, value)
-    if CCState == true then
-        SaveLastChanges(_C(), attachment, parameterName, parameterType, value)
-        ApplyParameters(entity, attachment, parameterName, parameterType, value)
-    else
-        SaveLastChanges(entity, attachment, parameterName, parameterType, value)
-        ApplyParameters(entity, attachment, parameterName, parameterType, value)
-    end
-end
 
---tbd: unhardcode the table
----Appplies the things to the entity
 ---@param entity EntityHandle
----@param attachment VisualAttachment
----@param parameterType MyOwnParemeterTypes
+---@param parameterType ParemeterTypes
 ---@param parameterName MaterialParameterName
----@param value number | -- for parameterType:
+---@param value number
 --- - Scalar: number
 --- - Vector3: number{3}
---- - Vector_1..4: number{4} (bs)
-function SaveLastChanges(entity, attachment, parameterName, parameterType, value)
-    -- if INCC == false then
-    --     entity = _C()
-    -- else
-    --     entity = entity
-    -- end
-    -- DPrint(entity)
-    if entity and entity.Uuid then
-        local entityUuid = entity.Uuid.EntityUuid
-        lastParameters[entityUuid] = lastParameters[entityUuid] or {}
-        lastParameters[entityUuid][attachment] = lastParameters[entityUuid][attachment] or {}
-        lastParameters[entityUuid][attachment][parameterType] = lastParameters[entityUuid][attachment][parameterType] or {}
-        local visualsTable = FindAttachment(entity, attachment)
-        if visualsTable then
-            if type(visualsTable) ~= "table" then
-                visualsTable = {visualsTable}
-            end
-            local parameterFound = false
-            for _, visuals in pairs(visualsTable) do
-                if visuals and visuals.ObjectDescs and not parameterFound then
-                    for _, desc in pairs(visuals.ObjectDescs) do
-                        if parameterFound then break end
-                        
-                        local am = desc.Renderable.ActiveMaterial   
-                        local am1m = desc.Renderable.AppliedMaterials[1] and desc.Renderable.AppliedMaterials[1].Material
-                        if am ~= nil and am.Material ~= nil then
-                            if parameterType == 'ScalarParameters' then
-                                if am.Material.Parameters.ScalarParameters then
-                                    for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
-                                        if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment][parameterType][parameterName] = value
-                                            parameterFound = true
-                                            break
-                                        end
-                                    end
-                                end
-                            elseif parameterType == 'Vector3Parameters' then
-                                if am.Material.Parameters.Vector3Parameters then
-                                    for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
-                                        if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment][parameterType][parameterName] = value
-                                            parameterFound = true
-                                            break
-                                        end
-                                    end
-                                end
-                            elseif parameterType == 'Vector_1Parameters' then
-                                if am.Material.Parameters.VectorParameters then
-                                    for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                        if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = {[parameterName] = value}
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
-                                            parameterFound = true
-                                            break
-                                        end
-                                    end
-                                end
-                            elseif parameterType == 'Vector_2Parameters' then
-                                if am.Material.Parameters.VectorParameters then
-                                    for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                        if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = {[parameterName] = value}
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
-                                            parameterFound = true
-                                            break
-                                        end
-                                    end
-                                end
-                            elseif parameterType == 'Vector_3Parameters' then
-                                if am.Material.Parameters.VectorParameters then
-                                    for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                        if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = {[parameterName] = value}
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = nil
-                                            parameterFound = true
-                                            break
-                                        end
-                                    end
-                                end
-                            elseif parameterType == 'Vector_4Parameters' then
-                                if am.Material.Parameters.VectorParameters then
-                                    for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                        if scalarParam.ParameterName == parameterName then
-                                            lastParameters[entityUuid][attachment]["Vector_1Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_2Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_3Parameters"] = nil
-                                            lastParameters[entityUuid][attachment]["Vector_4Parameters"] = {[parameterName] = value}
-                                            parameterFound = true
-                                            break
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
+--- - Vector: number{4}
+---@param materialPreset ResourceMaterialPresetResource
+function SetMaterialPresetParameterValue(entity, parameterName, parameterType, value, materialPreset)
+    local entityUuid = entity.Uuid.EntityUuid
+    for _, parameter in pairs(materialPreset.Presets[parameterType]) do
+        if parameter.Parameter == parameterName then
+            parameter.Value = value
         end
     end
-    Ext.Net.PostMessageToServer('SendModVars', Ext.Json.Stringify(lastParameters))
-    -- DDump(lastParameters)
+    Ext.Net.PostMessageToServer('CCEE_Replicate', Ext.Json.Stringify(entityUuid))
 end
 
 
----Appplies the things to the entity
+function SaveMaterialPresetParameterChange(entity, parameterName, parameterType, value, materialPreset)
+    local materialGuid = materialPreset.Guid
+    local entityUuid = entity.Uuid.EntityUuid
+    local matParams = SLOP:tableCheck(Globals.AllParameters, 'MatParameters', entityUuid, materialGuid, parameterType)
+    --#region
+    -- Globals.AllParameters.MatParameters[entityUuid] = Globals.AllParameters.MatParameters[entityUuid] or {}
+    -- Globals.AllParameters.MatParameters[entityUuid][materialGuid] = Globals.AllParameters.MatParameters[entityUuid][materialGuid] or {}
+    -- Globals.AllParameters.MatParameters[entityUuid][materialGuid][parameterType] = Globals.AllParameters.MatParameters[entityUuid][materialGuid][parameterType] or {}
+    -- Globals.AllParameters.MatParameters[entityUuid][materialGuid][parameterType][parameterName] = Globals.AllParameters.MatParameters[entityUuid][materialGuid][parameterType][parameterName] or {}
+    -- Globals.AllParameters.MatParameters[entityUuid][materialGuid][parameterType][parameterName] = value
+    --#endregion
+    matParams[parameterName] = value
+    Ext.Net.PostMessageToServer('CCEE_SendMatVars', Ext.Json.Stringify(Globals.AllParameters.MatParameters))
+end
+
+
+function HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset, presetType)
+    --temporary
+    if parameterName:lower():find('tattoo') then
+        Ext.Net.PostMessageToServer('CCEE_SetTattooZero', _C().Uuid.EntityUuid)
+    elseif parameterName == 'Hair_Color' then
+        Ext.Net.PostMessageToServer('CCEE_SetHairZero', _C().Uuid.EntityUuid)
+    elseif parameterName:lower():find('make') then
+        Ext.Net.PostMessageToServer('CCEE_SetMakeUpZero', _C().Uuid.EntityUuid)
+    end
+    local materialPreset = getMaterialPreset(entity, presetType) or materialPreset
+    if materialPreset then 
+        SetMaterialPresetParameterValue(entity, parameterName, parameterType, value, materialPreset)
+        SaveMaterialPresetParameterChange(entity, parameterName, parameterType, value, materialPreset)
+    end
+end
+
+
+
+
 ---@param entity EntityHandle
----@param attachment VisualAttachment
----@param parameterType MyOwnParemeterTypes
+---@param parameterType ParemeterTypes
 ---@param parameterName MaterialParameterName
----@param value number | boolean -- for parameterType:
+---@param value number
 --- - Scalar: number
 --- - Vector3: number{3}
---- - Vector_1..4: number{4} (bs)
-function ApplyParameters(entity, attachment, parameterName, parameterType, value, materialPreset)
-    -- DPrint(entity)
-    local brute = true
+--- - Vector: number{4}
+function SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
     local visualsTable = FindAttachment(entity, attachment)
     if visualsTable then
         if type(visualsTable) ~= "table" then
@@ -527,11 +613,7 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
         end
         for _, visuals in pairs(visualsTable) do
             for descNumber, desc in pairs(visuals.ObjectDescs) do
-                -- DPrint(desc.LOD)
                 local am = desc.Renderable.ActiveMaterial
-                local am1 = desc.Renderable.AppliedMaterials[1]
-                local amp = desc.Renderable.ActiveMaterial.Material.Parent
-                local am1p = desc.Renderable.AppliedMaterials[1].Material.Parent
                 if am ~= nil and am.Material ~= nil then
                     if parameterType == 'ScalarParameters' then
                         if am.Material.Parameters.ScalarParameters then
@@ -543,51 +625,17 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
                         end
                     elseif parameterType == 'Vector3Parameters' then
                         if am.Material.Parameters.Vector3Parameters then
-                            for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
-                                if scalarParam.ParameterName == parameterName then
+                            for _, vec3Param in pairs(am.Material.Parameters.Vector3Parameters) do
+                                if vec3Param.ParameterName == parameterName then
                                     am:SetVector3(parameterName, {value[1], value[2], value[3]})
                                 end
                             end
                         end
-                    elseif parameterType == 'Vector_1Parameters' then
+                    elseif parameterType == 'VectorParameters' then
                         if am.Material.Parameters.VectorParameters then
-                            for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                if scalarParam.ParameterName == parameterName then
-                                    am:SetVector4(parameterName, {value, 0, 0, 0})
-                                end
-                            end
-                        end
-                    elseif parameterType == 'Vector_2Parameters' then
-                        if am.Material.Parameters.VectorParameters then
-                            for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                if scalarParam.ParameterName == parameterName then
-                                    am:SetVector4(parameterName, {0, value, 0, 0}) 
-                                end
-                            end
-                        end
-                    elseif parameterType == 'Vector_3Parameters' then
-                        if am.Material.Parameters.VectorParameters then
-                            for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                if scalarParam.ParameterName == parameterName then
-                                    am:SetVector4(parameterName, {0, 0, value, 0}) 
-                                end
-                            end
-                        end
-                    elseif parameterType == 'Vector_4Parameters' then
-                        if am.Material.Parameters.VectorParameters then
-                            for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
-                                if scalarParam.ParameterName == parameterName then
-                                    am:SetVector4(parameterName, {0, 0, 0, value}) 
-                                end
-                            end
-                        end
-                    elseif parameterType == 'Texture2DParameters' then
-                        if am.Material.Parameters.Texture2DParameters then
-                            for _, twoDParam in pairs(am.Material.Parameters.Texture2DParameters) do
-                                if twoDParam.ParameterName == parameterName then
-                                    DPrint(descNumber)
-                                    twoDParam.Enabled = value
-                                    DDump(twoDParam)
+                            for _, vec4Param in pairs(am.Material.Parameters.VectorParameters) do
+                                if vec4Param.ParameterName == parameterName then
+                                    am:SetVector4(parameterName, {value[1], value[2], value[3], value[4]}) 
                                 end
                             end
                         end
@@ -599,23 +647,106 @@ function ApplyParameters(entity, attachment, parameterName, parameterType, value
 end
 
 
-
-function getMaterialPreset(entity)
-
-    local skinUuid = AssignSkinToCharacter(entity)
-    -- local skin = entity.CharacterCreationAppearance.SkinColor
-    -- DPrint(skin) 
-    local matPresetUuid = Ext.StaticData.Get(skinUuid, 'CharacterCreationSkinColor').MaterialPresetUUID
-    -- DPrint(matPresetUuid)
-    
-    local mt = Ext.Resource.Get(matPresetUuid,'MaterialPreset')  --'2cac4615-e3ac-8b17-906b-7fb8b2775981'
-    return mt
+---@param entity EntityHandle
+---@param attachment VisualAttachment
+---@param parameterType MyOwnParemeterTypes
+---@param parameterName MaterialParameterName
+---@param value number | -- for parameterType:
+--- - Scalar: number
+--- - Vector3: number{3}
+--- - Vector: number{4}
+function SaveActiveMaterialLastChanges(entity, attachment, parameterName, parameterType, value)
+    if entity and entity.Uuid then
+        local entityUuid = entity.Uuid.EntityUuid
+        --#region
+        -- Globals.AllParameters.LastParameters[entityUuid] = Globals.AllParameters.LastParameters[entityUuid] or {}
+        -- Globals.AllParameters.LastParameters[entityUuid][attachment] = Globals.AllParameters.LastParameters[entityUuid][attachment] or {}
+        -- Globals.AllParameters.LastParameters[entityUuid][attachment][parameterType] = Globals.AllParameters.LastParameters[entityUuid][attachment][parameterType] or {}
+        --#endregion
+        local lastParams = SLOP:tableCheck(Globals.AllParameters, 'LastParameters', entityUuid, attachment, parameterType)
+        local visualsTable = FindAttachment(entity, attachment)
+        if visualsTable then
+            if type(visualsTable) ~= "table" then
+                visualsTable = {visualsTable}
+            end
+            local parameterFound = false
+            for _, visuals in pairs(visualsTable) do
+                if visuals and visuals.ObjectDescs and not parameterFound then
+                    for _, desc in pairs(visuals.ObjectDescs) do
+                        if parameterFound then break end
+                        local am = desc.Renderable.ActiveMaterial   
+                        if am ~= nil and am.Material ~= nil then
+                            if parameterType == 'ScalarParameters' then
+                                if am.Material.Parameters.ScalarParameters then
+                                    for _, scalarParam in pairs(am.Material.Parameters.ScalarParameters) do
+                                        if scalarParam.ParameterName == parameterName then
+                                            lastParams[parameterName] = value
+                                            parameterFound = true
+                                            break
+                                        end
+                                    end
+                                end
+                            elseif parameterType == 'Vector3Parameters' then
+                                if am.Material.Parameters.Vector3Parameters then
+                                    for _, scalarParam in pairs(am.Material.Parameters.Vector3Parameters) do
+                                        if scalarParam.ParameterName == parameterName then
+                                            lastParams[parameterName] = value
+                                            parameterFound = true
+                                            break
+                                        end
+                                    end
+                                end
+                            elseif parameterType == 'VectorParameters' then
+                                if am.Material.Parameters.VectorParameters then
+                                    for _, scalarParam in pairs(am.Material.Parameters.VectorParameters) do
+                                        if scalarParam.ParameterName == parameterName then
+                                            lastParams[parameterName] = value
+                                            parameterFound = true
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    Ext.Net.PostMessageToServer('CCEE_SendModVars', Ext.Json.Stringify(Globals.AllParameters.LastParameters))
+    -- DDump(LastParameters)
 end
 
 
-function CCEE_MT()
-    if MatData then
-        for charUuid, matUuids in pairs(MatData) do
+function HandleActiveMaterialParameters(entity, attachment, parameterName, parameterType, value)
+    if CCState == true then
+        SaveActiveMaterialLastChanges(_C(), attachment, parameterName, parameterType, value)
+        SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
+    else
+        SaveActiveMaterialLastChanges(entity, attachment, parameterName, parameterType, value)
+        SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
+    end
+end
+
+--LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+function SetAdditionalChoices(choice, value)
+   local ac = _C().CharacterCreationAppearance.AdditionalChoices
+    if choice == 'Vitiligo' then
+        ac[1] = value
+    elseif choice == 'Freckles' then
+        ac[2] = value
+    elseif choice == 'FrecklesWeight' then
+        ac[4] = value
+    elseif choice == 'Oldness' then
+        ac[3] = value
+   end
+   Ext.Net.PostMessageToServer('CCEE_Replicate', Ext.Json.Stringify(_C().Uuid.EntityUuid))
+end
+
+
+function LoadMatVars()
+    if Globals.MatVars.MatData then
+        for charUuid, matUuids in pairs(Globals.MatVars.MatData) do
             for matUuid, parameterTypes in pairs(matUuids) do
                 for parameterType, parameterNames in pairs(parameterTypes) do
                     for parameterName, value in pairs(parameterNames) do
@@ -628,119 +759,169 @@ function CCEE_MT()
                     end
                 end
             end
+            local entity = Ext.Entity.Get(charUuid)
             Helpers.Timer:OnTicks(30, function ()
-                Ext.Entity.Get(charUuid).CharacterCreationAppearance.SkinColor = AssignSkinToCharacter(Ext.Entity.Get(charUuid))
-                Ext.Net.PostMessageToServer('Replicate', Ext.Json.Stringify(charUuid))
+                Ext.Entity.Get(charUuid).CharacterCreationAppearance.SkinColor = AssignSkinToCharacter(entity)
+                Ext.Entity.Get(charUuid).CharacterCreationAppearance.HairColor = AssignHairToCharacter(entity)
+                Helpers.Timer:OnTicks(5, function ()
+                    Ext.Net.PostMessageToServer('CCEE_Replicate', Ext.Json.Stringify(charUuid))
+                end)
             end)
         end
     end
 end
 
-Ext.RegisterNetListener('CCEE_MT', function (channel, payload, user)
-    DPrint('CCEE_MT')
-    local data = Ext.Json.Parse(payload)
-    UsedSkinUUID = data.UsedSkinUUID
-    SkinMap = data.SkinMap
-    MatData = data.MatData
-    CCEE_MT()
-end)
 
 
 
-function AssignSkinToCharacter(entity)
-    UsedSkinUUID = UsedSkinUUID or {}
-    SkinMap = SkinMap or {}
+local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable, keyUsedTable)
+    Globals.MatVars[keyUsedTable] = Globals.MatVars[keyUsedTable] or {}
+    Globals.MatVars[keyMapTable] = Globals.MatVars[keyMapTable] or {}
     local entity = Ext.Entity.Get(entity)
-    if SkinMap and SkinMap[entity.Uuid.EntityUuid] then
-        return SkinMap[entity.Uuid.EntityUuid]
+    if Globals.MatVars[keyMapTable] and Globals.MatVars[keyMapTable][entity.Uuid.EntityUuid] then
+        return Globals.MatVars[keyMapTable][entity.Uuid.EntityUuid]
     end
-    for i = 1, #CCSkinUuids do
-        local uuid = CCSkinUuids[i]
-        if not UsedSkinUUID[uuid] then
-            entity.CharacterCreationAppearance.SkinColor = uuid --'58e6b206-4cfc-41f3-af7e-25358a30cf7f'
-            SkinMap[entity.Uuid.EntityUuid] = uuid
-            UsedSkinUUID[uuid] = true --I might even don't need this, since if the skin is mapped to a character then it's in use PonderingCat
+    for i = 1, #typeTable do
+        local uuid = typeTable[i]
+        if not Globals.MatVars[keyUsedTable][uuid] then
+            Globals.MatVars[keyMapTable][entity.Uuid.EntityUuid] = uuid
+            Globals.MatVars[keyUsedTable][uuid] = true
             local data = {
-                SkinMap = SkinMap,
-                UsedSkinUUID = UsedSkinUUID
+                keyMapTable = keyMapTable,
+                keyUsedTable = keyUsedTable,
+                mapTable = Globals.MatVars[keyMapTable],
+                usedTable = Globals.MatVars[keyUsedTable],
             }
-            local temp = {
+            local cc = {
                 uuid = entity.Uuid.EntityUuid,
-                skinUuid = SkinMap[entity.Uuid.EntityUuid]
+                ccUuid = Globals.MatVars[keyMapTable][entity.Uuid.EntityUuid]
             }
-            Ext.Net.PostMessageToServer('UsedMatVars', Ext.Json.Stringify(data))
-            Ext.Net.PostMessageToServer('ApplySkin', Ext.Json.Stringify(temp))
+            if keyMapTable == 'HairMap' then
+                Ext.Net.PostMessageToServer('CCEE_ApplyHair', Ext.Json.Stringify(cc))
+            elseif keyMapTable == 'SkinMap' then
+                Ext.Net.PostMessageToServer('CCEE_ApplySkin', Ext.Json.Stringify(cc))
+            elseif keyMapTable == 'TattooMap' then
+                cc.index = getElementIndex(entity, 'Tattoo')
+                Ext.Net.PostMessageToServer('CCEE_ApplyTattoo', Ext.Json.Stringify(cc))
+            else
+                --EyeColor
+            end
+            Ext.Net.PostMessageToServer('CCEE_UsedMatVars', Ext.Json.Stringify(data))
             return uuid
         end
     end
 end
 
 
-function ApplyParameters2(entity, parameterName, parameterType, value, materialPreset)
-    local entityUuid = entity.Uuid.EntityUuid
-    for _, parameter in pairs(materialPreset.Presets[parameterType]) do
-        if parameter.Parameter:find(parameterName) then
-            parameter.Value = value
-        end
-    end
-    Ext.Net.PostMessageToServer('Replicate', Ext.Json.Stringify(entityUuid))
+
+---@param entity EntityHandle
+function AssignSkinToCharacter(entity)
+    --#region
+    -- Globals.MatVars.UsedSkinUUID = Globals.MatVars.UsedSkinUUID or {}
+    -- Globals.MatVars.SkinMap = Globals.MatVars.SkinMap or {}
+    -- local entity = Ext.Entity.Get(entity)
+    -- if Globals.MatVars.SkinMap and Globals.MatVars.SkinMap[entity.Uuid.EntityUuid] then
+    --     return Globals.MatVars.SkinMap[entity.Uuid.EntityUuid]
+    -- end
+    -- for i = 1, #CCSkinUuids do
+    --     local uuidS = CCSkinUuids[i]
+    --     if not Globals.MatVars.UsedSkinUUID[uuidS] then
+    --         entity.CharacterCreationAppearance.SkinColor = uuidS
+    --         Globals.MatVars.SkinMap[entity.Uuid.EntityUuid] = uuidS
+    --         Globals.MatVars.UsedSkinUUID[uuidS] = true --I might even don't need this, since if the skin is mapped to a character then it's in use PonderingCat
+    --         local data = {
+    --             SkinMap = Globals.MatVars.SkinMap,
+    --             UsedSkinUUID = Globals.MatVars.UsedSkinUUID
+    --         }
+    --         local temp = {
+    --             uuid = entity.Uuid.EntityUuid,
+    --             skinUuid = Globals.MatVars.SkinMap[entity.Uuid.EntityUuid]
+    --         }
+    --         Ext.Net.PostMessageToServer('CCEE_UsedMatVars', Ext.Json.Stringify(data))
+    --         Ext.Net.PostMessageToServer('CCEE_ApplySkin', Ext.Json.Stringify(temp))
+    --         return uuidS
+    --     end
+    -- end
+    --#endregion
+    return assignCharacterCreationAppearance(entity, CCSkinUuids, 'SkinMap', 'UsedSkinUUID')
+end
+
+---@param entity EntityHandle
+function AssignHairToCharacter(entity)
+    --#region
+    -- Globals.MatVars.UsedHairUUID = Globals.MatVars.UsedHairUUID or {}
+    -- Globals.MatVars.HairMap = Globals.MatVars.HairMap or {}
+    -- local entity = Ext.Entity.Get(entity)
+    -- if Globals.MatVars.HairMap and Globals.MatVars.HairMap[entity.Uuid.EntityUuid] then
+    --     return Globals.MatVars.HairMap[entity.Uuid.EntityUuid]
+    -- end
+    -- for i = 1, #CCHairUuids do
+    --     local uuidH = CCHairUuids[i]
+    --     if not Globals.MatVars.UsedHairUUID[uuidH] then
+    --         entity.CharacterCreationAppearance.HairColor = uuidH
+    --         Globals.MatVars.HairMap[entity.Uuid.EntityUuid] = uuidH
+    --         Globals.MatVars.UsedHairUUID[uuidH] = true
+    --         local data = {
+    --             HairMap = Globals.MatVars.HairMap,
+    --             UsedHairUUID = Globals.MatVars.UsedHairUUID
+    --         }
+    --         local temp = {
+    --             uuid = entity.Uuid.EntityUuid,
+    --             hairUuid = Globals.MatVars.HairMap[entity.Uuid.EntityUuid]
+    --         }
+    --         Ext.Net.PostMessageToServer('CCEE_UsedMatVars', Ext.Json.Stringify(data))
+    --         Ext.Net.PostMessageToServer('CCEE_ApplyHair', Ext.Json.Stringify(temp))
+    --         return uuidH
+    --     end
+    -- end
+    --#endregion
+    return assignCharacterCreationAppearance(entity, CCHairUuids, 'HairMap', 'UsedHairUUID')
 end
 
 
-function SaveParameters2(entity, parameterName, parameterType, value, materialPreset)
-    local materialGuid = materialPreset.Guid
-    local entityUuid = entity.Uuid.EntityUuid
-    matParameters[entityUuid] = matParameters[entityUuid] or {}
-    matParameters[entityUuid][materialGuid] = matParameters[entityUuid][materialGuid] or {}
-    matParameters[entityUuid][materialGuid][parameterType] = matParameters[entityUuid][materialGuid][parameterType] or {}
-    matParameters[entityUuid][materialGuid][parameterType][parameterName] = matParameters[entityUuid][materialGuid][parameterType][parameterName] or {}
-    matParameters[entityUuid][materialGuid][parameterType][parameterName] = value
-    Ext.Net.PostMessageToServer('SendMatVars', Ext.Json.Stringify(matParameters))
+function AssignTattooToCharacter(entity)
+    return assignCharacterCreationAppearance(entity, CCTattooUuids, 'TattooMap', 'UsedTattooUUID')
 end
 
 
-function MaterialPreset(entity, parameterName, parameterType, value, materialPreset)
-    local materialPreset = materialPreset or getMaterialPreset(entity)
-    -- DPrint('------------------')
-    -- DDump(parameterType)
-    -- DPrint('------------------')
-    -- DPrint(materialPreset.Guid)
-    ApplyParameters2(entity, parameterName, parameterType, value, materialPreset)
-    SaveParameters2(entity, parameterName, parameterType, value, materialPreset)
-    -- local entityUuid = entity.Uuid.EntityUuid
-    -- Ext.Net.PostMessageToServer('Replicate', Ext.Json.Stringify(entityUuid))
-end
 
 Ext.RegisterNetListener('LoadMatVars', function (channel, payload, user)
-    GLOBALdata = Ext.Json.Parse(payload)
-    if GLOBALdata.matParameters['MatData'] then
-        matParameters = GLOBALdata.matParameters['MatData']
-        if GLOBALdata.single == true then
-            local entity = Ext.Entity.Get(GLOBALdata.entityUuid)
+    DPrint('LoadMatVars')
+    local data = Ext.Json.Parse(payload)
+    if data.MatParameters['MatData'] then
+        Globals.AllParameters.MatParameters = data.MatParameters['MatData']
+        if data.single == true then
+            DPrint('LoadMatVars Single')
+            local entity = Ext.Entity.Get(data.entityUuid)
             local uuid = entity.Uuid.EntityUuid
-            for materialUuids, parameterTypes in pairs(matParameters[uuid]) do
+            for materialUuids, parameterTypes in pairs(Globals.AllParameters.MatParameters[uuid]) do
                 for parameterType, parameterNames in pairs(parameterTypes) do
                     for parameterName, value in pairs(parameterNames) do
                         Helpers.Timer:OnTicks(4, function ()
                             local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
-                            MaterialPreset(entity, parameterName, parameterType, value, materialPreset)
+                            HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset)
                         end)
                     end
                 end
             end
-        else    
-            for uuid, _ in pairs(matParameters) do
+        else
+            DPrint('LoadMatVars All')
+            local LoadMatVars_timer = 0
+            for uuid, _ in pairs(Globals.AllParameters.MatParameters) do
+                LoadMatVars_timer = LoadMatVars_timer + 10
+                Helpers.Timer:OnTicks(LoadMatVars_timer, function ()
                 local entity = Ext.Entity.Get(uuid)
-                for materialUuids, parameterTypes in pairs(matParameters[uuid]) do
-                    for parameterType, parameterNames in pairs(parameterTypes) do
-                        for parameterName, value in pairs(parameterNames) do
-                            Helpers.Timer:OnTicks(4, function ()
-                                local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
-                                MaterialPreset(entity, parameterName, parameterType, value, materialPreset)
-                            end)
+                    for materialUuids, parameterTypes in pairs(Globals.AllParameters.MatParameters[uuid]) do
+                        for parameterType, parameterNames in pairs(parameterTypes) do
+                            for parameterName, value in pairs(parameterNames) do
+                                Helpers.Timer:OnTicks(4, function ()
+                                    local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
+                                    HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset)
+                                end)
+                            end
                         end
                     end
-                end
+                end)
             end
         end
     end
@@ -749,16 +930,15 @@ end)
 
 --#region
 --tbd: combine into one function, perhaps elseif, perhaps learn something new
-
 ---Appplies the things to the PM dummies
 function ApplyParametersToPMDummies()
-    GetPMDummies()
-    for uuid, attachments in pairs(lastParameters) do
+    DPrint('ApplyParametersToPMDummies')
+    for uuid, attachments in pairs(Globals.AllParameters.LastParameters) do
         local entity = MatchCharacterAndPMDummy(uuid)
         for attachment, parameterTypes in pairs(attachments) do
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
-                    ApplyParameters(entity, attachment, parameterName, parameterType, value)
+                    SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
                 end
             end
         end
@@ -768,32 +948,61 @@ end
 ---Appplies the things to the paperdolls v2
 function ApplyParametersToDollsTest(entity, uuid)
     DPrint('ApplyParametersToDollsTest')
-    -- DPrint('ApplyParametersToDolls')
-    local attachments = lastParameters[uuid]
-        -- DPrint(Helpers.Format.GetEntityName(entity))
+    local attachments = Globals.AllParameters.LastParameters[uuid]
     if attachments then 
         for attachment, parameterTypes in pairs(attachments) do
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
-                    ApplyParameters(entity, attachment, parameterName, parameterType, value)
+                    SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
                 end
             end
         end
     end
 end
 
+
 function ApplyParametersToCCDummy(entity)
+    DPrint('ApplyParametersToCCDummy')
+    local tempEntity = _C()
     local entityDummy
-    local CCdumies = Ext.Entity.GetAllEntitiesWithComponent("ClientCCDummyDefinition")
-    for _,dummy in pairs(CCdumies) do
-        if entity.DisplayName.Name:Get() == dummy.CCChangeAppearanceDefinition.Appearance.Name then
-            entityDummy = dummy.ClientCCDummyDefinition.Dummy
-            for _, attachments in pairs(lastParameters) do
-                for attachment, parameterTypes in pairs(attachments) do
-                    for parameterType, parameterNames in pairs(parameterTypes) do
-                        for parameterName, value in pairs(parameterNames) do
-                            ApplyParameters(entityDummy, attachment, parameterName, parameterType, value)
+    local CC_Dumies = Ext.Entity.GetAllEntitiesWithComponent("ClientCCDummyDefinition")
+    if entity and Globals.AllParameters.LastParameters[tempEntity.Uuid.EntityUuid] then
+        for _,dummy in pairs(CC_Dumies) do
+            if dummy and dummy.CCChangeAppearanceDefinition then
+                if tempEntity.DisplayName.Name:Get() == dummy.CCChangeAppearanceDefinition.Appearance.Name then
+                    entityDummy = dummy.ClientCCDummyDefinition.Dummy
+                    table.insert(Globals.CC_Entities, entityDummy)
+                    for _, v in pairs(Globals.CC_Entities) do
+                        for attachment, parameterTypes in pairs(Globals.AllParameters.LastParameters[tempEntity.Uuid.EntityUuid]) do
+                            for parameterType, parameterNames in pairs(parameterTypes) do
+                                for parameterName, value in pairs(parameterNames) do
+                                    SetActiveMaterialParameterValue(v, attachment, parameterName, parameterType, value)
+                                end
+                            end
                         end
+                    end
+                end
+            end
+        end
+    end
+end
+
+
+function ApplyParametersToTLPreview()
+    local entity = Ext.Entity.GetAllEntitiesWithComponent("TLPreviewDummy")
+    for q = 1, #entity do
+        if entity and entity[q] then
+            local dummy = entity[q].TLPreviewDummy
+            if dummy ~= nil and entity[q].ClientTimelineActorControl ~= nil then
+                local actorLink = entity[q].ClientTimelineActorControl.field_0
+                local owner
+                for i, v in pairs(Ext.Entity.GetAllEntitiesWithComponent("Origin")) do
+                    if v.TimelineActorData ~= nil and v.TimelineActorData.field_0 == actorLink then
+                        owner = v
+                        DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
+                        Helpers.Timer:OnTicks(2, function ()
+                            ApplyParametersToDollsTest(entity[q], owner.Uuid.EntityUuid)
+                        end)
                     end
                 end
             end
@@ -803,39 +1012,15 @@ end
 --#endregion
 
 
-
---#region
----Appplies the things to the paperdolls
--- function ApplyParametersToDolls()
---     DPrint('ApplyParametersToDolls')
---     for uuid, attachments in pairs(lastParameters) do
---         -- DPrint(uuid)
---         -- DDump(attachments)
---         local owner = Ext.Entity.Get(uuid)
---         local entity = Paperdoll.GetOwnersDoll(owner)
---         DPrint('Owner: ' .. owner.DisplayName.Name:Get())
---         -- DPrint(entity)
---         for attachment, parameterTypes in pairs(attachments) do
---             for parameterType, parameterNames in pairs(parameterTypes) do
---                 for parameterName, value in pairs(parameterNames) do
---                     ApplyParameters(entity, attachment, parameterName, parameterType, value)
---                 end
---             end
---         end
---     end
--- end
---#endregion
-
 ---Main thingy
 Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
     DPrint('LoadModVars')
-    GetAllParameterNames(_C())
+    getAllParameterNames(_C())
     local data = Ext.Json.Parse(payload)
-    lastParametersMV = data.lastParameters
-    lastParameters = data.lastParameters
+    lastParametersMV = data.LastParameters
+    Globals.AllParameters.LastParameters = data.LastParameters
     local TICKS_TO_WAIT = data.TICKS_TO_WAIT
     DPrint('Waiting ' ..  TICKS_TO_WAIT .. ' ticks before applying parameters')
-    local ticksPassedBar = 0
     Helpers.Timer:OnTicks(TICKS_TO_WAIT, function()
         Helpers.Timer:OnTicks(TICKS_BEFORE_GAPM, function()
             Helpers.Timer:OnTicks(TICKS_BEFORE_LOADING, function()
@@ -852,10 +1037,10 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                                     for parameterName, value in pairs(parameterNames) do
                                         Helpers.Timer:OnTicks(4, function ()
                                             if CCState == true then
-                                                local entity = dummyEntity
-                                                ApplyParameters(entity, attachment, parameterName, parameterType, value)
+                                                local entity = Globals.dummyEntity
+                                                SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
                                             else
-                                                ApplyParameters(entity, attachment, parameterName, parameterType, value)
+                                                SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
                                             end
                                         end)
                                     end
@@ -865,21 +1050,27 @@ Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
                     end)
                 end
                 function LoadParameters()
-                    DPrint('EVERYONE')
+                    DPrint('ALL')
                     Helpers.Timer:OnTicks(TICKS_BEFORE_APPLYING, function()
-                        for uuid, attachments in pairs(lastParametersMV) do
-                            local entity = Ext.Entity.Get(uuid)
-                            if entity and entity.DisplayName then
-                                DPrint('Char: ' .. entity.DisplayName.Name:Get()) ---entity.Uuid.EntityUuid
-                                for attachment, parameterTypes in pairs(attachments) do
-                                    for parameterType, parameterNames in pairs(parameterTypes) do
-                                        for parameterName, value in pairs(parameterNames) do
-                                            Helpers.Timer:OnTicks(5, function ()
-                                                ApplyParameters(entity, attachment, parameterName, parameterType, value)
-                                            end)
+                        if lastParametersMV then 
+                            local LoadModVars_timer = 0
+                            for uuid, attachments in pairs(lastParametersMV) do
+                                LoadModVars_timer = LoadModVars_timer + 10
+                                Helpers.Timer:OnTicks(LoadModVars_timer, function ()
+                                    local entity = Ext.Entity.Get(uuid)
+                                    if entity and entity.DisplayName then
+                                        DPrint('Char: ' .. entity.DisplayName.Name:Get()) ---entity.Uuid.EntityUuid
+                                        for attachment, parameterTypes in pairs(attachments) do
+                                            for parameterType, parameterNames in pairs(parameterTypes) do
+                                                for parameterName, value in pairs(parameterNames) do
+                                                    Helpers.Timer:OnTicks(5, function ()
+                                                        SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
+                                                    end)
+                                                end
+                                            end
                                         end
                                     end
-                                end
+                                end)
                             end
                         end
                     end)
@@ -906,9 +1097,8 @@ function TempThingy()
     end
     timer = Ext.Timer.WaitFor(500, function()
         -- Ext.Net.PostMessageToServer('UpdateParameters', '')
-        Ext.Net.PostMessageToServer('UpdateParameters2', '')
-        GetAllParameterNames(_C())
-        -- PMKeybind()
+        Ext.Net.PostMessageToServer('CCEE_UpdateParameters_NotOnlyVis', '')
+        getAllParameterNames(_C())
         timer = nil
     end)
 end
@@ -935,35 +1125,36 @@ function DumpCurrentParameters(entity, parameterName, parameterType)
 end
 
 
-function getCharacterCreationAppearance(charEntity)
-    local savedAppearance = {}
-    local CCA = charEntity.CharacterCreationAppearance
-    if CCA then
-        savedAppearance.AdditionalChoices = {}
-        for i = 1, #CCA.AdditionalChoices do
-            savedAppearance.AdditionalChoices[i] = CCA.AdditionalChoices[i]
-        end
-        savedAppearance.Elements = {}
-        for i = 1, #CCA.Elements do
-            savedAppearance.Elements[i] = {
-                Color = CCA.Elements[i].Color,
-                ColorIntensity = CCA.Elements[i].ColorIntensity,
-                GlossyTint = CCA.Elements[i].GlossyTint,
-                Material = CCA.Elements[i].Material,
-                MetallicTint = CCA.Elements[i].MetallicTint
-            }
-        end
-        savedAppearance.EyeColor = CCA.EyeColor
-        savedAppearance.HairColor = CCA.HairColor
-        savedAppearance.SecondEyeColor = CCA.SecondEyeColor
-        savedAppearance.SkinColor = CCA.SkinColor
-        savedAppearance.Visuals = {}
-        for i = 1, #CCA.Visuals do
-            savedAppearance.Visuals[i] = CCA.Visuals[i]
-        end
-    end
-    return savedAppearance
-end
+
+-- function getCharacterCreationAppearance(charEntity)
+--     local savedAppearance = {}
+--     local CCA = charEntity.CharacterCreationAppearance
+--     if CCA then
+--         savedAppearance.AdditionalChoices = {}
+--         for i = 1, #CCA.AdditionalChoices do
+--             savedAppearance.AdditionalChoices[i] = CCA.AdditionalChoices[i]
+--         end
+--         savedAppearance.Elements = {}
+--         for i = 1, #CCA.Elements do
+--             savedAppearance.Elements[i] = {
+--                 Color = CCA.Elements[i].Color,
+--                 ColorIntensity = CCA.Elements[i].ColorIntensity,
+--                 GlossyTint = CCA.Elements[i].GlossyTint,
+--                 Material = CCA.Elements[i].Material,
+--                 MetallicTint = CCA.Elements[i].MetallicTint
+--             }
+--         end
+--         savedAppearance.EyeColor = CCA.EyeColor
+--         savedAppearance.HairColor = CCA.HairColor
+--         savedAppearance.SecondEyeColor = CCA.SecondEyeColor
+--         savedAppearance.SkinColor = CCA.SkinColor
+--         savedAppearance.Visuals = {}
+--         for i = 1, #CCA.Visuals do
+--             savedAppearance.Visuals[i] = CCA.Visuals[i]
+--         end
+--     end
+--     return savedAppearance
+-- end
 
 
 
@@ -982,12 +1173,23 @@ function SavePreset(fileName)
     local uuid = _C().Uuid.EntityUuid
     local cca = getCharacterCreationAppearance(_C())
     local rippedMatParameters = {}
-    for _,v in pairs(matParameters[uuid]) do
-        rippedMatParameters = v
+    if Globals.AllParameters.MatParameters[uuid] then
+        for _,v in pairs(Globals.AllParameters.MatParameters[uuid]) do
+            rippedMatParameters = v
+        end
+    else
+        rippedMatParameters = nil
     end
+
+    if Globals.AllParameters.LastParameters[uuid] then
+        CCEEParams = Globals.AllParameters.LastParameters[uuid]
+    else
+        CCEEParams = nil
+    end
+
     local dataSave = {
         {SkinMaterialParams = {rippedMatParameters or {}}},
-        {CCEEParams = {lastParameters[uuid] or {}}},
+        {CCEEParams = {CCEEParams or {}}},
         {DefaultCC = cca}
     }
     -- Presets.FileName = fileName
@@ -996,73 +1198,148 @@ function SavePreset(fileName)
     -- Presets.Data = {}
     Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
     dataSave = nil
-
 end
-
 
 
 ---@param fileName string
 function LoadPreset(fileName)
-    DPrint('LoadPreset')
-    local uuidedData = {}
-    local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
-    local dataLoad = Ext.Json.Parse(json)
-    local uuid = _C().Uuid.EntityUuid
+    local skinMatUuid
+    local skinUuid
+    local hairMatUuid
+    DPrint('CCEE_LoadPreset')
+    Ext.Net.PostMessageToServer('CCEE_RequestMatVars', '')
+    Helpers.Timer:OnTicks(10, function ()
+        local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
+        if json then
+            local dataLoad = Ext.Json.Parse(json)
+            local uuid = _C().Uuid.EntityUuid
 
-    if not SkinMap then
-        
-    end
 
-    local data = {
-        dataLoad = dataLoad,
-        uuid = uuid,
-        skinMatUuid = Ext.StaticData.Get(SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID,
-        skinUuid = SkinMap[uuid] --Hardcoded UUID
-    }
-    -- DDump(data)
-    Helpers.Timer:OnTicks(3, function ()
-        Ext.Net.PostMessageToServer('LoadPreset', Ext.Json.Stringify(data))
+            if Globals.MatVars.SkinMap and Globals.MatVars.SkinMap[_C().Uuid.EntityUuid] then
+                skinMatUuid = Ext.StaticData.Get(Globals.MatVars.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID
+            else
+                if dataLoad[3] then
+                    skinMatUuid = Ext.StaticData.Get(dataLoad[3].DefaultCC.SkinColor, 'CharacterCreationSkinColor').MaterialPresetUUID
+                end
+            end
+            if Globals.MatVars.HairMap and Globals.MatVars.HairMap[_C().Uuid.EntityUuid] then
+                hairMatUuid = Ext.StaticData.Get(Globals.MatVars.HairMap[_C().Uuid.EntityUuid], 'CharacterCreationHairColor').MaterialPresetUUID
+            else
+                if dataLoad[3] then
+                    hairMatUuid = Ext.StaticData.Get(dataLoad[3].DefaultCC.HairColor, 'CharacterCreationHairColor').MaterialPresetUUID
+                end
+            end
+
+            --p8/Elen_G_3
+            --sa/E_China
+
+
+            if Globals.MatVars.SkinMap and Globals.MatVars.SkinMap[uuid] then
+                skinUuid = Globals.MatVars.SkinMap[uuid]
+            else
+                if dataLoad[3] then
+                    skinUuid = dataLoad[3].DefaultCC.SkinColor
+                end
+            end
+            if Globals.MatVars.HairMap and Globals.MatVars.HairMap[uuid] then
+                skinUuid = Globals.MatVars.HairMap[uuid]
+            else
+                if dataLoad[3] then
+                    skinUuid = dataLoad[3].DefaultCC.HairColor
+                end
+            end
+
+            local data = {
+                dataLoad = dataLoad,
+                uuid = uuid,
+                skinMatUuid = skinMatUuid,
+                skinUuid = skinUuid,
+                hairMatUuid = hairMatUuid,
+                hairUuid = skinUuid
+            }
+            Helpers.Timer:OnTicks(3, function ()
+                Ext.Net.PostMessageToServer('CCEE_LoadPreset', Ext.Json.Stringify(data))
+            end)
+        else
+            GlobalsIMGUI.invalidName.Label = 'No presets with name' .. fileName .. ' were found'
+            Helpers.Timer:OnTicks(100, function ()
+                GlobalsIMGUI.invalidName.Label = ''
+            end)
+        end
     end)
 end
+
 
 
 function RealodPreset()
     DPrint('RealodPreset')
-    local uuid = _C().Uuid.EntityUuid
-    local cca = getCharacterCreationAppearance(_C())
-    Helpers.Timer:OnTicks(5, function ()
-        local dataLoad = {
-            {SkinMaterialParams = {matParameters[uuid][Ext.StaticData.Get(SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID] or {}}},
-            {CCEEParams = {lastParameters[uuid] or {}}},
-            {DefaultCC = cca},
-        }
-        local data = {
-            dataLoad = dataLoad,
-            uuid = uuid,
-            skinMatUuid = Ext.StaticData.Get(SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID,
-            skinUuid = SkinMap[uuid] --Hardcoded UUID
-        }
-        -- DDump(data)
-        Helpers.Timer:OnTicks(3, function ()
-            Ext.Net.PostMessageToServer('LoadPreset', Ext.Json.Stringify(data))
-            data = {}
+    Ext.Net.PostMessageToServer('CCEE_RequestMatVars', '')
+    Helpers.Timer:OnTicks(10, function ()
+        local uuid = _C().Uuid.EntityUuid
+        DPrint(_C())
+        local cca = getCharacterCreationAppearance(_C())
+        Helpers.Timer:OnTicks(5, function ()
+            local SkinMaterialParams
+            local skinMatUuid
+            local skinUuid
+            if Globals.MatVars.SkinMap then
+                SkinMaterialParams = {Globals.AllParameters.MatParameters[uuid][Ext.StaticData.Get(Globals.MatVars.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID]}
+                skinMatUuid = Ext.StaticData.Get(Globals.MatVars.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID
+                skinUuid = Globals.MatVars.SkinMap[uuid]
+            else
+                SkinMaterialParams = {}
+                skinMatUuid = nil
+                skinUuid = nil
+            end
+            local dataLoad = {
+                {SkinMaterialParams = SkinMaterialParams},
+                {CCEEParams = {Globals.AllParameters.LastParameters[uuid]} or {}},
+                {DefaultCC = cca},
+            }
+            local data = {
+                dataLoad = dataLoad,
+                uuid = uuid,
+                skinMatUuid = skinMatUuid,
+                skinUuid = skinUuid
+            }
+            Helpers.Timer:OnTicks(3, function ()
+                Ext.Net.PostMessageToServer('CCEE_LoadPreset', Ext.Json.Stringify(data))
+                data = {}
+            end)
         end)
     end)
 end
 
-Ext.RegisterConsoleCommand('d', function (cmd, ...)
-
-    -- local path = ObjectPath:New(_C(), 'Visual.Visual.Attachments[1].field_24')
-    -- DDump(path:Resolve())
-
-
+Ext.RegisterConsoleCommand('d', function ()
     DWarn('MAT DAT -----------------')
-    DDump(MatData)
+    DDump(Globals.MatVars.MatData)
     DWarn('SKIN MAP -----------------')
-    DDump(SkinMap)
+    DDump(Globals.MatVars.SkinMap)
     DWarn('USED SKIN -----------------')
-    DDump(UsedSkinUUID)
+    DDump(Globals.MatVars.UsedSkinUUID)
+    DWarn('HAIR MAP -----------------')
+    DDump(Globals.MatVars.HairMap)
+    DWarn('USED HAIR -----------------')
+    DDump(Globals.MatVars.UsedHairUUID)
 end)
 
+
+function StartPMSub()
+    Utils:SubUnsubToTick('sub', 'PhotoMode', function ()
+        local success, result = pcall(function()
+            return Ext.UI.GetRoot():Find("ContentRoot"):Child(21).DataContext
+        end)
+            if success and result then
+            if not Globals.inPhotoMode then
+                Globals.inPhotoMode = true
+                Helpers.Timer:OnTicks(40, function ()
+                    ApplyParametersToPMDummies()
+                end)
+            end
+        else
+            Globals.inPhotoMode = false
+        end
+    end)
+end
 
 
