@@ -294,13 +294,13 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
     end
 
 
-    Helpers.Timer:OnTicks(5, function ()
+    Helpers.Timer:OnTicks(1, function ()
         for _, v in pairs(entity.CharacterCreationAppearance.Visuals) do
             Osi.RemoveCustomVisualOvirride(data.uuid, v)
             -- DPrint('RemoveCustomVisualOvirride')
         end
     end)
-    Helpers.Timer:OnTicks(40, function ()
+    Helpers.Timer:OnTicks(2, function ()
         if DefaultCC then
             for _, visUuid in pairs(DefaultCC.Visuals) do
                 if visUuid then
@@ -309,14 +309,14 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                     -- DDump(visUuid)
                 end
             end
-            Helpers.Timer:OnTicks(10, function ()
+            Helpers.Timer:OnTicks(3, function ()
                 applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC)
             end)
-            Helpers.Timer:OnTicks(15, function ()
+            Helpers.Timer:OnTicks(4, function ()
                 entity:Replicate('GameObjectVisual')
                 entity:Replicate("CharacterCreationAppearance")
             end)
-            UpdateParameters(50, entity, true, false)
+            UpdateParameters(2, entity, true, false)
         end
     end)
 end)
