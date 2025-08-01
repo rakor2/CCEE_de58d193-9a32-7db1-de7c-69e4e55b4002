@@ -30,10 +30,10 @@ end)
 -- Ext.RegisterNetListener('CCEE_UpdateParameters_OnlyVis', function (channel, payload, user)
 --     DPrint('1')
 --     local LastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
---     Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(LastParameters))
+--     Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(LastParameters))
 -- end)
 
-
+--rename me
 Ext.RegisterNetListener('CCEE_MT', function (channel, payload, user)
     -- local data = Ext.Json.Parse(payload)
     -- UsedSkinUUID = data.UsedSkinUUID
@@ -84,7 +84,7 @@ Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component
     end)
 end)
 
---Probably just sub to noesis
+--Probably just sub to noesis Ext.UI.GetRoot():Child(1):Child(1):Child(24):Child(1).StartCharacterCreation
 Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, component)
     Helpers.Timer:OnTicks(10, function ()
     if _C().CCState and _C().CCState.HasDummy == true then
@@ -103,7 +103,7 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
     --#endregion
 end)
 
---Ext.UI.GetRoot():Child(1):Child(1):Child(24):Child(1).StartCharacterCreation
+
 
 
 
@@ -195,8 +195,11 @@ Ext.Entity.OnSystemUpdate("ClientVisualsVisibilityState", function()
 end)
 
 --bruh
+--This shit also fires on hide/unhide T_T
+--Wtf is this game
 Ext.Entity.OnChange("Unsheath", function(entity)
-    if ClientControl == true then --bruh x2
+    Utils:AntiSpam(300, function ()
+            if ClientControl == true then --bruh x2
         return
     end
     local origins = Ext.Entity.GetAllEntitiesWithComponent('Origin')
@@ -210,4 +213,5 @@ Ext.Entity.OnChange("Unsheath", function(entity)
             -- end)
         end
     end
+    end)
 end)

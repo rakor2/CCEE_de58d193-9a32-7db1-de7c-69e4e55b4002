@@ -1329,9 +1329,13 @@ function CCEE:Unsorted()
     local parent = unsotredCollapse
 
 
-    Elements:PopulateTab(ahhTable['UnsortedB'], parent, 'UnsortedB')
+    --Elements:PopulateTab(ahhTable['UnsortedB'], parent, 'UnsortedB')
 
-
+    local trollXDImSoFunnyICant = parent:AddButton('Delete all game files')
+    trollXDImSoFunnyICant.OnClick = function ()
+        Imgui.Jiggle(trollXDImSoFunnyICant, 10)
+        Imgui.BorderPulse(trollXDImSoFunnyICant, 10)
+    end
     local sepa = unsotredCollapse:AddSeparatorText('')
 
 end

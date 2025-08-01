@@ -885,8 +885,8 @@ end
 
 
 
-Ext.RegisterNetListener('LoadMatVars', function (channel, payload, user)
-    DPrint('LoadMatVars')
+Ext.RegisterNetListener('CCEE_LoadMatVars', function (channel, payload, user)
+    DPrint('CCEE_LoadMatVars')
     local data = Ext.Json.Parse(payload)
     if data.MatParameters['MatData'] then
         Globals.AllParameters.MatParameters = data.MatParameters['MatData']
@@ -985,6 +985,7 @@ function ApplyParametersToCCDummy(entity)
             end
         end
     end
+    Globals.CC_Entities = {}
 end
 
 
@@ -1013,8 +1014,8 @@ end
 
 
 ---Main thingy
-Ext.RegisterNetListener('LoadModVars', function (channel, payload, user)
-    DPrint('LoadModVars')
+Ext.RegisterNetListener('CCEE_LoadModVars', function (channel, payload, user)
+    DPrint('CCEE_LoadModVars')
     getAllParameterNames(_C())
     local data = Ext.Json.Parse(payload)
     lastParametersMV = data.LastParameters
@@ -1104,8 +1105,8 @@ function TempThingy()
 end
 
 
---- Dumps all parameterName
---- 'ScalarParameters' , 'Vector3Parameters' , 'VectorParameters'
+---Dumps all parameterName
+---'ScalarParameters' , 'Vector3Parameters' , 'VectorParameters'
 function DumpCurrentParameters(entity, parameterName, parameterType)
    for i = 1, #entity.Visual.Visual.Attachments do
        if entity.Visual.Visual.Attachments[i] and 
@@ -1222,10 +1223,10 @@ function LoadPreset(fileName)
                     skinMatUuid = Ext.StaticData.Get(dataLoad[3].DefaultCC.SkinColor, 'CharacterCreationSkinColor').MaterialPresetUUID
                 end
             end
-            if Globals.MatVars.HairMap and Globals.MatVars.HairMap[_C().Uuid.EntityUuid] then
-                hairMatUuid = Ext.StaticData.Get(Globals.MatVars.HairMap[_C().Uuid.EntityUuid], 'CharacterCreationHairColor').MaterialPresetUUID
-            else
-                if dataLoad[3] then
+            if dataLoad[3] then
+                if dataLoad[3].DefaultCC.HairColor == Utils.ZEROUUID then
+                    hairMatUuid = dataLoad[3].DefaultCC.HairColor
+                else
                     hairMatUuid = Ext.StaticData.Get(dataLoad[3].DefaultCC.HairColor, 'CharacterCreationHairColor').MaterialPresetUUID
                 end
             end
@@ -1241,12 +1242,8 @@ function LoadPreset(fileName)
                     skinUuid = dataLoad[3].DefaultCC.SkinColor
                 end
             end
-            if Globals.MatVars.HairMap and Globals.MatVars.HairMap[uuid] then
-                skinUuid = Globals.MatVars.HairMap[uuid]
-            else
-                if dataLoad[3] then
-                    skinUuid = dataLoad[3].DefaultCC.HairColor
-                end
+            if dataLoad[3] then
+                skinUuid = dataLoad[3].DefaultCC.HairColor
             end
 
             local data = {

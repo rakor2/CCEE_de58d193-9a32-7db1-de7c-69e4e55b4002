@@ -25,11 +25,11 @@ function UpdateParameters(ticks, entity, singleEntity, onlyVis, print)
         MatParameters = Helpers.ModVars.Get(ModuleUUID).CCEE_MT
     }
     if onlyVis == true then
-        Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
+        Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(payload))
     else
-        Ext.Net.BroadcastMessage('LoadMatVars', Ext.Json.Stringify(payload))
+        Ext.Net.BroadcastMessage('CCEE_LoadMatVars', Ext.Json.Stringify(payload))
         Helpers.Timer:OnTicks(15, function ()
-            Ext.Net.BroadcastMessage('LoadModVars', Ext.Json.Stringify(payload))
+            Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(payload))
         end)
     end
 end
