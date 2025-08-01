@@ -1166,6 +1166,56 @@ end
 --     Data = {},
 -- })
 
+---tbd: unharcode presets json, make "if presetName == fileName then" as separate function
+---@param fileName string
+---@return boolean #if fileName exists in _PresetNames.json returns true
+function RegisterPresetName(fileName)
+    local Presets = {}
+    local function insertName(fileName)
+        table.insert(Presets, fileName)
+        Ext.IO.SaveFile('CCEE/_PresetNames.json', Ext.Json.Stringify(Presets))
+        ParsePresetNames()
+        DPrint('Preset ' .. fileName .. ' registered')
+    end
+    if Ext.IO.LoadFile('CCEE/_PresetNames.json') then
+        Presets = Ext.Json.Parse(Ext.IO.LoadFile('CCEE/_PresetNames.json'))
+        for _, presetName in pairs(Presets) do
+            if presetName == fileName then
+                DPrint('Preset ' .. fileName .. ' already registered')
+                return true
+            end
+        end
+        insertName(fileName)
+    else
+        insertName(fileName)
+    end
+    GlobalsIMGUI.presetsCombo.Options = Globals.Presets
+    return false
+end
+
+---tbd: make "if presetName == fileName then" as separate function
+---@param fileName string | nil
+---@return boolean #if fileName exists in _PresetNames.json returns true
+function ParsePresetNames(fileName)
+    local Presets = {}
+    Globals.Presets = {}
+    if Ext.IO.LoadFile('CCEE/_PresetNames.json') then
+        Presets = Ext.Json.Parse(Ext.IO.LoadFile('CCEE/_PresetNames.json'))
+        for _, presetName in pairs(Presets) do
+            table.insert(Globals.Presets, presetName)
+            if presetName == fileName then
+                return true
+            end
+        end
+    end
+    if GlobalsIMGUI.presetsCombo then
+        GlobalsIMGUI.presetsCombo.Options = Globals.Presets
+    end
+    --DDump(Globals.Presets)
+    Presets = nil
+    return false
+end
+ParsePresetNames()
 
 
 ---@param fileName string
@@ -1197,6 +1247,7 @@ function SavePreset(fileName)
     -- Presets:AddOrChange('Preset', dataSave)
     -- Presets:SaveToFile()
     -- Presets.Data = {}
+    RegisterPresetName(fileName)
     Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
     dataSave = nil
 end
@@ -1212,6 +1263,9 @@ function LoadPreset(fileName)
     Helpers.Timer:OnTicks(10, function ()
         local json = Ext.IO.LoadFile(('CCEE/' .. fileName .. '.json'))
         if json then
+            if not ParsePresetNames(fileName) then
+                RegisterPresetName(fileName)
+            end
             local dataLoad = Ext.Json.Parse(json)
             local uuid = _C().Uuid.EntityUuid
 
@@ -1264,6 +1318,7 @@ function LoadPreset(fileName)
             end)
         end
     end)
+    ParsePresetNames()
 end
 
 

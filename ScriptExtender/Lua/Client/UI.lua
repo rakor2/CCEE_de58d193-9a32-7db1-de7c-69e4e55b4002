@@ -1364,10 +1364,11 @@ function CCEE:PresetsTab()
     -- local sepapT1 = pT:AddSeparatorText('Presets')
 
     local sepapT2 = presetsTab:AddSeparatorText('Save')
-    local presetNameLoad = presetsTab:AddInputText('Preset name')
+    local presetNameLoad = presetsTab:AddInputText('')
     presetNameLoad.IDContext = 'presetNameLoad'
 
     local savePreset = presetsTab:AddButton('Save')
+    savePreset.SameLine = true
     savePreset.IDContext = 'savePreset'
     savePreset.OnClick = function ()
         SavePreset(presetNameLoad.Text)
@@ -1375,19 +1376,30 @@ function CCEE:PresetsTab()
     end
 
     local sepapT2 = presetsTab:AddSeparatorText('Load')
-    local presetLoadName = presetsTab:AddInputText('Preset name')
+
+    GlobalsIMGUI.presetsCombo = presetsTab:AddCombo('Presets')
+    GlobalsIMGUI.presetsCombo.Options = Globals.Presets or {}
+    GlobalsIMGUI.presetsCombo.SelectedIndex = 0
+    GlobalsIMGUI.presetsCombo.OnChange = function ()
+        DPrint(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
+    end
+
+    local presetLoadName = presetsTab:AddInputText('')
     presetLoadName.IDContext = 'presetLoadName'
 
     local loadPreset = presetsTab:AddButton('Load')
+    loadPreset.SameLine = true
     loadPreset.IDContext = 'CCEE_LoadPreset'
     loadPreset.OnClick = function ()
-        LoadPreset(presetLoadName.Text)
+        local name = (presetLoadName.Text ~= '' and presetLoadName.Text) or GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1]
+        if name then
+            LoadPreset(name)
+        end
         presetLoadName.Text = ''
     end
 
 
     local loadPreset2 = presetsTab:AddButton('ReLoad')
-    loadPreset2.SameLine = true
     loadPreset2.IDContext = 'loadPrese2'
     loadPreset2.OnClick = function ()
         RealodPreset()
@@ -1446,6 +1458,15 @@ function CCEE:Reset()
     local tp2 = resetTableBtn:Tooltip()
     tp2:AddText([[
     The mod stores some data in game save file, this button deletes the data]])
+
+
+    local resetPresetss = resetTab:AddButton('Purge presets list')
+    resetPresetss.OnClick = function ()
+        local Presets = {}
+        Ext.IO.SaveFile('CCEE/_PresetNames.json', Ext.Json.Stringify(Presets))
+        GlobalsIMGUI.presetsCombo.Options = Globals.Presets or {}
+    end
+
 end
 
 function CCEE:Dev()
