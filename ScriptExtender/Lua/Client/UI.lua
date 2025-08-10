@@ -121,10 +121,10 @@ function Window:CCEEWindow()
             Ext.Net.PostMessageToServer('CCEE_ResetCurrentCharacter', '')
             if _C().Uuid then
                 local uuid = _C().Uuid.EntityUuid
-                Globals.AllParameters.LastParameters[uuid] = nil
-                Globals.AllParameters.MatParameters[uuid] = nil
-                lastParametersMV[uuid] = nil
-                Ext.Net.PostMessageToServer('CCEE_SendModVars', Ext.Json.Stringify(Globals.AllParameters.LastParameters))
+                Globals.AllParameters.ActiveMatParameters[uuid] = nil
+                Globals.AllParameters.MatPresetParameters[uuid] = nil
+                --lastParametersMV[uuid] = nil
+                Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
             end
 
             resetCharacter.Visible = true
@@ -403,6 +403,13 @@ ahhTable = {
         end},
     },
 
+    Dirt_body = {
+        {nil, 'slBlood', 'Blood', parent, {max = 2}, function(var)
+            ahhTable.Sweat:Scalar(Apply.entity, 'Dirt', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Blood:Scalar(Apply.entity, 'Blood', var, 'mp', nil, 'CharacterCreationSkinColor')
+        end},
+    },
+
 
     UnsortedB = {
     },
@@ -511,6 +518,8 @@ ahhTable = {
             ahhTable.Tattoo:Vector(Apply.entity, 'TattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
         end},
 
+
+
             
         {nil, 'slAddHeadTatInt', 'Head AdditionalTattooIntensity', parent, {max = 2}, function(var)
             ahhTable.Tattoo:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, nil, {'Head'})
@@ -591,6 +600,11 @@ ahhTable = {
         end},
     },
     
+    Dirt_face = {
+        {nil, 'slHeadDirtInt', 'Dirt', parent, {max = 1}, function(var)
+            ahhTable.Dirt_face:Scalar(Apply.entity, 'Dirt', var, nil, {'Head'})
+        end},
+    },
 
     Eyes = {
         {'int', 'slEyesHet', 'Heterochromia', parent, {max = 1}, function(var)
@@ -1050,6 +1064,13 @@ ahhTable = {
         end},
     },
     
+
+    Dirt_hair = {
+        {nil, 'slHairDirt', 'Dirt', parent, {max = 2}, function(var)
+            ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+        end},
+    },
+
     Horns = {
         {'picker', 'pickHornsColor', 'Color', parent, {}, function(var)
             ahhTable.Horns:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Horns'})
@@ -1202,6 +1223,8 @@ function CCEE:Skin()
 
     Elements:PopulateTab(ahhTable['Blood'], parent, 'Blood')
 
+    Elements:PopulateTab(ahhTable.Dirt_body, parent, 'Dirt')
+
     local sepa = skinColorCollapse:AddSeparatorText('')
 
 end
@@ -1223,6 +1246,8 @@ function CCEE:Face()
     Elements:PopulateTab(ahhTable['Age'], parent, 'Age')
 
     Elements:PopulateTab(ahhTable['Scales'], parent, 'Scales')
+
+    Elements:PopulateTab(ahhTable.Dirt_face, parent, 'Dirt')
 
     local sepa1 = faceCollapse:AddSeparatorText('')
 
@@ -1300,6 +1325,8 @@ function CCEE:Hair()
 
     Elements:PopulateTab(ahhTable['BodyHair'], parent, 'Body hair')
 
+    Elements:PopulateTab(ahhTable.Dirt_hair, parent, 'Dirt')
+
 
     local sepa1333 = hairCollapse:AddSeparatorText('')
 
@@ -1363,6 +1390,9 @@ function CCEE:PresetsTab()
 
     -- local sepapT1 = pT:AddSeparatorText('Presets')
 
+
+
+
     local sepapT2 = presetsTab:AddSeparatorText('Save')
     local presetNameLoad = presetsTab:AddInputText('')
     presetNameLoad.IDContext = 'presetNameLoad'
@@ -1375,6 +1405,13 @@ function CCEE:PresetsTab()
         presetNameLoad.Text = ''
     end
 
+    local updatePreset = presetsTab:AddButton('Update')
+    updatePreset.SameLine = true
+    updatePreset.IDContext = 'savePreset'
+    updatePreset.OnClick = function ()
+        SavePreset(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
+    end
+    
     local sepapT2 = presetsTab:AddSeparatorText('Load')
 
     GlobalsIMGUI.presetsCombo = presetsTab:AddCombo('Presets')
@@ -1434,7 +1471,7 @@ function CCEE:Reset()
     local resetTableBtn = resetTab:AddButton('Delete data')
     resetTableBtn.OnClick = function ()
 
-        Globals.AllParameters.LastParameters = {}
+        Globals.AllParameters.ActiveMatParameters = {}
         lastParametersMV = {}
         dummies = {}
         -- Parameters = {}
@@ -1494,6 +1531,7 @@ function CCEE:Dev()
     zeroBtn.OnClick = function ()
         Ext.Net.PostMessageToServer('CCEE_setElementsToZero', '')
     end
+
 
 
 end
@@ -2060,9 +2098,10 @@ end
 
 ---temp abomination 
 function Elements:UpdateElements(charUuid)
-    if Globals.AllParameters.LastParameters and Globals.AllParameters.LastParameters[charUuid] then
-        local character = Globals.AllParameters.LastParameters[charUuid]
-        local character2 = Globals.AllParameters.MatParameters[charUuid]
+    DPrint('Elements:UpdateElements')
+    if Globals.AllParameters.ActiveMatParameters and Globals.AllParameters.ActiveMatParameters[charUuid] then
+        local character = Globals.AllParameters.ActiveMatParameters[charUuid]
+        local character2 = Globals.AllParameters.MatPresetParameters[charUuid]
         --local skinMat = Ext.StaticData.Get(Ext.Entity.Get(charUuid).CharacterCreationAppearance.SkinColor, 'CharacterCreationSkinColor').MaterialPresetUUID
         --local hairMat = Ext.StaticData.Get(Ext.Entity.Get(charUuid).CharacterCreationAppearance.HairColor, 'CharacterCreationHairColor').MaterialPresetUUID
 

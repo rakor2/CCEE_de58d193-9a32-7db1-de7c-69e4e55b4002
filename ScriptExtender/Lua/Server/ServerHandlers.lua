@@ -10,7 +10,7 @@
 ---@param singleEntity boolean # Apply parameters to single character or all characters
 ---@param onlyVis boolean 
 function UpdateParameters(ticks, entity, singleEntity, onlyVis, print)
-    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE)
+    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE_AM)
     local uuid
     if entity ~= nil then
         uuid = entity.Uuid.EntityUuid
@@ -21,8 +21,34 @@ function UpdateParameters(ticks, entity, singleEntity, onlyVis, print)
         single = singleEntity,
         entityUuid = uuid,
         TICKS_TO_WAIT = ticks,
-        LastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE,
-        MatParameters = Helpers.ModVars.Get(ModuleUUID).CCEE_MT
+        ActiveMatParameters = Helpers.ModVars.Get(ModuleUUID).CCEE_AM,
+        MatPresetParameters = Helpers.ModVars.Get(ModuleUUID).CCEE_MP
+    }
+    if onlyVis == true then
+        Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(payload))
+    else
+        Ext.Net.BroadcastMessage('CCEE_LoadMatVars', Ext.Json.Stringify(payload))
+        Helpers.Timer:OnTicks(15, function ()
+            Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(payload))
+        end)
+    end
+end
+
+
+function UpdateParameters(ticks, entity, singleEntity, onlyVis, print)
+    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE_AM)
+    local uuid
+    if entity ~= nil then
+        uuid = entity.Uuid.EntityUuid
+    else
+        uuid = ''
+    end
+    local payload = {
+        single = singleEntity,
+        entityUuid = uuid,
+        TICKS_TO_WAIT = ticks,
+        ActiveMatParameters = Helpers.ModVars.Get(ModuleUUID).CCEE_AM,
+        MatPresetParameters = Helpers.ModVars.Get(ModuleUUID).CCEE_MP
     }
     if onlyVis == true then
         Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(payload))

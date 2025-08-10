@@ -3,46 +3,65 @@
 
 --LevelGameplayStarted
 Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
+
+    Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
+    Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
+    Globals.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
+
+
+
     Helpers.Timer:OnTicks(100, function ()
         StartPMSub()
     end)
 
-
-    Ext.Net.PostMessageToServer('CCEE_RequestMatVars', '')
     if _C() then
-        CzechCCState()
+        CzechCCState(nil)
         getAllParameterNames(_C())
-        Helpers.Timer:OnTicks(200, function ()
-            DPrint('Elements:UpdateElements')
-            Elements:UpdateElements(_C().Uuid.EntityUuid)
+        Helpers.Timer:OnTicks(100, function ()
+            ApplyMaterialPresetPararmetersToAllCharacters()
+            Helpers.Timer:OnTicks(50, function ()
+                ApplyActiveMaterialParametersToAllCharacters()
+                Elements:UpdateElements(_C().Uuid.EntityUuid)
+            end)
         end)
     end
-    ApplyParametersToTLPreview() --in cases like the transponder cutscenes, when cutscene starts right after gameplay started
+
+    ApplyParametersToTLPreview() --in cases like the transponder cutscenes, when the cutscene starts right after gameplay started
+     
 end)
 
 
 
-Ext.RegisterNetListener('CCEE_BroadcastMatVars', function (channel, payload, user)
-    Globals.MatVars = Ext.Json.Parse(payload).MatVars
+Ext.RegisterNetListener('CCEE_BroadcastMatPresetVars', function (channel, payload, user)
+    --Globals.MatVars = Ext.Json.Parse(payload).MatVars
+    Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
 end)
+
+Ext.RegisterNetListener('CCEE_BroadcastActiveMatVars', function (channel, payload, user)
+    --Globals.MatVars = Ext.Json.Parse(payload).MatVars
+    Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
+end)
+
 
 
 -- Ext.RegisterNetListener('CCEE_UpdateParameters_OnlyVis', function (channel, payload, user)
 --     DPrint('1')
---     local LastParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
---     Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(LastParameters))
+--     local ActiveMatParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
+--     Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(ActiveMatParameters))
 -- end)
 
 --rename me
-Ext.RegisterNetListener('CCEE_MT', function (channel, payload, user)
-    -- local data = Ext.Json.Parse(payload)
-    -- UsedSkinUUID = data.UsedSkinUUID
-    -- SkinMap = data.SkinMap
-    -- MatData = data.MatData
-    LoadMatVars()
+-- Ext.RegisterNetListener('CCEE_MP', function (channel, payload, user)
+--     -- local data = Ext.Json.Parse(payload)
+--     -- UsedSkinUUID = data.UsedSkinUUID
+--     -- SkinMap = data.SkinMap
+--     -- MatData = data.MatData
+    
+-- end)
+
+Ext.RegisterNetListener('CCEE_ConfirmWorkaround', function (channel, payload, user)
+    ConfirmWorkaround(_C())
 end)
-
-
 
 
 --TLPreviewDummy
@@ -53,6 +72,35 @@ Ext.RegisterNetListener('CCEE_LoadDollParameters',function (channel, payload, us
     ApplyParametersToTLPreview()
 end)
 
+local APPLY_TICKS = 20
+Ext.RegisterNetListener('CCEE_ApplyMaterialPresetPararmetersToCharacter', function (channel, payload, user)
+    Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
+    Helpers.Timer:OnTicks(APPLY_TICKS, function ()
+        ApplyMaterialPresetPararmetersToCharacter(payload)
+    end)
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyMaterialPresetPararmetersAllCharacters', function (channel, payload, user)
+    Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
+    Helpers.Timer:OnTicks(APPLY_TICKS, function ()
+        DPrint(payload)
+        ApplyMaterialPresetPararmetersToAllCharacters()
+    end)
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToCharacter', function (channel, payload, user)
+    Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
+    Helpers.Timer:OnTicks(APPLY_TICKS, function ()
+        ApplyActiveMaterialParametersToCharacter(payload)
+    end)
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToAllCharacters', function (channel, payload, user)
+    Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
+    Helpers.Timer:OnTicks(APPLY_TICKS, function ()
+        ApplyActiveMaterialParametersToAllCharacters()
+    end)
+end)
 
 --Preset reload on mirror exit
 Ext.RegisterNetListener('CCEE_CAC', function (channel, payload, user)
@@ -110,8 +158,14 @@ end)
 
 
 Ext.Entity.OnChange('ItemDye', function(entity) --EasyDie
-    TempThingy()
+    --TempThingy()
     --DyeUpdates = Ext.System.ClientEquipmentVisuals.DyeUpdates
+    Utils:AntiSpam(500, function ()
+        DPrint('ItemDye')
+        --Ext.Net.PostMessageToServer('CCEE_UpdateParameters_NotOnlyVis', '')
+        getAllParameterNames(_C())
+        ApplyActiveMaterialParametersToCharacter(entity.Uuid.EntityUuid)
+    end)
 end)
 
 Ext.Entity.OnChange('CCState', function (entityCC)
@@ -119,12 +173,17 @@ Ext.Entity.OnChange('CCState', function (entityCC)
 end)
 
 
-Ext.Events.ResetCompleted:Subscribe(function()
-    CzechCCState()
-    LoadMatVars()
-    StartPMSub()
-    Elements:UpdateElements(_C().Uuid.EntityUuid)
-end)
+-- Ext.Events.ResetCompleted:Subscribe(function()
+--     Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
+--     Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
+--     Globals.justReseted = true
+--     Helpers.Timer:OnTicks(50, function ()
+--         Globals.justReseted = false
+--     end)
+--     CzechCCState(nil)
+--     StartPMSub()
+--     ApplyActiveMaterialParametersToAllCharacters()
+-- end)
 
 
 --Systems
@@ -198,6 +257,7 @@ end)
 --This shit also fires on hide/unhide T_T
 --Wtf is this game
 Ext.Entity.OnChange("Unsheath", function(entity)
+    if Globals.justReseted then return end
     Utils:AntiSpam(300, function ()
             if ClientControl == true then --bruh x2
         return
@@ -206,7 +266,12 @@ Ext.Entity.OnChange("Unsheath", function(entity)
     for bruh = 1, #origins do
         if entity == origins[bruh] then
             Helpers.Timer:OnTicks(30, function () --giga bruh
-                Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
+                if entity.Uuid then
+
+                    --ApplyActiveMaterialParametersToCharacter(entity.Uuid.EntityUuid)
+
+                end
+                    --Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
             end)
             -- Helpers.Timer:OnTicks(84, function () --giga bruh x2
             --     Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
