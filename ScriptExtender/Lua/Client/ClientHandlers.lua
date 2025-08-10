@@ -63,11 +63,11 @@ Globals.AllParameters.CCEEModStuff = {}
 
 
 
-Globals.MatPresetVars = {}
-Globals.MatPresetVars.SkinMap = {}
-Globals.MatPresetVars.HairMap = {}
-Globals.MatPresetVars.UsedSkinUUID = {}
-Globals.MatPresetVars.UsedHairUUID = {}
+Globals.AllParameters.CCEEModStuff = {}
+Globals.AllParameters.CCEEModStuff.SkinMap = {}
+Globals.AllParameters.CCEEModStuff.HairMap = {}
+Globals.AllParameters.CCEEModStuff.UsedSkinUUID = {}
+Globals.AllParameters.CCEEModStuff.UsedHairUUID = {}
 
 Globals.CC_Entities = {}
 
@@ -1340,8 +1340,8 @@ function LoadPreset(fileName)
             local uuid = _C().Uuid.EntityUuid
 
             ---TBD:remove this
-            if Globals.MatPresetVars.SkinMap and Globals.MatPresetVars.SkinMap[_C().Uuid.EntityUuid] then
-                skinMatUuid = Ext.StaticData.Get(Globals.MatPresetVars.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID
+            if Globals.AllParameters.CCEEModStuff.SkinMap and Globals.AllParameters.CCEEModStuff.SkinMap[_C().Uuid.EntityUuid] then
+                skinMatUuid = Ext.StaticData.Get(Globals.AllParameters.CCEEModStuff.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID
             else
                 if dataLoad[3] then
                     skinMatUuid = Ext.StaticData.Get(dataLoad[3].DefaultCC.SkinColor, 'CharacterCreationSkinColor').MaterialPresetUUID
@@ -1355,8 +1355,8 @@ function LoadPreset(fileName)
                 end
             end
 
-            if Globals.MatPresetVars.SkinMap and Globals.MatPresetVars.SkinMap[uuid] then
-                skinUuid = Globals.MatPresetVars.SkinMap[uuid]
+            if Globals.AllParameters.CCEEModStuff.SkinMap and Globals.AllParameters.CCEEModStuff.SkinMap[uuid] then
+                skinUuid = Globals.AllParameters.CCEEModStuff.SkinMap[uuid]
             else
                 if dataLoad[3] then
                     skinUuid = dataLoad[3].DefaultCC.SkinColor
@@ -1400,10 +1400,10 @@ function RealodPreset()
             local SkinMaterialParams
             local skinMatUuid
             local skinUuid
-            if Globals.MatPresetVars.SkinMap then
-                SkinMaterialParams = {Globals.AllParameters.MatPresetParameters[uuid][Ext.StaticData.Get(Globals.MatPresetVars.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID]}
-                skinMatUuid = Ext.StaticData.Get(Globals.MatPresetVars.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID
-                skinUuid = Globals.MatPresetVars.SkinMap[uuid]
+            if Globals.AllParameters.CCEEModStuff.SkinMap then
+                SkinMaterialParams = {Globals.AllParameters.MatPresetParameters[uuid][Ext.StaticData.Get(Globals.AllParameters.CCEEModStuff.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID]}
+                skinMatUuid = Ext.StaticData.Get(Globals.AllParameters.CCEEModStuff.SkinMap[_C().Uuid.EntityUuid], 'CharacterCreationSkinColor').MaterialPresetUUID
+                skinUuid = Globals.AllParameters.CCEEModStuff.SkinMap[uuid]
             else
                 SkinMaterialParams = {}
                 skinMatUuid = nil
@@ -1420,9 +1420,9 @@ function RealodPreset()
                 skinMatUuid = skinMatUuid,
                 skinUuid = skinUuid
             }
-            Helpers.Timer:OnTicks(3, function ()
+            Helpers.Timer:OnTicks(5, function ()
                 Ext.Net.PostMessageToServer('CCEE_LoadPreset', Ext.Json.Stringify(data))
-                data = {}
+                data = nil
             end)
         end)
     end)
@@ -1432,15 +1432,15 @@ end
 
 Ext.RegisterConsoleCommand('d', function ()
     DWarn('MAT DAT -----------------')
-    DDump(Globals.MatPresetVars)
+    DDump(Globals.AllParameters.CCEEModStuff)
     DWarn('SKIN MAP -----------------')
-    DDump(Globals.MatPresetVars.SkinMap)
+    DDump(Globals.AllParameters.CCEEModStuff.SkinMap)
     DWarn('USED SKIN -----------------')
-    DDump(Globals.MatPresetVars.UsedSkinUUID)
+    DDump(Globals.AllParameters.CCEEModStuff.UsedSkinUUID)
     DWarn('HAIR MAP -----------------')
-    DDump(Globals.MatPresetVars.HairMap)
+    DDump(Globals.AllParameters.CCEEModStuff.HairMap)
     DWarn('USED HAIR -----------------')
-    DDump(Globals.MatPresetVars.UsedHairUUID)
+    DDump(Globals.AllParameters.CCEEModStuff.UsedHairUUID)
 end)
 
 
