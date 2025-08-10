@@ -17,9 +17,9 @@ Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payl
     if _C() then
         CzechCCState(nil)
         getAllParameterNames(_C())
-        Helpers.Timer:OnTicks(100, function ()
+        Helpers.Timer:OnTicks(10, function ()
             ApplyMaterialPresetPararmetersToAllCharacters()
-            Helpers.Timer:OnTicks(50, function ()
+            Helpers.Timer:OnTicks(15, function ()
                 ApplyActiveMaterialParametersToAllCharacters()
                 Elements:UpdateElements(_C().Uuid.EntityUuid)
             end)

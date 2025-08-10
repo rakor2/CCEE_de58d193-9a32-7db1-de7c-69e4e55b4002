@@ -360,7 +360,7 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
             -- DPrint('RemoveCustomVisualOvirride')
         end
     end)
-    Helpers.Timer:OnTicks(2, function ()
+    Helpers.Timer:OnTicks(4, function ()
         if DefaultCC then
             for _, visUuid in pairs(DefaultCC.Visuals) do
                 if visUuid then
@@ -369,16 +369,16 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                     -- DDump(visUuid)
                 end
             end
-            Helpers.Timer:OnTicks(3, function ()
+            Helpers.Timer:OnTicks(8, function ()
                 applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC)
             end)
-            Helpers.Timer:OnTicks(4, function ()
+            Helpers.Timer:OnTicks(12, function ()
                 entity:Replicate('GameObjectVisual')
                 entity:Replicate('CharacterCreationAppearance')
             end)
-            Helpers.Timer:OnTicks(10, function ()
+            Helpers.Timer:OnTicks(14, function ()
                 Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyMaterialPresetPararmetersToCharacter', entity.Uuid.EntityUuid)
-                Helpers.Timer:OnTicks(20, function ()
+                Helpers.Timer:OnTicks(16, function ()
                     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
                 end)
             end)
