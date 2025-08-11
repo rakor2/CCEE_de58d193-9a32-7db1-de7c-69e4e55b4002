@@ -147,6 +147,27 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
             DPrint('CEV|CC dummies')
             ApplyParametersToCCDummy(entity)
             table.insert(Globals.CC_Entities, entity)
+    --Mods.Luas._DD(entity, '_First_CC', true)
+    --Mods.Luas._DD(entity.ClientPaperdoll.Entity, '_First_CC2', true)
+    --Mods.Luas._DD(entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190, '_First_CC3', true)
+    --Mods.Luas._DD(entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190.ClientCCDefinitionState.Entity, '_First_CC4', true)
+    --Globals.firstCCDummy = entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190.ClientCCDummyDefinition.Dummy
+    --DPrint(Globals.firstCCDummy)
+    local timer
+    if Globals.firstCC == true then
+        timer = 10
+    else
+        timer = 40
+    end
+    Helpers.Timer:OnTicks(timer, function ()
+    if (_C().CCState and _C().CCState.HasDummy == true) or Globals.firstCC == true then
+        DPrint('CEV|CC dummies')
+            if Globals.firstCC then
+                ApplyParametersToVisibleFirstCCDummy(getFirsCCDummy())
+            else
+                ApplyParametersToVisibleCCDummy(entity)
+                table.insert(Globals.CC_Entities, entity)
+            end
         end
     end)
     --#region

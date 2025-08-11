@@ -28,6 +28,40 @@ function getCharacterCreationAppearance(entity)
     return savedAppearance
 end
 
+function getDummyAppearance(entity)
+    DPrint('1')
+    local savedAppearance = {}
+    local dummyCCA = entity.ClientCCDummyDefinition
+    if dummyCCA and dummyCCA.Visual then
+        local vis = dummyCCA.Visual
+        savedAppearance.AdditionalChoices = {}
+        for i = 1, #vis.AdditionalChoices do
+            savedAppearance.AdditionalChoices[i] = vis.AdditionalChoices[i]
+        end
+        savedAppearance.Elements = {}
+        for i = 1, #vis.Elements do
+            savedAppearance.Elements[i] = {
+                Color = vis.Elements[i].Color,
+                ColorIntensity = vis.Elements[i].ColorIntensity,
+                GlossyTint = vis.Elements[i].GlossyTint,
+                Material = vis.Elements[i].Material,
+                MetallicTint = vis.Elements[i].MetallicTint
+            }
+        end
+        savedAppearance.EyeColor = vis.EyeColor
+        savedAppearance.HairColor = vis.HairColor
+        savedAppearance.SecondEyeColor = vis.SecondEyeColor
+        savedAppearance.SkinColor = vis.SkinColor
+        savedAppearance.Visuals = {}
+        for i = 1, #vis.Visuals do
+            savedAppearance.Visuals[i] = vis.Visuals[i]
+        end
+    end
+    DPrint('4')
+    DDump(savedAppearance)
+    return savedAppearance
+end
+
 function getCharacterCreationAppearance2(entity)
     local savedAppearance = {}
     local CCA = entity.CharacterCreationAppearance
