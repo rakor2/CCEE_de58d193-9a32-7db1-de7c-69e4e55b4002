@@ -293,3 +293,34 @@ Ext.Entity.OnChange("Unsheath", function(entity)
     end
     end)
 end)
+
+
+--Thx LL for investigation 
+local function OnClientCharacterIconRender()
+    local system = Ext.System.ClientCharacterIconRender
+    local totalRequests = #system.IconRequests
+    if totalRequests > 0 then
+        for _,v in pairs(system.IconRequests) do
+            local req = v.ClientCharacterIconRequest --[[@as EclCharacterIconRequestComponent]]
+            --req.Trigger = 'Icon_Minthara' --'Icon_Origin_Astarion' --"Icon_SCL_HAV_HalsinPortal"
+            --req.Template = "05047890-4138-40b5-9d8d-3ccb9d10e434"
+            --req.Visual = "cc86c035-ec2b-1ab3-4d8d-5d39092c908c"
+
+            if GlobalsIMGUI.iconVanity.Checked then
+                req.ArmorSetState = "Vanity"
+            else
+                req.ArmorSetState = "Normal"
+            end
+        end
+    end
+end
+
+Ext.Events.SessionLoaded:Subscribe(function (e)
+    Ext.Entity.OnSystemUpdate("ClientCharacterIconRender", OnClientCharacterIconRender)
+end)
+
+
+
+Ext.Events.ResetCompleted:Subscribe(function()
+
+end)
