@@ -1,5 +1,5 @@
 ---@diagnostic disable: param-type-mismatch
-local OPENQUESTIONMARK = true
+local OPENQUESTIONMARK = false
 
 
 function UI:Init()
@@ -81,13 +81,16 @@ function Window:CCEEWindow()
 
     function CCEE:CoolThings()
 
-        local STOPPPPP = p:AddButton('Idle')
-        STOPPPPP.OnClick = function()
-            Ext.Net.PostMessageToServer('CCEE_Stop', '')
-        end
+        -- local STOPPPPP = p:AddButton('Idle')
+        -- STOPPPPP.OnClick = function()
+        --     Ext.Net.PostMessageToServer('CCEE_Stop', '')
+        -- end
+
+
+
 
         local resetCharacter = p:AddButton('Reset character')
-        resetCharacter.SameLine = true
+        resetCharacter.SameLine = false
         resetCharacter.OnClick = function ()
 
             confirmResetChar.Visible = true
@@ -112,7 +115,7 @@ function Window:CCEEWindow()
         confirmResetChar:SetColor("ButtonActive", {0.25, 0.0, 0.0, 1.0})
         confirmResetChar.Size = {159,35}
 
-        confirmResetChar.SameLine = true
+        confirmResetChar.SameLine = false
         confirmResetChar.Visible = false
         confirmResetChar.OnClick = function ()
 
@@ -132,31 +135,6 @@ function Window:CCEEWindow()
 
         end
 
-        local backupPM = p:AddButton('PM backup')
-        backupPM.SameLine = true
-        backupPM.OnClick = function ()
-            ApplyParametersToPMDummies()
-        end
-
-        local tp5 = backupPM:Tooltip()
-        tp5:AddText([[
-        If parameters didn't apply to PM characters]])
-
-        local forceLoad = p:AddButton('Force load')
-        forceLoad.SameLine = true
-        forceLoad.OnClick = function ()
-            Ext.Net.PostMessageToServer('CCEE_UpdateParameters_OnlyVis', '')
-            ApplyParametersToCCDummy()
-            ApplyParametersToTLPreview()
-        end
-
-
-        local tp3 = forceLoad:Tooltip()
-        tp3:AddText([[
-        Loads stored data from the save file for every character in scene
-        Useful if visually MOD'S parameters (THE ones in THE WINDOW) got reset]])
-
-
         local resetBtn = p:AddButton('Reload SE')
         resetBtn.SameLine = true
         resetBtn.OnClick = function ()
@@ -166,6 +144,56 @@ function Window:CCEEWindow()
         local tp4 = resetBtn:Tooltip()
         tp4:AddText([[
         Hit the buttone if something went wrong]])
+
+        local backupPM = p:AddButton('Force dummies')
+        backupPM.SameLine = false
+        backupPM.OnClick = function ()
+            ApplyParametersToPMDummies()
+            ApplyParametersToVisibleCCDummy()
+            ApplyParametersToTLPreview()
+        end
+
+        local tp10 = backupPM:Tooltip()
+        tp10:AddText([[
+        Loads stored data from the save file for every character in PM
+        Useful if visually MOD'S parameters (THE ones in THE WINDOW) got reset]])
+
+        -- local tp5 = backupPM:Tooltip()
+        -- tp5:AddText([[
+        -- If parameters didn't apply to PM characters]])
+
+        local forceLoad = p:AddButton('Force characters')
+        forceLoad.SameLine = true
+        forceLoad.OnClick = function ()
+            --Ext.Net.PostMessageToServer('CCEE_UpdateParameters_OnlyVis', '')
+            ApplyMaterialPresetPararmetersToAllCharacters()
+            Helpers.Timer:OnTicks(20, function ()
+                ApplyActiveMaterialParametersToAllCharacters()
+            end)
+        end
+
+
+        local tp3 = forceLoad:Tooltip() 
+        tp3:AddText([[
+        Loads stored data from the save file for every character in scene
+        Useful if visually MOD'S parameters (THE ones in THE WINDOW) got reset]])
+
+
+        GlobalsIMGUI.firstCC = p:AddCheckbox([[I'm in THE first character creation]])
+        GlobalsIMGUI.firstCC.OnChange = function ()
+            if GlobalsIMGUI.firstCC.Checked then
+                CCState = true
+                Globals.firstCC = true
+                Apply.entity = getFirsCCDummy()
+                table.insert(Globals.FirstCCCharacters, _C().Uuid.EntityUuid)
+                DDump(Globals.FirstCCCharacters)
+            else
+                Globals.firstCC = false
+            end
+        end
+
+        
+
 
 
         local sepa = p:AddSeparatorText('')
@@ -1393,39 +1421,35 @@ function CCEE:PresetsTab()
 
 
 
-    local sepapT2 = presetsTab:AddSeparatorText('Save')
+    --local sepapT2 = presetsTab:AddSeparatorText('Save')
     local presetNameLoad = presetsTab:AddInputText('')
     presetNameLoad.IDContext = 'presetNameLoad'
 
     local savePreset = presetsTab:AddButton('Save')
-    savePreset.SameLine = true
+    savePreset.SameLine = false
     savePreset.IDContext = 'savePreset'
     savePreset.OnClick = function ()
         SavePreset(presetNameLoad.Text)
         presetNameLoad.Text = ''
     end
 
-    local updatePreset = presetsTab:AddButton('Update')
-    updatePreset.SameLine = true
-    updatePreset.IDContext = 'savePreset'
-    updatePreset.OnClick = function ()
-        SavePreset(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
-    end
     
-    local sepapT2 = presetsTab:AddSeparatorText('Load')
+    local sepapT2 = presetsTab:AddSeparatorText('')
 
-    GlobalsIMGUI.presetsCombo = presetsTab:AddCombo('Presets')
+
+    local presetLoadName = presetsTab:AddInputText('')
+    presetLoadName.IDContext = 'presetLoadName'
+
+
+    GlobalsIMGUI.presetsCombo = presetsTab:AddCombo('')
     GlobalsIMGUI.presetsCombo.Options = Globals.Presets or {}
     GlobalsIMGUI.presetsCombo.SelectedIndex = 0
     GlobalsIMGUI.presetsCombo.OnChange = function ()
         DPrint(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
     end
 
-    local presetLoadName = presetsTab:AddInputText('')
-    presetLoadName.IDContext = 'presetLoadName'
-
     local loadPreset = presetsTab:AddButton('Load')
-    loadPreset.SameLine = true
+    loadPreset.SameLine = false
     loadPreset.IDContext = 'CCEE_LoadPreset'
     loadPreset.OnClick = function ()
         local name = (presetLoadName.Text ~= '' and presetLoadName.Text) or GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1]
@@ -1435,14 +1459,22 @@ function CCEE:PresetsTab()
         presetLoadName.Text = ''
     end
 
+    local updatePreset = presetsTab:AddButton('Update selected')
+    updatePreset.SameLine = true
+    updatePreset.IDContext = 'savePreset'
+    updatePreset.OnClick = function ()
+        SavePreset(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
+    end
 
-    local loadPreset2 = presetsTab:AddButton('ReLoad')
+
+    local loadPreset2 = presetsTab:AddButton('Reload current')
+    loadPreset2.SameLine = true
     loadPreset2.IDContext = 'loadPrese2'
     loadPreset2.OnClick = function ()
         RealodPreset()
         presetLoadName.Text = ''
     end
-    
+
 
     local tp6 = loadPreset2:Tooltip()
     tp6:AddText([[
@@ -1450,19 +1482,45 @@ function CCEE:PresetsTab()
     load your preset using this button, so the added attachment doesn't get overridden.
     And after saving it, you can use Load]])
 
+    local sepa = presetsTab:AddSeparatorText('DO NOT MISSCLICK')
 
+    local loadPresetFirstCC = presetsTab:AddButton('Load after first CC')
+    loadPresetFirstCC.IDContext = 'loadPresetFirstCC'
+    loadPresetFirstCC.OnClick = function ()
+        local name = (presetLoadName.Text ~= '' and presetLoadName.Text) or GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1]
+        if name then
+            for _, uuid in pairs(Globals.FirstCCCharacters) do
+                Globals.AllParameters.ActiveMatParameters[uuid] = nil
+                Globals.AllParameters.MatPresetParameters[uuid] = nil
+                Globals.AllParameters.CCEEModStuff.SkinMap[uuid] = nil
+            end
+            Helpers.Timer:OnTicks(5, function ()
+                Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
+                Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
+                Ext.Net.PostMessageToServer('CCEE_SendCCEEModVars', Ext.Json.Stringify(Globals.AllParameters.CCEEModStuff))
+                Globals.FirstCCCharacters = {}
+                Helpers.Timer:OnTicks(5, function ()
+                    LoadPreset(name)
+                end)
+            end)
+        end
+        presetLoadName.Text = ''
+    end
 
-    GlobalsIMGUI.invalidName = presetsTab:AddText('')
+    GlobalsIMGUI.info = presetsTab:AddText('')
 
 end
 
 function CCEE:SettingsTab()
     GlobalsIMGUI.unlockTats = settingsTab:AddCheckbox('Unlock tats sliders')
+
+    GlobalsIMGUI.iconVanity = settingsTab:AddCheckbox('Use camp clothes in portrait')
+
     local sepa = settingsTab:AddSeparator()
     local text = settingsTab:AddText('Delay before re-applying parameters')
-    local applyDelay = settingsTab:AddSliderInt('', 1000, 0, 1000, 0)
-    applyDelay.OnChange = function ()
-        Ext.Net.PostMessageToServer('CCEE_Apply_Delay', applyDelay.Value[1])
+    GlobalsIMGUI.applyDelay = settingsTab:AddSliderInt('ms', 1000, 0, 1000, 0)
+    GlobalsIMGUI.applyDelay.OnChange = function ()
+        --Ext.Net.PostMessageToServer('CCEE_Apply_Delay', GlobalsIMGUI.applyDelay.Value[1])
     end
 end
 
@@ -1470,10 +1528,11 @@ function CCEE:Reset()
 
     local resetTableBtn = resetTab:AddButton('Delete data')
     resetTableBtn.OnClick = function ()
-
-        Globals.AllParameters.ActiveMatParameters = {}
-        lastParametersMV = {}
+        --lastParametersMV = {}
         dummies = {}
+        Parameters = Parameters or {}
+        Globals.AllParameters = {}
+        Globals.CC_Entities = {}
         -- Parameters = {}
 
         Ext.Net.PostMessageToServer('CCEE_ResetAllData', '')
@@ -1516,30 +1575,31 @@ function CCEE:Dev()
 
     local testsCheck = devTab:AddCheckbox('All parameters (they do not save)')
     testsCheck.IDContext = 'adasd22'
-    testsCheck.SameLine = true
     testsCheck.OnChange = function ()
         if testsCheck.Checked then
             CCEE:Tests()
         else
             sepate:Destroy()
-            testParams:Destroy()
+            testParams2:Destroy()
         end
     end
+
+    testsSave = devTab:AddCheckbox('Save all parameters')
     
 
-    local zeroBtn = devTab:AddButton('Zero')
-    zeroBtn.OnClick = function ()
-        Ext.Net.PostMessageToServer('CCEE_setElementsToZero', '')
-    end
+    -- local zeroBtn = devTab:AddButton('Zero')
+    -- zeroBtn.OnClick = function ()
+    --     Ext.Net.PostMessageToServer('CCEE_setElementsToZero', '')
+    -- end
 
 
 
 end
 
 function CCEE:Tests()
-    local sepate = p:AddSeparatorText('Not main tabs')
+    sepate = p:AddSeparatorText('')
     local parent = p
-    local testParams2 = parent:AddCollapsingHeader('All parameters')
+    testParams2 = parent:AddCollapsingHeader('All parameters')
     function Tests:All()
         Tree = Tree or {}
         Tree1 = Tree1 or {}
@@ -1551,16 +1611,20 @@ function CCEE:Tests()
             Tree2[attachment] = Tree[attachment]:AddTree('Vec3##3123')
             Tree3[attachment] = Tree[attachment]:AddTree('Vec##3123')
 
-            local max = 5
+            local max = 10
             local min = -max
             function TestAllScalarParameters()
                 for _,v in ipairs(Parameters[attachment].ScalarParameters) do
                     local testSlider = Tree1[attachment] :AddSlider(v, 0, min, max, 0.1)
-                    testSlider.Logarithmic = true
+                    testSlider.Logarithmic = false
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
                         for _, part in ipairs({attachment}) do
-                            SetActiveMaterialParameterValue(_C(), part, v, 'ScalarParameters', testSlider.Value[1])
+                            if testsSave.Checked then
+                                HandleActiveMaterialParameters(Apply.entity, part, v, 'ScalarParameters', testSlider.Value[1])
+                            else
+                                SetActiveMaterialParameterValue(Apply.entity, part, v, 'ScalarParameters', testSlider.Value[1])
+                            end
                         end
                     end
                 end
@@ -1572,7 +1636,11 @@ function CCEE:Tests()
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
                         for _, part in ipairs({attachment}) do
-                            SetActiveMaterialParameterValue(_C(), part, v, 'Vector3Parameters', testPicker.Color)
+                            if testsSave.Checked then
+                                HandleActiveMaterialParameters(Apply.entity, part, v, 'Vector3Parameters', testPicker.Color)
+                            else
+                                SetActiveMaterialParameterValue(Apply.entity, part, v, 'Vector3Parameters', testPicker.Color)
+                            end
                         end
                     end
                 end
@@ -1584,7 +1652,11 @@ function CCEE:Tests()
                     testPicker2.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker2.OnChange = function()
                         for _, part in ipairs({attachment}) do
-                            SetActiveMaterialParameterValue(_C(), part, v, 'VectorParameters', testPicker2.Color)
+                            if testsSave.Checked then
+                                HandleActiveMaterialParameters(Apply.entity, part, v, 'VectorParameters', testPicker2.Color)
+                            else
+                                SetActiveMaterialParameterValue(Apply.entity, part, v, 'VectorParameters', testPicker2.Color)
+                            end
                         end
                     end
                 end
