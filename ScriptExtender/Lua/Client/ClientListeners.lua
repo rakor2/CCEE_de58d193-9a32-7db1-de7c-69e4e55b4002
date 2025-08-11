@@ -142,11 +142,6 @@ end)
 
 --Probably just sub to noesis Ext.UI.GetRoot():Child(1):Child(1):Child(24):Child(1).StartCharacterCreation
 Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, component)
-    Helpers.Timer:OnTicks(10, function ()
-    if _C().CCState and _C().CCState.HasDummy == true then
-            DPrint('CEV|CC dummies')
-            ApplyParametersToCCDummy(entity)
-            table.insert(Globals.CC_Entities, entity)
     --Mods.Luas._DD(entity, '_First_CC', true)
     --Mods.Luas._DD(entity.ClientPaperdoll.Entity, '_First_CC2', true)
     --Mods.Luas._DD(entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190, '_First_CC3', true)
