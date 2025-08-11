@@ -738,7 +738,7 @@ function ApplyParametersToDollsTest(entity, uuid)
     end
 end
 
-function ApplyParametersToCCDummy(entity)
+function ApplyParametersToVisibleCCDummy(entity)
     local entityDummy
     local CCdumies = Ext.Entity.GetAllEntitiesWithComponent("ClientCCDummyDefinition")
     for _,dummy in pairs(CCdumies) do
