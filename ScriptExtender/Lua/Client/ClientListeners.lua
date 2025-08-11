@@ -3,12 +3,11 @@
 
 --LevelGameplayStarted
 Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
-
+    Globals.firstCC = false
+    GlobalsIMGUI.firstCC.Checked = false
     Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
     Globals.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
-
-
 
     Helpers.Timer:OnTicks(100, function ()
         StartPMSub()
@@ -25,9 +24,7 @@ Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payl
             end)
         end)
     end
-
     ApplyParametersToTLPreview() --in cases like the transponder cutscenes, when the cutscene starts right after gameplay started
-     
 end)
 
 
@@ -42,6 +39,10 @@ Ext.RegisterNetListener('CCEE_BroadcastActiveMatVars', function (channel, payloa
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
 end)
 
+Ext.RegisterNetListener('CCEE_BroadcastCCEEModVars', function (channel, payload, user)
+    --Globals.MatVars = Ext.Json.Parse(payload).MatVars
+    Globals.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
+end)
 
 
 -- Ext.RegisterNetListener('CCEE_UpdateParameters_OnlyVis', function (channel, payload, user)
@@ -77,28 +78,35 @@ Ext.RegisterNetListener('CCEE_ApplyMaterialPresetPararmetersToCharacter', functi
     Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
         ApplyMaterialPresetPararmetersToCharacter(payload)
+        Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
     end)
 end)
 
 Ext.RegisterNetListener('CCEE_ApplyMaterialPresetPararmetersAllCharacters', function (channel, payload, user)
     Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
+    Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
         DPrint(payload)
         ApplyMaterialPresetPararmetersToAllCharacters()
+        Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
     end)
 end)
 
 Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToCharacter', function (channel, payload, user)
     Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
+    Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
         ApplyActiveMaterialParametersToCharacter(payload)
+        Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
     end)
 end)
 
 Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToAllCharacters', function (channel, payload, user)
     Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
+    Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
         ApplyActiveMaterialParametersToAllCharacters()
+        Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
     end)
 end)
 
@@ -155,6 +163,11 @@ end)
 
 
 
+Ext.Events.ResetCompleted:Subscribe(function()
+    Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
+    Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
+    Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
+end)
 
 
 Ext.Entity.OnChange('ItemDye', function(entity) --EasyDie
@@ -268,7 +281,7 @@ Ext.Entity.OnChange("Unsheath", function(entity)
             Helpers.Timer:OnTicks(30, function () --giga bruh
                 if entity.Uuid then
 
-                    --ApplyActiveMaterialParametersToCharacter(entity.Uuid.EntityUuid)
+                    ApplyActiveMaterialParametersToCharacter(entity.Uuid.EntityUuid)
 
                 end
                     --Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
