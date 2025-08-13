@@ -10,7 +10,7 @@ Test = {}
 function Test:CharVis()
     local allCharVis = Ext.Resource.GetAll('CharacterVisual')
     -- for k,v in pairs(allCharVis) do
-    --     DPrint(k)
+    --    DPrint(k)
     --     DDump()
     -- end
 
@@ -18,3 +18,11 @@ function Test:CharVis()
         DDump(Ext.Resource.Get(allCharVis[i],'CharacterVisual'))
     end
 end
+
+
+
+
+
+
+
+
