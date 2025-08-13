@@ -4,6 +4,7 @@
 --LevelGameplayStarted
 Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
     Globals.firstCC = false
+    Globals.States.firstCC = false
     GlobalsIMGUI.firstCC.Checked = false
     Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
@@ -130,7 +131,9 @@ end)
 
 --Paperdoll --make a check for transparent attack doll
 Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component)
-    DPrint('ClientPaperdoll|OnCreate')
+    Utils:AntiSpam(100, function ()
+        DPrint('ClientPaperdoll|OnCreate')
+    end)
     Helpers.Timer:OnTicks(5, function ()
         local owner = Paperdoll.GetDollOwner(entity)
         if owner then
@@ -146,18 +149,20 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
     --Mods.Luas._DD(entity.ClientPaperdoll.Entity, '_First_CC2', true)
     --Mods.Luas._DD(entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190, '_First_CC3', true)
     --Mods.Luas._DD(entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190.ClientCCDefinitionState.Entity, '_First_CC4', true)
-    --Globals.firstCCDummy = entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190.ClientCCDummyDefinition.Dummy
-    --DPrint(Globals.firstCCDummy)
+    --Globals.States.firstCCDummy = entity.ClientPaperdoll.Entity.ClientCharacterIconRequest.field_190.ClientCCDummyDefinition.Dummy
+    --DPrint(Globals.States.firstCCDummy)
     local timer
-    if Globals.firstCC == true then
+    if Globals.States.firstCC == true then
         timer = 10
     else
         timer = 40
     end
     Helpers.Timer:OnTicks(timer, function ()
-    if (_C().CCState and _C().CCState.HasDummy == true) or Globals.firstCC == true then
-        DPrint('CEV|CC dummies')
-            if Globals.firstCC then
+    if (_C().CCState and _C().CCState.HasDummy == true) or Globals.States.firstCC == true then
+        Utils:AntiSpam(100, function ()
+            DPrint('CEV|CC dummies')
+        end)
+            if Globals.States.firstCC then
                 ApplyParametersToVisibleFirstCCDummy(getFirsCCDummy())
             else
                 ApplyParametersToVisibleCCDummy(entity)

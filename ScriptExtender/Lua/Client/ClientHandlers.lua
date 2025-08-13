@@ -69,10 +69,12 @@ Globals.AllParameters.CCEEModStuff.HairMap = {}
 Globals.AllParameters.CCEEModStuff.UsedSkinUUID = {}
 Globals.AllParameters.CCEEModStuff.UsedHairUUID = {}
 
+Globals.States = {}
+
 Globals.CC_Entities = {}
 
 
-Globals.FirstCCCharacters = Globals.FirstCCCharacters or {}
+Globals.States.firstCCCharacters = Globals.States.firstCCCharacters or {}
 
 ---@param type integer # 1 - keyborad / 0 - controller
 ---@param bindingIndex integer
@@ -131,21 +133,48 @@ end
 MoneyCounter()
 
 
----Checks if character is in the mirror (for some reason the osi listeners doesn't return characters); and also does some bs
+---Checks if character is in the mirror (for some reason the osi listeners doesn't return characters)
+---and also does some bs
 ---@param entity EntityHandle
 ---@return EntityHandle #If user in the mirror returns visually seen СС dummy entity, if not - _C()
 function CzechCCState(entity)
     DPrint('CzechCCState')
     Helpers.Timer:OnTicks(20, function ()
         if _C() and _C().CCState and _C().CCState.HasDummy == false then
-            CCState = false
+            DPrint('Not in the mirror')
+            Globals.States.CCState = false
+            Globals.States.firstCC = false
             Apply.entity = _C()
-            DPrint('HasDummy = ' .. tostring(CCState))
+            --DPrint('HasDummy = ' .. tostring(CCState))
             DPrint('Apply entity' .. ' - ' .. tostring(Apply.entity))
-            Ext.Net.PostMessageToServer('CCEE_CCSate', Ext.Json.Stringify(CCState))
+            Ext.Net.PostMessageToServer('CCEE_CCSate', Ext.Json.Stringify(Globals.States.CCState))
+            GlobalsIMGUI.stateStatus.Label = 'Not in the mirror'
             return _C()
+        --First CC
+        elseif Ext.Entity.Get('e2badbf0-159a-4ef5-9e73-7bbeb3d1015a')
+            or Ext.Entity.Get('aa772968-b5e0-4441-8d86-2d0506b4aab5')
+            or Ext.Entity.Get('81c48711-d7cc-4a3d-9e49-665eb915c15c')
+            or Ext.Entity.Get('6bff5419-5a9e-4839-acd4-cac4f6e41bd7') then
+            DPrint('In the first CC')
+            Globals.States.CCState = true
+            Globals.States.firstCC = true
+            DPrint('Waiting for the dummy to be created')
+            Utils:SubUnsubToTick('sub', 'FirstCC', function ()
+                if getFirsCCDummy() then
+                    Apply.entity = getFirsCCDummy()
+                    DPrint('Apply entity' .. ' - ' .. tostring(Apply.entity))
+                    table.insert(Globals.States.firstCCCharacters, _C().Uuid.EntityUuid)
+                    GlobalsIMGUI.stateStatus.Label = 'In the first CC'
+                    if Apply.entity then
+                        Utils:SubUnsubToTick('unsub', 'FirstCC', nil)
+                    end
+                end
+            end)
         else
-            CCState = true
+        --Mirror
+            DPrint('In the mirror')
+            Globals.States.CCState = true
+            Globals.States.firstCC = false
             local dummy = getCCDummy(_C())
             if dummy then
                 ApplyParametersToVisibleCCDummy(entity)
@@ -153,8 +182,10 @@ function CzechCCState(entity)
                 Globals.dummyEntity = dummy.ClientCCDummyDefinition.Dummy
                 Apply.entity = dummy.ClientCCDummyDefinition.Dummy
                 DPrint('HasDummy = ' .. tostring(CCState))
+                --DPrint('HasDummy = ' .. tostring(CCState))
                 DPrint('Apply entity' .. ' - ' .. tostring(Apply.entity))
-                Ext.Net.PostMessageToServer('CCEE_CCSate', Ext.Json.Stringify(CCState))
+                Ext.Net.PostMessageToServer('CCEE_CCSate', Ext.Json.Stringify(Globals.States.CCState))
+                GlobalsIMGUI.stateStatus.Label = 'In the mirror'
             end
             return Globals.dummyEntity
         end
@@ -167,42 +198,67 @@ end
 ---It's just sets valid default UUIDs to CC dummy
 ---Don't know if the indecies? indexes? are static
 function ConfirmWorkaround(entity)
-    if CCState == true then
+    if Globals.States.CCState == true then
         local dummy = getCCDummy(entity)
-        if dummy then 
+        if dummy then
             local DummyVisual = dummy.ClientCCChangeAppearanceDefinition.Definition.Visual
             local EntityCCA = entity.CharacterCreationAppearance
-            -- Hair Color
+            --Hair Color
             if EntityCCA.HairColor == Utils.ZEROUUID then
                 DummyVisual.HairColor = 'edbb0710-7162-487b-9553-062bece30c1f'
+            else
+                --DPrint('HairColor: ' .. DummyVisual.HairColor)
             end
-            -- Face Tattoo
+            --Face Tattoo
             if EntityCCA.Elements[1].Material == Utils.ZEROUUID then
                 DummyVisual.Elements[1].Material = '00894ccc-31ee-4527-94d5-a408cccb3583'
+            else
+                --DPrint('Face: ' .. DummyVisual.Elements[1].Material)
             end
-            -- Makeup
+            --Makeup
             if EntityCCA.Elements[2].Material == Utils.ZEROUUID then
                 DummyVisual.Elements[2].Material = '503bb196-fee7-4e1b-8a58-c09f48bdc9d1'
+            else
+                --DPrint('Makeup: ' .. DummyVisual.Elements[2].Material)
             end
-            -- Scales
+            --Scales
             if EntityCCA.Elements[3].Material == Utils.ZEROUUID then
                 DummyVisual.Elements[3].Material = 'f03b33ae-5d47-4cb5-80bc-ea06a3c55c96'
+            else
+                --DPrint('Scales: ' .. DummyVisual.Elements[3].Material)
             end
-            -- Graying
+            --Graying
             if EntityCCA.Elements[4].Material == Utils.ZEROUUID then
                 DummyVisual.Elements[4].Material = 'dbf4ab14-44c2-4ef9-b8be-35d1dfdd1c0f'
+            else
+                --DPrint('Graying: ' .. DummyVisual.Elements[4].Material)
             end
-            -- Highlights
+            --Highlights
             if EntityCCA.Elements[5].Material == Utils.ZEROUUID then
                 DummyVisual.Elements[5].Material = '32f58f2c-525d-4b09-86ba-0c6cb0baca28'
+            else
+                --DPrint('Highlights: ' .. DummyVisual.Elements[5].Material)
             end
-            -- Scar
+            --Scar
             if EntityCCA.Elements[6].Material == Utils.ZEROUUID then
                 DummyVisual.Elements[6].Material = '5c6acf4c-0438-48ab-9e04-4dee7e88f8f7'
+            else
+                --DPrint('Scar: ' .. DummyVisual.Elements[6].Material)
             end
         end
     end
 end
+
+
+
+local function UpdateCCDummySkin(skinColor)
+    local dummy = getCCDummy(_C())
+    if skinColor and dummy and dummy.ClientCCChangeAppearanceDefinition.Definition.Visual.SkinColor ~= skinColor then
+        dummy.ClientCCChangeAppearanceDefinition.Definition.Visual.SkinColor = skinColor
+        Ext.UI.GetRoot():Child(1):Child(1):Child(24):Child(1).StartCharacterCreation:Execute()
+    end
+end
+
 
 ---temp abomination (temp?)
 ---@param entity EntityHandle
@@ -519,6 +575,7 @@ end
 
 Ext.RegisterConsoleCommand('dum', function (cmd, ...)
     CCState = true
+    Globals.States.CCState = true
     Apply.entity = getFirsCCDummy()
 end)
 
@@ -1005,6 +1062,7 @@ local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable,
             }
             Ext.Net.PostMessageToServer('CCEE_UsedMaterialsMap', Ext.Json.Stringify(data))
             Ext.Net.PostMessageToServer('CCEE_SendCCEEModVars', Ext.Json.Stringify(Globals.AllParameters.CCEEModStuff))
+            UpdateCCDummySkin(uuid)
             return uuid
         end
     end
@@ -1203,6 +1261,10 @@ end
 function ApplyParametersToVisibleCCDummy(entity)
     if CCState == true then
         DPrint('ApplyParametersToVisibleCCDummy')
+    if Globals.States.CCState == true then
+        Utils:AntiSpam(100, function ()
+            DPrint('ApplyParametersToVisibleCCDummy')
+        end)
         local tempEntity = _C()
         local entityDummy
         local CCDumies = Ext.Entity.GetAllEntitiesWithComponent("ClientCCDummyDefinition")

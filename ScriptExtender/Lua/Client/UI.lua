@@ -1490,6 +1490,7 @@ function CCEE:PresetsTab()
         local name = (presetLoadName.Text ~= '' and presetLoadName.Text) or GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1]
         if name then
             for _, uuid in pairs(Globals.FirstCCCharacters) do
+            for _, uuid in pairs(Globals.States.firstCCCharacters) do
                 Globals.AllParameters.ActiveMatParameters[uuid] = nil
                 Globals.AllParameters.MatPresetParameters[uuid] = nil
                 Globals.AllParameters.CCEEModStuff.SkinMap[uuid] = nil
@@ -1498,7 +1499,7 @@ function CCEE:PresetsTab()
                 Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
                 Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
                 Ext.Net.PostMessageToServer('CCEE_SendCCEEModVars', Ext.Json.Stringify(Globals.AllParameters.CCEEModStuff))
-                Globals.FirstCCCharacters = {}
+                Globals.States.firstCCCharacters = {}
                 Helpers.Timer:OnTicks(5, function ()
                     LoadPreset(name)
                 end)
@@ -1587,10 +1588,28 @@ function CCEE:Dev()
     testsSave = devTab:AddCheckbox('Save all parameters')
     
 
+
+    GlobalsIMGUI.firstCC = devTab:AddCheckbox([[I'm in THE first character creation]])
+    GlobalsIMGUI.firstCC.OnChange = function ()
+        if GlobalsIMGUI.firstCC.Checked then
+            Globals.States.CCState = true
+            Globals.States.firstCC = true
+            Apply.entity = getFirsCCDummy()
+            table.insert(Globals.States.firstCCCharacters, _C().Uuid.EntityUuid)
+            DDump(Globals.States.firstCCCharacters)
+        else
+            Globals.States.firstCC = false
+        end
+    end
+
     -- local zeroBtn = devTab:AddButton('Zero')
     -- zeroBtn.OnClick = function ()
     --     Ext.Net.PostMessageToServer('CCEE_setElementsToZero', '')
     -- end
+    
+    local status = ''
+    GlobalsIMGUI.stateStatus = devTab:AddText('')
+    GlobalsIMGUI.stateStatus.Label = status
 
 
 
