@@ -181,7 +181,6 @@ function CzechCCState(entity)
                 ConfirmWorkaround(_C())
                 Globals.dummyEntity = dummy.ClientCCDummyDefinition.Dummy
                 Apply.entity = dummy.ClientCCDummyDefinition.Dummy
-                DPrint('HasDummy = ' .. tostring(CCState))
                 --DPrint('HasDummy = ' .. tostring(CCState))
                 DPrint('Apply entity' .. ' - ' .. tostring(Apply.entity))
                 Ext.Net.PostMessageToServer('CCEE_CCSate', Ext.Json.Stringify(Globals.States.CCState))
@@ -192,6 +191,34 @@ function CzechCCState(entity)
     end)
 end
 
+--Fires on mirror visuals
+local entityXd = _C()
+-- Ext.Entity.OnSystemUpdate("ClientCharacterManager", function()
+--     local sys = Ext.System.ClientCharacterManager.ReloadVisuals[entityXd]
+--     if sys == true then
+--         DPrint('ReloadVisuals: ' .. tostring(sys))
+--     end
+-- end)
+
+
+-- Ext.Entity.OnSystemUpdate("ClientEquipmentVisuals", function()
+--     local sys = Ext.System.ClientEquipmentVisuals.UnloadRequests
+--     for k, v in pairs(sys) do
+--         DPrint('UnloadRequests')
+--         DDump(v)
+--         DPrint('-----------')
+--     end
+-- end)
+
+-- Ext.Entity.OnSystemUpdate("ClientVisualsVisibilityState", function()
+--     local sys = Ext.System.ClientCharacterManager.UpdateRepose
+--     for k, v in pairs(sys) do
+--         DPrint('UpdateRepose')
+--         DDump(k)
+--         DDump(v)
+--         DPrint('-----------')
+--     end
+-- end)
 
 
 ---Invalid UUID non-clickable Confirm workaround
@@ -574,7 +601,6 @@ end
 
 
 Ext.RegisterConsoleCommand('dum', function (cmd, ...)
-    CCState = true
     Globals.States.CCState = true
     Apply.entity = getFirsCCDummy()
 end)
@@ -709,7 +735,15 @@ function SaveMaterialPresetParameterChange(entity, parameterName, parameterType,
         -- Globals.AllParameters.MatPresetParameters[entityUuid][materialGuid][parameterType][parameterName] = value
         --#endregion
         matParams[parameterName] = value
-        Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
+        local data = {
+            entityUuid = entityUuid,
+            materialGuid = materialGuid,
+            parameterType = parameterType,
+            parameterName = parameterName,
+            value = value
+        }
+        Ext.Net.PostMessageToServer('CCEE_SendSingleMatPresetVars', Ext.Json.Stringify(data))
+        --Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
     end
 end
 
@@ -862,14 +896,22 @@ function SaveActiveMaterialLastChanges(entity, attachment, parameterName, parame
                 end
             end
         end
+        local data = {
+            entityUuid = entityUuid,
+            attachment = attachment,
+            parameterType = parameterType,
+            parameterName = parameterName,
+            value = value
+        }
+        Ext.Net.PostMessageToServer('CCEE_SendSingleActiveMatVars', Ext.Json.Stringify(data))
+        --Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
     end
-    Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
     -- DDump(ActiveMatParameters)
 end
 
 
 function HandleActiveMaterialParameters(entity, attachment, parameterName, parameterType, value)
-    if CCState == true then
+    if Globals.States.CCState == true then
         SaveActiveMaterialLastChanges(_C(), attachment, parameterName, parameterType, value)
         SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
     else
@@ -1015,6 +1057,7 @@ local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable,
     if Globals.AllParameters.CCEEModStuff[keyMapTable] 
         and Globals.AllParameters.CCEEModStuff[keyMapTable][entity.Uuid.EntityUuid] then
         Ext.Net.PostMessageToServer('CCEE_SendCCEEModVars', Ext.Json.Stringify(Globals.AllParameters.CCEEModStuff))
+        UpdateCCDummySkin(uuid)
         return Globals.AllParameters.CCEEModStuff[keyMapTable][entity.Uuid.EntityUuid]
     end
     ---slopped
@@ -1027,7 +1070,7 @@ local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable,
         return false
     end
     for i = 1, #typeTable do
-        local uuid = typeTable[i]
+        uuid = typeTable[i]
         local duplicateFound = false
         if keyMapTable == "SkinMap" then
             local allEntities = Ext.Entity.GetAllEntitiesWithComponent('Origin')
@@ -1159,7 +1202,8 @@ function ApplyMaterialPresetPararmetersToCharacter(charUuid)
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
                     local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
-                    HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset)
+                    --HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset)
+                    SetMaterialPresetParameterValue(entity, parameterName, parameterType, value, materialPreset)
                 end
             end
             end)
@@ -1178,7 +1222,8 @@ function ApplyMaterialPresetPararmetersToAllCharacters()
                 for parameterType, parameterNames in pairs(parameterTypes) do
                     for parameterName, value in pairs(parameterNames) do
                         local materialPreset = Ext.Resource.Get(materialUuids,'MaterialPreset')
-                        HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset)
+                        --HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset)
+                        SetMaterialPresetParameterValue(entity, parameterName, parameterType, value, materialPreset)
                     end
                 end
             end
@@ -1198,7 +1243,7 @@ function ApplyActiveMaterialParametersToCharacter(charUuid)
         Helpers.Timer:OnTicks(timer, function()
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
-                    if CCState == true then
+                    if Globals.States.CCState == true then
                         local entity = Globals.dummyEntity
                         SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value)
                     else
@@ -1209,7 +1254,9 @@ function ApplyActiveMaterialParametersToCharacter(charUuid)
         end)
         end
     end
-    Elements:UpdateElements(_C().Uuid.EntityUuid)
+    if _C() then 
+        Elements:UpdateElements(_C().Uuid.EntityUuid)
+    end
 end
 
 
@@ -1259,8 +1306,6 @@ end
 
 
 function ApplyParametersToVisibleCCDummy(entity)
-    if CCState == true then
-        DPrint('ApplyParametersToVisibleCCDummy')
     if Globals.States.CCState == true then
         Utils:AntiSpam(100, function ()
             DPrint('ApplyParametersToVisibleCCDummy')
@@ -1293,7 +1338,7 @@ function ApplyParametersToVisibleCCDummy(entity)
 end
 
 function ApplyParametersToVisibleFirstCCDummy(entity)
-    if Globals.firstCC and Globals.AllParameters.ActiveMatParameters[_C().Uuid.EntityUuid] then
+    if Globals.States.firstCC and Globals.AllParameters.ActiveMatParameters[_C().Uuid.EntityUuid] then
         for attachment, parameterTypes in pairs(Globals.AllParameters.ActiveMatParameters[_C().Uuid.EntityUuid]) do
             for parameterType, parameterNames in pairs(parameterTypes) do
                 for parameterName, value in pairs(parameterNames) do
@@ -1435,7 +1480,7 @@ local function presetsInfoLable(lable)
     end)
 end
 
-Globals.firstCC = false
+Globals.States.firstCC = false
 ---@param fileName string
 function SavePreset(fileName)
     GlobalsIMGUI.firstCC.Checked = false
@@ -1443,14 +1488,14 @@ function SavePreset(fileName)
     local uuid = _C().Uuid.EntityUuid
     local rippedMatParameters = {}
     local cca
-    if Globals.firstCC == false then
+    if Globals.States.firstCC == false then
         cca = getCharacterCreationAppearance(_C())
     else
         cca = getDummyAppearance(getFirsCCThings())
         DDump(cca)
     end
-    DPrint(tostring(Globals.firstCC))
-    Globals.firstCC = false
+    DPrint(tostring(Globals.States.firstCC))
+    Globals.States.firstCC = false
     if Globals.AllParameters.MatPresetParameters[uuid] then
         for _,v in pairs(Globals.AllParameters.MatPresetParameters[uuid]) do
             rippedMatParameters = v
@@ -1483,6 +1528,7 @@ end
 
 ---@param fileName string
 function LoadPreset(fileName)
+    local uuid = _C().Uuid.EntityUuid
     AssignSkinToCharacter(_C())
     local skinMatUuid
     local skinUuid
@@ -1497,7 +1543,7 @@ function LoadPreset(fileName)
                 RegisterPresetName(fileName)
             end
             local dataLoad = Ext.Json.Parse(json)
-            local uuid = _C().Uuid.EntityUuid
+            
             ---TBD:remove this
             if Globals.AllParameters.CCEEModStuff.SkinMap and Globals.AllParameters.CCEEModStuff.SkinMap[uuid] then
                 skinMatUuid = Ext.StaticData.Get(Globals.AllParameters.CCEEModStuff.SkinMap[uuid], 'CharacterCreationSkinColor').MaterialPresetUUID
@@ -1546,9 +1592,9 @@ end
 
 function RealodPreset()
     DPrint('RealodPreset')
+    local uuid = _C().Uuid.EntityUuid
     Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
     Helpers.Timer:OnTicks(10, function ()
-        local uuid = _C().Uuid.EntityUuid
         DPrint(_C())
         local cca = getCharacterCreationAppearance(_C())
         Helpers.Timer:OnTicks(5, function ()
@@ -1606,24 +1652,24 @@ end)
 
 
 
-function StartPMSub()
-    Utils:SubUnsubToTick('sub', 'PhotoMode', function ()
-        local success, _ = pcall(function()
-            return Ext.UI.GetRoot():Find("ContentRoot"):Child(21).DataContext.DOFDistance
-        end)
+-- function StartPMSub()
+--     Utils:SubUnsubToTick('sub', 'PhotoMode', function ()
+--         local success, _ = pcall(function()
+--             return Ext.UI.GetRoot():Find("ContentRoot"):Child(21).DataContext.DOFDistance
+--         end)
         
-        if success then
-            if not Globals.inPhotoMode then
-                Globals.inPhotoMode = true
-                Helpers.Timer:OnTicks(40, function ()
-                    ApplyParametersToPMDummies()
-                end)
-            end
-        else
-            Globals.inPhotoMode = false
-        end
-    end)
-end
+--         if success then
+--             if not Globals.inPhotoMode then
+--                 Globals.inPhotoMode = true
+--                 Helpers.Timer:OnTicks(40, function ()
+--                     ApplyParametersToPMDummies()
+--                 end)
+--             end
+--         else
+--             Globals.inPhotoMode = false
+--         end
+--     end)
+-- end
 
 
 
@@ -1666,3 +1712,5 @@ end
 --     FolderName = 'CCEE',
 --     Data = {},
 -- })
+
+

@@ -1,5 +1,5 @@
 ---@diagnostic disable: param-type-mismatch
-local OPENQUESTIONMARK = false
+local OPENQUESTIONMARK = true
 
 
 function UI:Init()
@@ -87,8 +87,6 @@ function Window:CCEEWindow()
         -- end
 
 
-
-
         local resetCharacter = p:AddButton('Reset character')
         resetCharacter.SameLine = false
         resetCharacter.OnClick = function ()
@@ -121,7 +119,7 @@ function Window:CCEEWindow()
 
             Ext.Timer.Cancel(confirmTimer)
 
-            Ext.Net.PostMessageToServer('CCEE_ResetCurrentCharacter', '')
+            Ext.Net.PostMessageToServer('CCEE_ResetCurrentCharacter', _C().Uuid.EntityUuid)
             if _C().Uuid then
                 local uuid = _C().Uuid.EntityUuid
                 Globals.AllParameters.ActiveMatParameters[uuid] = nil
@@ -178,19 +176,6 @@ function Window:CCEEWindow()
         Loads stored data from the save file for every character in scene
         Useful if visually MOD'S parameters (THE ones in THE WINDOW) got reset]])
 
-
-        GlobalsIMGUI.firstCC = p:AddCheckbox([[I'm in THE first character creation]])
-        GlobalsIMGUI.firstCC.OnChange = function ()
-            if GlobalsIMGUI.firstCC.Checked then
-                CCState = true
-                Globals.firstCC = true
-                Apply.entity = getFirsCCDummy()
-                table.insert(Globals.FirstCCCharacters, _C().Uuid.EntityUuid)
-                DDump(Globals.FirstCCCharacters)
-            else
-                Globals.firstCC = false
-            end
-        end
 
         
 
@@ -1459,11 +1444,44 @@ function CCEE:PresetsTab()
         presetLoadName.Text = ''
     end
 
+    -- local updatePreset = presetsTab:AddButton('Update selected')
+    -- updatePreset.SameLine = true
+    -- updatePreset.IDContext = 'savePreset'
+    -- updatePreset.OnClick = function ()
+    --     SavePreset(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
+    -- end
+
+
     local updatePreset = presetsTab:AddButton('Update selected')
     updatePreset.SameLine = true
     updatePreset.IDContext = 'savePreset'
     updatePreset.OnClick = function ()
+
+        confirmUpdatePreset.Visible = true
+        updatePreset.Visible = false
+
+        updateTimer = Ext.Timer.WaitFor(1000, function()
+            confirmUpdatePreset.Visible = false
+            updatePreset.Visible = true
+        end)
+
+    end
+
+
+    confirmUpdatePreset = presetsTab:AddButton('Confirm')
+
+    confirmUpdatePreset:SetColor("Button", {0.55, 0.0, 0.0, 1.00})
+    confirmUpdatePreset:SetColor("ButtonHovered", {0.35, 0.0, 0.0, 1.0})
+    confirmUpdatePreset:SetColor("ButtonActive", {0.25, 0.0, 0.0, 1.0})
+    confirmUpdatePreset.Size = {164,35}
+
+    confirmUpdatePreset.SameLine = true
+    confirmUpdatePreset.Visible = false
+    confirmUpdatePreset.OnClick = function ()
+        Ext.Timer.Cancel(updateTimer)
         SavePreset(GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1])
+        updatePreset.Visible = true
+        confirmUpdatePreset.Visible = false
     end
 
 
@@ -1489,7 +1507,6 @@ function CCEE:PresetsTab()
     loadPresetFirstCC.OnClick = function ()
         local name = (presetLoadName.Text ~= '' and presetLoadName.Text) or GlobalsIMGUI.presetsCombo.Options[GlobalsIMGUI.presetsCombo.SelectedIndex + 1]
         if name then
-            for _, uuid in pairs(Globals.FirstCCCharacters) do
             for _, uuid in pairs(Globals.States.firstCCCharacters) do
                 Globals.AllParameters.ActiveMatParameters[uuid] = nil
                 Globals.AllParameters.MatPresetParameters[uuid] = nil
@@ -1517,12 +1534,12 @@ function CCEE:SettingsTab()
 
     GlobalsIMGUI.iconVanity = settingsTab:AddCheckbox('Use camp clothes in portrait')
 
-    local sepa = settingsTab:AddSeparator()
-    local text = settingsTab:AddText('Delay before re-applying parameters')
-    GlobalsIMGUI.applyDelay = settingsTab:AddSliderInt('ms', 1000, 0, 1000, 0)
-    GlobalsIMGUI.applyDelay.OnChange = function ()
-        --Ext.Net.PostMessageToServer('CCEE_Apply_Delay', GlobalsIMGUI.applyDelay.Value[1])
-    end
+    -- local sepa = settingsTab:AddSeparator()
+    -- local text = settingsTab:AddText('Delay before re-applying parameters')
+    -- GlobalsIMGUI.applyDelay = settingsTab:AddSliderInt('ms', 1000, 0, 1000, 0)
+    -- GlobalsIMGUI.applyDelay.OnChange = function ()
+    --     --Ext.Net.PostMessageToServer('CCEE_Apply_Delay', GlobalsIMGUI.applyDelay.Value[1])
+    -- end
 end
 
 function CCEE:Reset()
@@ -1613,6 +1630,7 @@ function CCEE:Dev()
 
 
 
+    
 end
 
 function CCEE:Tests()

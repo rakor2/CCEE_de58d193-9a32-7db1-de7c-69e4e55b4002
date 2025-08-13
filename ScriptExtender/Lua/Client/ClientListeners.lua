@@ -3,16 +3,15 @@
 
 --LevelGameplayStarted
 Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
-    Globals.firstCC = false
     Globals.States.firstCC = false
     GlobalsIMGUI.firstCC.Checked = false
     Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
     Globals.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
 
-    Helpers.Timer:OnTicks(100, function ()
-        StartPMSub()
-    end)
+    -- Helpers.Timer:OnTicks(100, function ()
+    --     StartPMSub()
+    -- end)
 
     if _C() then
         CzechCCState(nil)
@@ -39,6 +38,33 @@ Ext.RegisterNetListener('CCEE_BroadcastActiveMatVars', function (channel, payloa
     --Globals.MatVars = Ext.Json.Parse(payload).MatVars
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
 end)
+
+
+
+
+Ext.RegisterNetListener('CCEE_SendSingleActiveMatVarsToUser', function (channel, payload, user)
+    local xd = Ext.Json.Parse(payload)
+    SLOP:tableCheck(Globals.AllParameters, 'ActiveMatParameters', xd.entityUuid, xd.attachment, xd.parameterType)[xd.parameterName] = xd.value
+    Utils:AntiSpam(1000, function ()
+        DPrint('CCEE_SendSingleActiveMatVarsToUser')
+        ApplyActiveMaterialParametersToCharacter(xd.entityUuid)
+        DDump(Globals.AllParameters.ActiveMatParameters)
+    end)
+end)
+
+
+Ext.RegisterNetListener('CCEE_SendSingleMatPresetVarsToUser', function (channel, payload, user)
+    local xd = Ext.Json.Parse(payload)
+    SLOP:tableCheck(Globals.AllParameters, 'MatPresetParameters', xd.entityUuid, xd.materialGuid, xd.parameterType)[xd.parameterName] = xd.value
+    Utils:AntiSpam(1000, function ()
+        DPrint('CCEE_SendSingleMatPresetVarsToUser')
+        ApplyMaterialPresetPararmetersToCharacter(xd.entityUuid)
+        DDump(Globals.AllParameters.MatPresetParameters)
+    end)
+end)
+
+
+
 
 Ext.RegisterNetListener('CCEE_BroadcastCCEEModVars', function (channel, payload, user)
     --Globals.MatVars = Ext.Json.Parse(payload).MatVars
@@ -180,8 +206,14 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
     --#endregion
 end)
 
-
-
+--PM dummies
+Ext.Entity.OnCreate('PauseExcluded', function ()
+    Helpers.Timer:OnTicks(40, function ()
+        Utils:AntiSpam(100, function ()
+            ApplyParametersToPMDummies()
+        end)
+    end)
+end)
 
 
 Ext.Events.ResetCompleted:Subscribe(function()
@@ -286,6 +318,12 @@ Ext.Entity.OnSystemUpdate("ClientVisualsVisibilityState", function()
     for k,v in pairs(UnloadVisuals) do
     end
 end)
+
+
+
+
+
+
 
 --bruh
 --This shit also fires on hide/unhide T_T

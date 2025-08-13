@@ -95,6 +95,12 @@ Ext.RegisterNetListener('CCEE_SendActiveMatVars', function (channel, payload, us
         MatPresetVars = Helpers.ModVars.Get(ModuleUUID).CCEE_MP
     }
     --Ext.Net.BroadcastMessage('CCEE_BroadcastMatPresetVars', Ext.Json.Stringify(data)) TBD
+    local users = Net:GetReservedUserIDs()
+    for _, userID in pairs(users) do
+        if user + 1 ~= userID then
+            --Ext.Net.PostMessageToUser(userID, 'CCEE_BroadcastMatPresetVars', Ext.Json.Stringify(data))
+        end
+    end
 end)
 
 
@@ -105,7 +111,59 @@ Ext.RegisterNetListener('CCEE_SendMatPresetVars', function (channel, payload, us
         ActiveMatVars = Helpers.ModVars.Get(ModuleUUID).CCEE_AM
     }
     --Ext.Net.BroadcastMessage('CCEE_BroadcastActiveMatVars', Ext.Json.Stringify(data)) TBD
+    local users = Net:GetReservedUserIDs()
+    for _, userID in pairs(users) do
+        if user + 1 ~= userID then
+            --Ext.Net.PostMessageToUser(userID, 'CCEE_BroadcastActiveMatVars', Ext.Json.Stringify(data))
+        end
+    end
 end)
+
+
+Ext.RegisterNetListener('CCEE_SendSingleMatPresetVars', function (channel, payload, user)
+    local xd = Ext.Json.Parse(payload)
+    --temp
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MP = Helpers.ModVars.Get(ModuleUUID).CCEE_MP or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid] or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid][xd.materialGuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid][xd.materialGuid] or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid][xd.materialGuid][xd.parameterType] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid][xd.materialGuid][xd.parameterType] or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[xd.entityUuid][xd.materialGuid][xd.parameterType][xd.parameterName] = xd.value
+    --Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleMatPresetVarsToUser', Ext.Json.Stringify(xd))
+    local users = Net:GetReservedUserIDs()
+    for _, userID in pairs(users) do
+        DPrint('On: ' .. userID)
+        if user + 1 ~= userID then
+            DPrint('Sent to: ', userID)
+            DPrint('Mat')
+            Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleMatPresetVarsToUser', Ext.Json.Stringify(xd))
+        end
+    end
+end)
+
+
+Ext.RegisterNetListener('CCEE_SendSingleActiveMatVars', function (channel, payload, user)
+    DPrint(user)
+    local xd = Ext.Json.Parse(payload)
+    --temp
+    Helpers.ModVars.Get(ModuleUUID).CCEE_AM = Helpers.ModVars.Get(ModuleUUID).CCEE_AM or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid] or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment] = Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment] or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType] = Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType] or {}
+    Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType][xd.parameterName] = xd.value
+    --Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleActiveMatVarsToUser', Ext.Json.Stringify(xd))
+    local users = Net:GetReservedUserIDs()
+    DDump(users)
+    for _, userID in pairs(users) do
+        DPrint('On: ' .. userID)
+        if user + 1 ~= userID then
+            DPrint('Sent to: ', userID)
+            DPrint('Act')
+            Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleActiveMatVarsToUser', Ext.Json.Stringify(xd))
+        end
+    end
+end)
+
+
 
 
 Ext.RegisterNetListener('CCEE_SendCCEEModVars', function (channel, payload, user)
@@ -159,9 +217,10 @@ Ext.RegisterNetListener('CCEE_ApplyHair', function (channel, payload, user)
 end)
 
 Ext.RegisterNetListener('CCEE_SetHairZero', function (channel, payload, user)
-    --DPrint('CCEE_SetHairZero')
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
+    entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
+    entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
 end)
 
@@ -276,7 +335,13 @@ Ext.RegisterNetListener('CCEE_Replicate', function (channel, payload, user)
     Ext.Net.PostMessageToUser(user, 'CCEE_ConfirmWorkaround', '')
 end)
 
-
+-- Ext.RegisterNetListener('CCEE_DummyReplicateTest', function (channel, payload, user)
+--     local CCdumies = Ext.Entity.GetAllEntitiesWithComponent('CCChangeAppearanceDefinition')
+--     DPrint(payload)
+--     CCdumies[1].CCChangeAppearanceDefinition.Appearance.Visual.SkinColor = payload
+--     CCdumies[1].CCChangeAppearanceDefinition.Definition.Visual.SkinColor = payload
+--     CCdumies[1]:Replicate('GameObjectVisual')
+-- end)
 
 Ext.RegisterNetListener('CCEE_Replicate_CCA', function (channel, payload, user)
     local entity = Ext.Json.Parse(payload)
@@ -285,12 +350,14 @@ end)
 
 
 Ext.Osiris.RegisterListener("Equipped", 2, "after", function(item, character)
-    Utils:AntiSpamn(50, function ()
+    Utils:AntiSpam(50, function ()
         DPrint('Equipped')
     end)
     --UpdateParameters(38, Ext.Entity.Get(character), true, true)
     local entity = Ext.Entity.Get(character)
-    Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
 
@@ -298,7 +365,9 @@ Ext.Osiris.RegisterListener("Unequipped", 2, "after", function(item, character)
     DPrint('Unequipped')
     --UpdateParameters(38, Ext.Entity.Get(character), true, true)
     local entity = Ext.Entity.Get(character)
-    Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
 
@@ -346,8 +415,8 @@ end)
 
 
 Ext.RegisterNetListener('CCEE_ResetCurrentCharacter', function (channel, payload, user)
-    _C():Replicate('GameObjectVisual')
-    _C():Replicate('CharacterCreationAppearance')
+    Ext.Entity.Get(payload):Replicate('GameObjectVisual')
+    Ext.Entity.Get(payload):Replicate('CharacterCreationAppearance')
 end)
 
 Ext.RegisterNetListener('CCEE_setElementsToZero', function (channel, payload, user)
@@ -367,7 +436,6 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
     DefaultCC = data.dataLoad[3].DefaultCC
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM[data.uuid] = CCEEParams[1]
     Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid] or {}
-    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] or {}
     Helpers.Timer:OnTicks(1, function ()
         for _, v in pairs(entity.CharacterCreationAppearance.Visuals) do
             Osi.RemoveCustomVisualOvirride(data.uuid, v)
@@ -383,6 +451,7 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
             Helpers.Timer:OnTicks(8, function ()
                 applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC)
                 if data.skinUuid and Helpers.ModVars.Get(ModuleUUID).CCEE_VARS then
+                    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] or {}
                     -- DDump(entity.CharacterCreationAppearance.SkinColor)
                     -- DPrint(entity.DisplayName.Name:Get())
                     entity.CharacterCreationAppearance.SkinColor = data.skinUuid
@@ -395,9 +464,9 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                 entity:Replicate('CharacterCreationAppearance')
             end)
             Helpers.Timer:OnTicks(14, function ()
-                Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyMaterialPresetPararmetersToCharacter', entity.Uuid.EntityUuid)
+                Ext.Net.BroadcastMessage('CCEE_ApplyMaterialPresetPararmetersToCharacter', entity.Uuid.EntityUuid)
                 Helpers.Timer:OnTicks(16, function ()
-                    Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+                    Ext.Net.BroadcastMessage('CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
                     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_Reload_Lable', '')
                 end)
             end)
@@ -409,9 +478,9 @@ end)
 Ext.Osiris.RegisterListener("ChangeAppearanceCompleted", 1, "after", function(character)
     DPrint('ChangeAppearanceCompleted')
     local entity = Ext.Entity.Get(character)
-    entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
-    entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
-    entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
+    -- entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
+    -- entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
+    -- entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_CAC', '')
 end)
@@ -481,3 +550,9 @@ end
 Ext.RegisterConsoleCommand('d', function (cmd, ...)
      DDump(Mods.CCEE.Helpers.ModVars.Get('de58d193-9a32-7db1-de7c-69e4e55b4002'))
 end)
+
+
+
+-- Ext.Events.GameStateChanged:Subscribe(function(e)
+--     DDump(e)
+-- end)
