@@ -8,24 +8,23 @@ Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payl
     Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
     Globals.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
-
     -- Helpers.Timer:OnTicks(100, function ()
     --     StartPMSub()
     -- end)
-
     if _C() then
-        CzechCCState(nil)
         getAllParameterNames(_C())
+        CzechCCState(nil)
         Helpers.Timer:OnTicks(10, function ()
-            ApplyMaterialPresetPararmetersToAllCharacters()
+            Apply_AllCharactersMaterialPresetPararmeters()
             Helpers.Timer:OnTicks(15, function ()
-                ApplyActiveMaterialParametersToAllCharacters()
+                Apply_AllCharactersActiveMaterialParameters()
                 Elements:UpdateElements(_C().Uuid.EntityUuid)
             end)
         end)
     end
-    ApplyParametersToTLPreview() --in cases like the transponder cutscenes, when the cutscene starts right after gameplay started
+    Apply_TLPreviwDummiesActiveMaterialsParameters() --in cases like the transponder cutscenes, when the cutscene starts right after gameplay started
 end)
+
 
 
 
@@ -47,7 +46,7 @@ Ext.RegisterNetListener('CCEE_SendSingleActiveMatVarsToUser', function (channel,
     SLOP:tableCheck(Globals.AllParameters, 'ActiveMatParameters', xd.entityUuid, xd.attachment, xd.parameterType)[xd.parameterName] = xd.value
     Utils:AntiSpam(1000, function ()
         DPrint('CCEE_SendSingleActiveMatVarsToUser')
-        ApplyActiveMaterialParametersToCharacter(xd.entityUuid)
+        Apply_CharacterActiveMaterialParameters(xd.entityUuid)
         DDump(Globals.AllParameters.ActiveMatParameters)
     end)
 end)
@@ -58,7 +57,7 @@ Ext.RegisterNetListener('CCEE_SendSingleMatPresetVarsToUser', function (channel,
     SLOP:tableCheck(Globals.AllParameters, 'MatPresetParameters', xd.entityUuid, xd.materialGuid, xd.parameterType)[xd.parameterName] = xd.value
     Utils:AntiSpam(1000, function ()
         DPrint('CCEE_SendSingleMatPresetVarsToUser')
-        ApplyMaterialPresetPararmetersToCharacter(xd.entityUuid)
+        Apply_CharacterMaterialPresetPararmeters(xd.entityUuid)
         DDump(Globals.AllParameters.MatPresetParameters)
     end)
 end)
@@ -72,21 +71,6 @@ Ext.RegisterNetListener('CCEE_BroadcastCCEEModVars', function (channel, payload,
 end)
 
 
--- Ext.RegisterNetListener('CCEE_UpdateParameters_OnlyVis', function (channel, payload, user)
---     DPrint('1')
---     local ActiveMatParameters = Helpers.ModVars.Get(ModuleUUID).CCEE
---     Ext.Net.BroadcastMessage('CCEE_LoadModVars', Ext.Json.Stringify(ActiveMatParameters))
--- end)
-
---rename me
--- Ext.RegisterNetListener('CCEE_MP', function (channel, payload, user)
---     -- local data = Ext.Json.Parse(payload)
---     -- UsedSkinUUID = data.UsedSkinUUID
---     -- SkinMap = data.SkinMap
---     -- MatData = data.MatData
-    
--- end)
-
 Ext.RegisterNetListener('CCEE_ConfirmWorkaround', function (channel, payload, user)
     ConfirmWorkaround(_C())
 end)
@@ -94,17 +78,14 @@ end)
 
 --TLPreviewDummy
 Ext.RegisterNetListener('CCEE_LoadDollParameters',function (channel, payload, user)
-    -- Helpers.Timer:OnTicks(1, function ()
-    --     ApplyParametersToDolls()
-    -- end)
-    ApplyParametersToTLPreview()
+    Apply_TLPreviwDummiesActiveMaterialsParameters()
 end)
 
 local APPLY_TICKS = 20
 Ext.RegisterNetListener('CCEE_ApplyMaterialPresetPararmetersToCharacter', function (channel, payload, user)
     Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
-        ApplyMaterialPresetPararmetersToCharacter(payload)
+        Apply_CharacterMaterialPresetPararmeters(payload)
         Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
     end)
 end)
@@ -113,8 +94,7 @@ Ext.RegisterNetListener('CCEE_ApplyMaterialPresetPararmetersAllCharacters', func
     Ext.Net.PostMessageToServer('CCEE_RequestMatPresetVars', '')
     Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
-        DPrint(payload)
-        ApplyMaterialPresetPararmetersToAllCharacters()
+        Apply_AllCharactersMaterialPresetPararmeters()
         Ext.Net.PostMessageToServer('CCEE_SendMatPresetVars', Ext.Json.Stringify(Globals.AllParameters.MatPresetParameters))
     end)
 end)
@@ -122,8 +102,14 @@ end)
 Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToCharacter', function (channel, payload, user)
     Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
     Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
-    Helpers.Timer:OnTicks(APPLY_TICKS, function ()
-        ApplyActiveMaterialParametersToCharacter(payload)
+    -- _C().Visual.Visual.Attachments[2].Visual.ObjectDescs[1].Renderable.ActiveMaterial.Material.Parameters.Texture2DParameters[2].Enabled = true
+    -- _C().Visual.Visual.Attachments[2].Visual.ObjectDescs[1].Renderable.ActiveMaterial.Material.Parameters.Texture2DParameters[2].ID = '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e'
+    --Ext.Resource.Get('6cf160fe-f568-9b7f-6ac9-0b9941b5952a', 'Material').Instance.Parameters.Texture2DParameters[2].ID = '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e'
+    Helpers.Timer:OnTicks(APPLY_TICKS, function ()            
+
+
+        Apply_CharacterActiveMaterialParameters(payload)
+
         Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
     end)
 end)
@@ -132,15 +118,17 @@ Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToAllCharacters', fun
     Ext.Net.PostMessageToServer('CCEE_RequestActiveMatVars', '')
     Ext.Net.PostMessageToServer('CCEE_RequestCCEEModVars', '')
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
-        ApplyActiveMaterialParametersToAllCharacters()
+        Apply_AllCharactersActiveMaterialParameters()
         Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
     end)
 end)
 
 --Preset reload on mirror exit
 Ext.RegisterNetListener('CCEE_CAC', function (channel, payload, user)
+    --setTexture('9216fcc5-1a18-c0f2-3d2f-3214d2477761', '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e')
     RealodPreset()
 end)
+
 
 
 --Client Control
@@ -149,7 +137,6 @@ Ext.Entity.OnCreate("ClientControl", function(entity, ct, c)
     ClientControl = true
     -- DPrint(entity.Uuid.EntityUuid)
      Elements:UpdateElements(entity.Uuid.EntityUuid)
-     
      Helpers.Timer:OnTicks(5, function ()
         ClientControl = false
      end)
@@ -164,7 +151,8 @@ Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component
         local owner = Paperdoll.GetDollOwner(entity)
         if owner then
             DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
-            ApplyParametersToDollsTest(entity, owner.Uuid.EntityUuid)
+            Apply_DollsActiveMaterialParameters(entity, owner.Uuid.EntityUuid)
+
         end
     end)
 end)
@@ -189,9 +177,9 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
             DPrint('CEV|CC dummies')
         end)
             if Globals.States.firstCC then
-                ApplyParametersToVisibleFirstCCDummy(getFirsCCDummy())
+                Apply_FirstCCDummyVActiveMaterialsParameters(getFirsCCDummy())
             else
-                ApplyParametersToVisibleCCDummy(entity)
+                Apply_CCDummyVActiveMaterialsParameters(entity)
                 table.insert(Globals.CC_Entities, entity)
             end
         end
@@ -200,7 +188,7 @@ Ext.Entity.OnCreate("ClientEquipmentVisuals", function(entity, componentType, co
     -- Helpers.Timer:OnTicks(40, function ()
     --     if entity:GetAllComponentNames(false)[2] == 'ecl::dummy::AnimationStateComponent' then
     --         DPrint('CEV|PM dummies')
-    --         ApplyParametersToPMDummies()
+    --         Apply_PMDummiesActiveMaterialParameters()
     --     end
     -- end)
     --#endregion
@@ -210,7 +198,7 @@ end)
 Ext.Entity.OnCreate('PauseExcluded', function ()
     Helpers.Timer:OnTicks(40, function ()
         Utils:AntiSpam(100, function ()
-            ApplyParametersToPMDummies()
+            Apply_PMDummiesActiveMaterialParameters()
         end)
     end)
 end)
@@ -230,7 +218,7 @@ Ext.Entity.OnChange('ItemDye', function(entity) --EasyDie
         DPrint('ItemDye')
         --Ext.Net.PostMessageToServer('CCEE_UpdateParameters_NotOnlyVis', '')
         getAllParameterNames(_C())
-        ApplyActiveMaterialParametersToCharacter(entity.Uuid.EntityUuid)
+        Apply_CharacterActiveMaterialParameters(entity.Uuid.EntityUuid)
     end)
 end)
 
@@ -248,7 +236,7 @@ end)
 --     end)
 --     CzechCCState(nil)
 --     StartPMSub()
---     ApplyActiveMaterialParametersToAllCharacters()
+--     Apply_CharacterAllActiveMaterialParametersTo()
 -- end)
 
 
@@ -339,9 +327,7 @@ Ext.Entity.OnChange("Unsheath", function(entity)
         if entity == origins[bruh] then
             Helpers.Timer:OnTicks(30, function () --giga bruh
                 if entity.Uuid then
-
-                    ApplyActiveMaterialParametersToCharacter(entity.Uuid.EntityUuid)
-
+                    Apply_CharacterActiveMaterialParameters(entity.Uuid.EntityUuid)
                 end
                     --Ext.Net.PostMessageToServer('CCEE_UpdateParametersSingle', entity.Uuid.EntityUuid)
             end)
@@ -354,7 +340,7 @@ Ext.Entity.OnChange("Unsheath", function(entity)
 end)
 
 
---Thx LL for investigation 
+--Thx LL for investigation
 local function OnClientCharacterIconRender()
     local system = Ext.System.ClientCharacterIconRender
     local totalRequests = #system.IconRequests
@@ -373,13 +359,6 @@ local function OnClientCharacterIconRender()
         end
     end
 end
-
 Ext.Events.SessionLoaded:Subscribe(function (e)
     Ext.Entity.OnSystemUpdate("ClientCharacterIconRender", OnClientCharacterIconRender)
-end)
-
-
-
-Ext.Events.ResetCompleted:Subscribe(function()
-
 end)
