@@ -688,6 +688,34 @@ function HandleAllVectorMaterialParameters(entity, parameterName, var, attachmen
 end
 
 
+function HandleAllTex2DMaterialParameters(entity, parameterName, var, attachments)
+    Utils:AntiSpam(10, function ()
+        HandleMaterialPresetParameters(_C(), parameterName, 'Texture2DParameters', var, nil, nil)
+    for _, attachment in pairs(attachments) do
+        HandleActiveMaterialParameters(entity, attachment, parameterName, 'Texture2DParameters', var)
+        HandleActiveMaterialParameters(_C(), attachment, parameterName, 'Texture2DParameters', var)
+    end
+    Helpers.Timer:OnTicks(10, function ()
+            pcall(function () Ext.UI.GetRoot():Child(1):Child(1):Child(24):Child(1).StartCharacterCreation:Execute() end)                           
+    end)
+    end)
+end
+
+
+Globals.Textures = {}
+function getAllTextures(name, type)
+    local i = 0
+    Globals.Textures = {}
+    local textures = Ext.Resource.GetAll('Texture')
+    for _, value in pairs(textures) do
+        local texture = Ext.Resource.Get(value, 'Texture')
+        if texture.Template:lower():find(name) and texture.Template:lower():find(type) then
+            i = i + 1
+            Globals.Textures[i] = texture.Guid
+        end
+    end
+end
+--getAllTextures('head', '_nm')
 
 
 ---@param entity EntityHandle
