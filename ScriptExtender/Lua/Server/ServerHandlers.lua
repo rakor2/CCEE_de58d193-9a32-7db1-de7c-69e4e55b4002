@@ -91,11 +91,13 @@ end
 
 
 function reSkin(entity)
-    local map = Helpers.ModVars.Get(ModuleUUID).CCEE_VARS.SkinMap
-    for k,v in pairs(map) do
-        if k == entity.Uuid.EntityUuid then
-            entity.CharacterCreationAppearance.SkinColor = v
-            entity:Replicate('CharacterCreationAppearance')
+    if Helpers.ModVars.Get(ModuleUUID).CCEE_VARS.SkinMap then
+        local map = Helpers.ModVars.Get(ModuleUUID).CCEE_VARS.SkinMap
+        for k,v in pairs(map) do
+            if k == entity.Uuid.EntityUuid then
+                entity.CharacterCreationAppearance.SkinColor = v
+                entity:Replicate('CharacterCreationAppearance')
+            end
         end
     end
 end

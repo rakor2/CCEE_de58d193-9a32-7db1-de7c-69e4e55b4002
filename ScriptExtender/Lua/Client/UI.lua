@@ -120,7 +120,7 @@ function Window:CCEEWindow()
             Ext.Timer.Cancel(confirmTimer)
 
             Ext.Net.PostMessageToServer('CCEE_ResetCurrentCharacter', _C().Uuid.EntityUuid)
-            if _C().Uuid then
+            if _C().Uuid and Globals.AllParameters.ActiveMatParameters and Globals.AllParameters.ActiveMatParameters[uuid] ~= nil and Globals.AllParameters.MatPresetParameters[uuid] ~= nil then
                 local uuid = _C().Uuid.EntityUuid
                 Globals.AllParameters.ActiveMatParameters[uuid] = nil
                 Globals.AllParameters.MatPresetParameters[uuid] = nil
@@ -146,9 +146,9 @@ function Window:CCEEWindow()
         local backupPM = p:AddButton('Force dummies')
         backupPM.SameLine = false
         backupPM.OnClick = function ()
-            ApplyParametersToPMDummies()
-            ApplyParametersToVisibleCCDummy()
-            ApplyParametersToTLPreview()
+            Apply_PMDummiesActiveMaterialParameters()
+            Apply_CCDummyVActiveMaterialsParameters()
+            Apply_TLPreviwDummiesActiveMaterialsParameters()
         end
 
         local tp10 = backupPM:Tooltip()
@@ -164,9 +164,9 @@ function Window:CCEEWindow()
         forceLoad.SameLine = true
         forceLoad.OnClick = function ()
             --Ext.Net.PostMessageToServer('CCEE_UpdateParameters_OnlyVis', '')
-            ApplyMaterialPresetPararmetersToAllCharacters()
+            Apply_AllCharactersMaterialPresetPararmeters()
             Helpers.Timer:OnTicks(20, function ()
-                ApplyActiveMaterialParametersToAllCharacters()
+                Apply_AllCharactersActiveMaterialParameters()
             end)
         end
 
@@ -194,6 +194,8 @@ function Window:CCEEWindow()
             self[var] = parent:AddColorEdit(name)
             self[var].Float = true
             self[var].NoAlpha = true
+        elseif type == 'inp' then
+            self[var] = parent:AddInputText(name)
         else
             self[var] = parent:AddSlider(name, options.default or 0, options.min or 0, options.max or 1, 0)
             self[var].Logarithmic = options.log or false
@@ -1377,8 +1379,6 @@ function CCEE:Face()
 
     Elements:PopulateTab(ahhTable['Scales'], parent, 'Scales')
 
-    Elements:PopulateTab(ahhTable.Dirt_face, parent, 'Dirt')
-
     local sepa1 = faceCollapse:AddSeparatorText('')
 
 end
@@ -1488,6 +1488,33 @@ function CCEE:Unsorted()
     local parent = unsotredCollapse
 
 
+    -- local slTextNM = p:AddSliderInt('NM', 0,0, #Globals.Textures, 0)
+    -- slTextNM.Value = {0,0,0,0}
+    -- slTextNM.OnChange = function ()
+    --     local guid = Globals.Textures[slTextNM.Value[1]]
+    --     HandleAllTex2DMaterialParameters(Apply.entity, 'normalmap', guid, {'Head'})
+    -- end
+
+
+    -- local nextTextNM = p:AddButton('<')
+    -- nextTextNM.IDContext = 'plkwefma;oekfnm'
+    -- nextTextNM.OnClick = function ()
+    --     slTextNM.Value = {slTextNM.Value[1]-1, 0,0,0}
+    --     local guid = Globals.Textures[slTextNM.Value[1]]
+    --     DPrint(Ext.Resource.Get(guid, 'Texture').Template)
+    --     HandleAllTex2DMaterialParameters(Apply.entity, 'normalmap', guid, {'Head'})
+    -- end
+
+    -- local prevTextNM = p:AddButton('>')
+    -- prevTextNM.SameLine = true
+    -- prevTextNM.IDContext = 'plkwefmasdfawsefe;oekfnm'
+    -- prevTextNM.OnClick = function ()
+    --     slTextNM.Value = {slTextNM.Value[1]+1, 0,0,0}
+    --     local guid = Globals.Textures[slTextNM.Value[1]]
+    --     DPrint(Ext.Resource.Get(guid, 'Texture').Template)
+    --     HandleAllTex2DMaterialParameters(Apply.entity, 'normalmap', guid, {'Head'})
+    -- end
+    
     --Elements:PopulateTab(ahhTable['UnsortedB'], parent, 'UnsortedB')
 
     local trollXDImSoFunnyICant = parent:AddButton('Delete all game files')
@@ -1649,7 +1676,7 @@ function CCEE:PresetsTab()
 end
 
 function CCEE:SettingsTab()
-    GlobalsIMGUI.unlockTats = settingsTab:AddCheckbox('Unlock tats sliders')
+    GlobalsIMGUI.unlockTats = settingsTab:AddCheckbox('Unlock tattoo and make up sliders')
 
     GlobalsIMGUI.iconVanity = settingsTab:AddCheckbox('Use camp clothes in portrait')
 
@@ -1665,7 +1692,6 @@ function CCEE:Reset()
 
     local resetTableBtn = resetTab:AddButton('Delete data')
     resetTableBtn.OnClick = function ()
-        --lastParametersMV = {}
         dummies = {}
         Parameters = Parameters or {}
         Globals.AllParameters = {}
@@ -1709,6 +1735,11 @@ function CCEE:Dev()
         Ext.Net.PostMessageToServer('CCEE_dumpVars', '')
     end
 
+    local openMirror = devTab:AddButton('Mirror')
+    openMirror.SameLine = true
+    openMirror.OnClick = function ()
+        Ext.Net.PostMessageToServer('CCEE_Mirror', _C().Uuid.EntityUuid)
+    end
 
     local testsCheck = devTab:AddCheckbox('All parameters (they do not save)')
     testsCheck.IDContext = 'adasd22'
@@ -1743,6 +1774,7 @@ function CCEE:Dev()
     --     Ext.Net.PostMessageToServer('CCEE_setElementsToZero', '')
     -- end
     
+
     local status = ''
     GlobalsIMGUI.stateStatus = devTab:AddText('')
     GlobalsIMGUI.stateStatus.Label = status
@@ -1775,12 +1807,11 @@ function CCEE:Tests()
                     testSlider.Logarithmic = false
                     testSlider.IDContext = v .. Ext.Math.Random(1,10000)
                     testSlider.OnChange = function()
-                        for _, part in ipairs({attachment}) do
-                            if testsSave.Checked then
-                                HandleActiveMaterialParameters(Apply.entity, part, v, 'ScalarParameters', testSlider.Value[1])
-                            else
-                                SetActiveMaterialParameterValue(Apply.entity, part, v, 'ScalarParameters', testSlider.Value[1])
-                            end
+                        if testsSave.Checked then
+                            --HandleActiveMaterialParameters(Apply.entity, part, v, 'ScalarParameters', testSlider.Value[1])
+                            HandleAllScalarMaterialParameters(Apply.entity, v, testSlider, {attachment})
+                        else
+                            SetActiveMaterialParameterValue(Apply.entity, attachment, v, 'ScalarParameters', testSlider.Value[1])
                         end
                     end
                 end
@@ -1791,12 +1822,11 @@ function CCEE:Tests()
                     testPicker.NoAlpha = true
                     testPicker.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker.OnChange = function()
-                        for _, part in ipairs({attachment}) do
-                            if testsSave.Checked then
-                                HandleActiveMaterialParameters(Apply.entity, part, v, 'Vector3Parameters', testPicker.Color)
-                            else
-                                SetActiveMaterialParameterValue(Apply.entity, part, v, 'Vector3Parameters', testPicker.Color)
-                            end
+                        if testsSave.Checked then
+                            --HandleActiveMaterialParameters(Apply.entity, part, v, 'Vector3Parameters', testPicker.Color)
+                            HandleAllVector3MaterialParameters(Apply.entity, v, testPicker, {attachment})
+                        else
+                            SetActiveMaterialParameterValue(Apply.entity, attachment, v, 'Vector3Parameters', testPicker.Color)
                         end
                     end
                 end
@@ -1807,12 +1837,11 @@ function CCEE:Tests()
                     testPicker2.NoAlpha = true
                     testPicker2.IDContext = v .. Ext.Math.Random(1,10000)
                     testPicker2.OnChange = function()
-                        for _, part in ipairs({attachment}) do
-                            if testsSave.Checked then
-                                HandleActiveMaterialParameters(Apply.entity, part, v, 'VectorParameters', testPicker2.Color)
-                            else
-                                SetActiveMaterialParameterValue(Apply.entity, part, v, 'VectorParameters', testPicker2.Color)
-                            end
+                        if testsSave.Checked then
+                            --HandleActiveMaterialParameters(Apply.entity, part, v, 'VectorParameters', testPicker2.Color)
+                            HandleAllVectorMaterialParameters(Apply.entity, v, testPicker2, {attachment})
+                        else
+                            SetActiveMaterialParameterValue(Apply.entity, attachment, v, 'VectorParameters', testPicker2.Color)
                         end
                     end
                 end
@@ -2324,7 +2353,9 @@ end
 
 
 
----temp abomination 
+---temp abomination
+---
+---seems like I have to keep it
 function Elements:UpdateElements(charUuid)
     DPrint('Elements:UpdateElements')
     if Globals.AllParameters.ActiveMatParameters and Globals.AllParameters.ActiveMatParameters[charUuid] then
@@ -2534,6 +2565,8 @@ function Elements:UpdateElements(charUuid)
             end
         end
     end
+
+    
 end
 
     
@@ -2543,7 +2576,7 @@ end
 
 UI:Init()
 
-
+Utils:D(Elements, '_CCEE_Elements')
 
 
 --#region ahhTable

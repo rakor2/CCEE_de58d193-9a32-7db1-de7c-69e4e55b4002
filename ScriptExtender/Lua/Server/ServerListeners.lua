@@ -104,6 +104,7 @@ Ext.RegisterNetListener('CCEE_SendActiveMatVars', function (channel, payload, us
 end)
 
 
+
 Ext.RegisterNetListener('CCEE_SendMatPresetVars', function (channel, payload, user)
     local MatPresetParameters = Ext.Json.Parse(payload)
     Helpers.ModVars.Get(ModuleUUID).CCEE_MP = MatPresetParameters
@@ -131,10 +132,10 @@ Ext.RegisterNetListener('CCEE_SendSingleMatPresetVars', function (channel, paylo
     --Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleMatPresetVarsToUser', Ext.Json.Stringify(xd))
     local users = Net:GetReservedUserIDs()
     for _, userID in pairs(users) do
-        DPrint('On: ' .. userID)
+        --DPrint('On: ' .. userID)
         if user + 1 ~= userID then
-            DPrint('Sent to: ', userID)
-            DPrint('Mat')
+            --DPrint('Sent to: ', userID)
+            --DPrint('Mat')
             Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleMatPresetVarsToUser', Ext.Json.Stringify(xd))
         end
     end
@@ -142,7 +143,7 @@ end)
 
 
 Ext.RegisterNetListener('CCEE_SendSingleActiveMatVars', function (channel, payload, user)
-    DPrint(user)
+    --DPrint(user)
     local xd = Ext.Json.Parse(payload)
     --temp
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM = Helpers.ModVars.Get(ModuleUUID).CCEE_AM or {}
@@ -152,12 +153,12 @@ Ext.RegisterNetListener('CCEE_SendSingleActiveMatVars', function (channel, paylo
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType][xd.parameterName] = xd.value
     --Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleActiveMatVarsToUser', Ext.Json.Stringify(xd))
     local users = Net:GetReservedUserIDs()
-    DDump(users)
+    --DDump(users)
     for _, userID in pairs(users) do
-        DPrint('On: ' .. userID)
+        --DPrint('On: ' .. userID)
         if user + 1 ~= userID then
-            DPrint('Sent to: ', userID)
-            DPrint('Act')
+            -- DPrint('Sent to: ', userID)
+            -- DPrint('Act')
             Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleActiveMatVarsToUser', Ext.Json.Stringify(xd))
         end
     end
@@ -219,11 +220,30 @@ end)
 Ext.RegisterNetListener('CCEE_SetHairZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
-    entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
-    entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
+
+Ext.RegisterNetListener('CCEE_SetGrayingZero', function (channel, payload, user)
+    local entity = Ext.Entity.Get(payload)
+    entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
+    entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
+end)
+
+Ext.RegisterNetListener('CCEE_SetHighZero', function (channel, payload, user)
+    local entity = Ext.Entity.Get(payload)
+    entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
+    entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
+end)
 
 Ext.RegisterNetListener('CCEE_ApplyTattoo', function (channel, payload, user)
     --DPrint('CCEE_ApplyTattoo')
@@ -237,6 +257,9 @@ Ext.RegisterNetListener('CCEE_SetTattooZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.Elements[1].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
 
@@ -252,6 +275,9 @@ Ext.RegisterNetListener('CCEE_SetMakeUpZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.Elements[2].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
 
@@ -268,6 +294,9 @@ Ext.RegisterNetListener('CCEE_SetScalesZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.Elements[3].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
 
@@ -283,6 +312,9 @@ Ext.RegisterNetListener('CCEE_SetScarsZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.Elements[6].Material = Utils.ZEROUUID
     entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
 end)
 
 --#endregion
@@ -398,7 +430,7 @@ end)
 
 
 Ext.RegisterNetListener('CCEE_Mirror', function (channel, payload, user)
-    Osi.StartChangeAppearance()
+    Osi.StartChangeAppearance(payload)
 end)
 
 
@@ -441,31 +473,57 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
             Osi.RemoveCustomVisualOvirride(data.uuid, v)
         end
     end)
-    Helpers.Timer:OnTicks(4, function ()
+    local baseTimer = 4
+    Helpers.Timer:OnTicks(baseTimer, function ()
         if DefaultCC then
             for _, visUuid in pairs(DefaultCC.Visuals) do
                 if visUuid then
                     Osi.AddCustomVisualOverride(data.uuid, visUuid)
                 end
             end
-            Helpers.Timer:OnTicks(8, function ()
+            Helpers.Timer:OnTicks(baseTimer + 4, function ()
                 applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC)
                 if data.skinUuid and Helpers.ModVars.Get(ModuleUUID).CCEE_VARS then
                     Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] or {}
                     -- DDump(entity.CharacterCreationAppearance.SkinColor)
                     -- DPrint(entity.DisplayName.Name:Get())
-                    entity.CharacterCreationAppearance.SkinColor = data.skinUuid
-                    entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
-                    Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] = SkinMaterialParams[1]
+                    if CCEEParams[1] then
+                        if CCEEParams[1].NakedBody then
+                            entity.CharacterCreationAppearance.HairColor = data.skinUuid
+                        end
+                        if CCEEParams[1].Hair then
+                            entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
+                        end
+                            if lookup(CCEEParams[1], 'Head', 'ScalarParameters', 'TattooIndex') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'TattooColor') then
+                                entity.CharacterCreationAppearance.Elements[1].Material = Utils.ZEROUUID
+                            end
+                            if lookup(CCEEParams[1], 'Head', 'ScalarParameters', 'MakeUpIndex') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'MakeupColor') then
+                                entity.CharacterCreationAppearance.Elements[2].Material = Utils.ZEROUUID
+                            end
+                            if lookup(CCEEParams[1], 'Head', 'ScalarParameters', 'CustomIndex') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'CustomColor') then
+                                entity.CharacterCreationAppearance.Elements[3].Material = Utils.ZEROUUID
+                            end
+                            if lookup(CCEEParams[1], 'Hair', 'ScalarParameters', 'Graying_Intensity') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'Hair_Graying_Color') then
+                                entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
+                            end
+                            if lookup(CCEEParams[1], 'Hair', 'ScalarParameters', 'Highlight_Intensity') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'Highlight_Color') then
+                                entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
+                            end
+                            if lookup(CCEEParams[1], 'Head', 'ScalarParameters', 'ScarIndex') then
+                                entity.CharacterCreationAppearance.Elements[6].Material = Utils.ZEROUUID
+                            end
+                        Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] = SkinMaterialParams[1]
+                    end
                 end
             end)
-            Helpers.Timer:OnTicks(12, function ()
+            Helpers.Timer:OnTicks(baseTimer + 8, function ()
+                reSkin(entity) --temporary
                 entity:Replicate('GameObjectVisual')
                 entity:Replicate('CharacterCreationAppearance')
             end)
-            Helpers.Timer:OnTicks(14, function ()
+            Helpers.Timer:OnTicks(baseTimer + 10, function ()
                 Ext.Net.BroadcastMessage('CCEE_ApplyMaterialPresetPararmetersToCharacter', entity.Uuid.EntityUuid)
-                Helpers.Timer:OnTicks(16, function ()
+                Helpers.Timer:OnTicks(baseTimer + 12, function ()
                     Ext.Net.BroadcastMessage('CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
                     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_Reload_Lable', '')
                 end)
@@ -478,10 +536,6 @@ end)
 Ext.Osiris.RegisterListener("ChangeAppearanceCompleted", 1, "after", function(character)
     DPrint('ChangeAppearanceCompleted')
     local entity = Ext.Entity.Get(character)
-    -- entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
-    -- entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
-    -- entity.CharacterCreationAppearance.Elements[5].Material = Utils.ZEROUUID
-    entity:Replicate('CharacterCreationAppearance')
     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_CAC', '')
 end)
 
@@ -522,14 +576,14 @@ end)
 
 
 
-Ext.Entity.OnSystemUpdate("ServerInventoryEquipment", function()
-    local Equipment = Ext.System.ServerInventoryEquipment.Equipment
-    for k,v in pairs(Equipment) do
-        -- DPrint('Sys ServerInventoryEquipment | Equipment')
-        -- DDump(k)
-        -- DDump(v)
-    end
-end)
+-- Ext.Entity.OnSystemUpdate("ServerInventoryEquipment", function()
+--     local Equipment = Ext.System.ServerInventoryEquipment.Equipment
+--     for k,v in pairs(Equipment) do
+--         -- DPrint('Sys ServerInventoryEquipment | Equipment')
+--         -- DDump(k)
+--         -- DDump(v)
+--     end
+-- end)
 
 
 
@@ -556,3 +610,44 @@ end)
 -- Ext.Events.GameStateChanged:Subscribe(function(e)
 --     DDump(e)
 -- end)
+
+
+
+-- Ext.Entity.OnCreate("Transform", function(entity, componentType, component)
+--         DPrint('GameObjectVisual|OnCreate')
+--         DPrint(entity)
+--         -- Utils:D(entity, '_Attack_Dummy', true)
+--     -- Helpers.Timer:OnTicks(5, function ()
+--     --     local owner = Paperdoll.GetDollOwner(entity)
+--     --     if owner then
+--     --         DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
+--     --         Apply_DollsActiveMaterialParameters(entity, owner.Uuid.EntityUuid)
+--     --     end
+--     -- end)
+-- end)
+
+
+--[[
+_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].Material.Name = 'a9481eff-5bc2-01f5-575b-29ade193693a'
+_D(_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].Material.Name)
+_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].Material.Parent.Name = 'I:/SteamLibrary/steamapps/common/Baldurs Gate 3/Data/Public/Shared/Assets/Materials/Characters/CHAR_Skin_Orin_SSS_MSK_VT.lsf'
+_D(_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].Material.Parent.Name)
+_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].MaterialName = 'a9481eff-5bc2-01f5-575b-29ade193693a'
+_D(_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].MaterialName)
+
+
+
+_C().Visual.Visual.Attachments[1].Visual.VisualResource.Objects[1].MaterialID = 'a9481eff-5bc2-01f5-575b-29ade193693a'
+_C().Visual.Visual.Attachments[1].Visual.VisualResource.Objects[2].MaterialID = 'a9481eff-5bc2-01f5-575b-29ade193693a'
+_C().Visual.Visual.Attachments[1].Visual.VisualResource.Objects[1].ObjectID = 'HUM_F_NKD_Body_Orin.HUM_F_NKD_Body_Orin_Mesh.0'
+_C().Visual.Visual.Attachments[1].Visual.VisualResource.Objects[2].ObjectID = 'HUM_F_NKD_Body_Orin.HUM_F_NKD_Body_Orin_Mesh_LOD1.1'
+_C().Visual.Visual.Attachments[1].Visual.VisualResource.SourceFile = 'I:/SteamLibrary/steamapps/common/Baldurs Gate 3/Data/Generated/Public/SharedDev/Assets/Characters/_Models/Humans/_Female/Resources/HUM_F_NKD_Body_Orin.GR2'
+_C().Visual.Visual.Attachments[1].Visual.VisualResource.Template = 'Generated/Public/SharedDev/Assets/Characters/_Models/Humans/_Female/Resources/HUM_F_NKD_Body_Orin.Dummy_Root.0'
+
+_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].Material.Shaders
+
+
+_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMaterials[1].Material.Parameters.Texture2DParameters[2]
+
+
+]]
