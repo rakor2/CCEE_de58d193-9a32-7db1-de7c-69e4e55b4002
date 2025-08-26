@@ -707,7 +707,7 @@ end)
 --tbd: combine into one function, perhaps elseif, perhaps learn something new
 
 ---Appplies the things to the PM dummies
-function ApplyParametersToPMDummies()
+function Apply_PMDummiesActiveMaterialParameters()
     getPMDummies()
     for uuid, attachments in pairs(LastParameters) do
         local entity = MatchCharacterAndPMDummy(uuid)
@@ -722,8 +722,8 @@ function ApplyParametersToPMDummies()
 end
 
 ---Appplies the things to the paperdolls v2
-function ApplyParametersToDollsTest(entity, uuid)
-    DPrint('ApplyParametersToDollsTest')
+function Apply_DollsActiveMaterialParameters(entity, uuid)
+    DPrint('Apply_DollsActiveMaterialParameters')
     -- DPrint('ApplyParametersToDolls')
     local attachments = LastParameters[uuid]
         -- DPrint(Helpers.Format.GetEntityName(entity))
@@ -738,7 +738,7 @@ function ApplyParametersToDollsTest(entity, uuid)
     end
 end
 
-function ApplyParametersToVisibleCCDummy(entity)
+function Apply_CCDummyVActiveMaterialsParameters(entity)
     local entityDummy
     local CCdumies = Ext.Entity.GetAllEntitiesWithComponent("ClientCCDummyDefinition")
     for _,dummy in pairs(CCdumies) do
