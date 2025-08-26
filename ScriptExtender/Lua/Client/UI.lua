@@ -246,76 +246,50 @@ ahhTable = {
     Melanin = {
 
         {'picker', 'pickMelaninColor', 'Color', parent, {}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(_C(), attachment, 'MelaninColor', 'Vector3', var.Color)
-
-            -- end 
-            -- MaterialPreset(_C(), 'MelaninColor', 'Vector3Parameters',  {var.Color[1],var.Color[2],var.Color[3]})
-
-            ahhTable.Melanin:Vector3(Apply.entity, 'MelaninColor', var, 'mp', nil, 'CharacterCreationSkinColor')
-
+            --ahhTable.Melanin:Vector3(Apply.entity, 'MelaninColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Melanin:Vector3(Apply.entity, 'MelaninColor', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'MelaninColor', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
             
         {nil, 'slMelaninAmount', 'Amount', parent, {}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(_C(), attachment, 'MelaninAmount', 'Scalar', var.Value[1])
-            -- end 
-            -- MaterialPreset(_C(), 'MelaninAmount', 'ScalarParameters', var.Value[1])
-
-            ahhTable.Melanin:Scalar(Apply.entity, 'MelaninAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
-
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninAmount', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'MelaninAmount', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
 
 
         {nil, 'slMelaninRemoval', 'Removal amount', parent, {max = 100, log = true}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(_C(), attachment, 'MelaninRemovalAmount', 'Scalar', var.Value[1])
-            -- end 
-            -- MaterialPreset(_C(), 'MelaninRemovalAmount', 'ScalarParameters', var.Value[1])
-
-            ahhTable.Melanin:Scalar(Apply.entity, 'MelaninRemovalAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
-
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninRemovalAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninRemovalAmount', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'MelaninRemovalAmount', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
 
 
         {nil, 'slMelaninDarkM', 'Dark multiplier', parent, {max = 100, log = true}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(_C(), attachment, 'MelaninDarkMultiplier', 'Scalar', var.Value[1])
-            -- end 
-
-            --MaterialPreset(_C(), 'MelaninDarkMultiplier', 'ScalarParameters', var.Value[1])
-            
-            ahhTable.Melanin:Scalar(Apply.entity, 'MelaninDarkMultiplier', var, 'mp', nil, 'CharacterCreationSkinColor')
-
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninDarkMultiplier', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninDarkMultiplier', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'MelaninDarkMultiplier', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
 
         {nil, 'slMelaninDarkT', 'Dark threshold', parent, {max = 1}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(_C(), attachment, 'MelaninDarkThreshold', 'Scalar', var.Value[1])
-            -- end
-            -- MaterialPreset(_C(), 'MelaninDarkThreshold', 'ScalarParameters', var.Value[1])
-
-            ahhTable.Melanin:Scalar(Apply.entity, 'MelaninDarkThreshold', var, 'mp', nil, 'CharacterCreationSkinColor')
-
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninDarkThreshold', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Melanin:Scalar(Apply.entity, 'MelaninDarkThreshold', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'MelaninDarkThreshold', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
     },
 
     Hemoglobin = {
 
         {'picker', 'pickHemoglobinColor', 'Color', parent, {}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(Apply.entity, attachment, 'HemoglobinColor', 'Vector3', var.Color)
-            -- end 
-            -- MaterialPreset(Apply.entity, 'HemoglobinColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
-            ahhTable.Hemoglobin:Vector3(Apply.entity, 'HemoglobinColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hemoglobin:Vector3(Apply.entity, 'HemoglobinColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hemoglobin:Vector3(Apply.entity, 'HemoglobinColor', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'HemoglobinColor', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
 
         {nil, 'slHemoglobinAmount', 'Amount', parent, {max = 3}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     HandleActiveMaterialParameters(Apply.entity, attachment, 'HemoglobinAmount', 'Scalar', var.Value[1])
-            -- end 
-            -- MaterialPreset(Apply.entity, 'HemoglobinAmount', 'ScalarParameters', var.Value[1])
-            ahhTable.Hemoglobin:Scalar(Apply.entity, 'HemoglobinAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hemoglobin:Scalar(Apply.entity, 'HemoglobinAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hemoglobin:Scalar(Apply.entity, 'HemoglobinAmount', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'HemoglobinAmount', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
     },
 
@@ -325,176 +299,188 @@ ahhTable = {
             --     --HandleActiveMaterialParameters(Apply.entity, attachment, 'YellowingColor', 'Vector3', var.Color)
             -- end 
             --MaterialPreset(Apply.entity, 'YellowingColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
-            ahhTable.Yellowing:Vector3(Apply.entity, 'YellowingColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Yellowing:Vector3(Apply.entity, 'YellowingColor', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            ----ahhTable.Yellowing:Vector3(Apply.entity, 'YellowingColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'YellowingColor', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
             
         {nil, 'slYellowingAmount', 'Amount', parent, {min = -300, max = 300, log = true}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     --HandleActiveMaterialParameters(Apply.entity, attachment, 'YellowingAmount', 'Scalar', var.Value[1])
-            -- end 
-            --MaterialPreset(Apply.entity, 'YellowingAmount', 'ScalarParameters', var.Value[1])
-            ahhTable.Yellowing:Scalar(Apply.entity, 'YellowingAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Yellowing:Scalar(Apply.entity, 'YellowingAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Yellowing:Scalar(Apply.entity, 'YellowingAmount', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'YellowingAmount', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
     },
     
     Vein = {
         {'picker', 'pickVeinColor', 'Color', parent, {}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     --HandleActiveMaterialParameters(Apply.entity, attachment, 'VeinColor', 'Vector3', var.Color)
-            -- end 
-            --MaterialPreset(Apply.entity, 'VeinColor', 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
-            ahhTable.Vein:Vector3(Apply.entity, 'VeinColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Vein:Vector3(Apply.entity, 'VeinColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Vein:Vector3(Apply.entity, 'VeinColor', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'VeinColor', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
 
         {nil, 'slVeinAmount', 'Amount', parent, {max = 7}, function(var)
-            -- for _, attachment in ipairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
-            --     --HandleActiveMaterialParameters(Apply.entity, attachment, 'VeinAmount', 'Scalar', var.Value[1])
-            -- end 
-            --MaterialPreset(Apply.entity, 'VeinAmount', 'ScalarParameters', var.Value[1])
-            ahhTable.Vein:Scalar(Apply.entity, 'VeinAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Vein:Scalar(Apply.entity, 'VeinAmount', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Vein:Scalar(Apply.entity, 'VeinAmount', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'VeinAmount', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             end},
     },
 
     NonSkinBody = {
         {'picker', 'pickNonSkinColor', 'NonSkinColor', parent, {}, function(var)
-            ahhTable.NonSkinBody:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
-            -- _SM(Apply.entity):NonSkinColor({'Head', 'NakedBody', 'Private Parts', 'Tail'}, {var.Color[1],var.Color[2],var.Color[3]})
             --ahhTable.NonSkin:Vector3(Apply.entity, 'NonSkinColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinColor', var, {'NakedBody', 'Private Parts', 'Tail'})
         end},
 
         {nil, 'slNonSkinWeight', 'NonSkin_Weight', parent, {max = 2}, function(var)
-            ahhTable.NonSkinBody:Scalar(Apply.entity, 'NonSkin_Weight', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.NonSkinBody:Scalar(Apply.entity, 'NonSkin_Weight', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkin_Weight', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'NonSkin_Weight', var, {'NakedBody', 'Private Parts', 'Tail'})
         end},
 
         {nil, 'slNonSkinMetalness', 'NonSkinMetalness', parent, {max = 1}, function(var)
-            ahhTable.NonSkinBody:Scalar(Apply.entity, 'NonSkinMetalness', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.NonSkinBody:Scalar(Apply.entity, 'NonSkinMetalness', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkinMetalness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'NonSkinMetalness', var, {'NakedBody', 'Private Parts', 'Tail'})
         end},
     },
 
-
-
     Freckles = {
         {nil, 'slFreckles', 'Freckles', parent, {max = 1.3}, function(var)
-            ahhTable.Freckles:Scalar(Apply.entity, 'Freckles', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Freckles:Scalar(Apply.entity, 'Freckles', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.Freckles:Scalar(Apply.entity, 'Freckles', var, 'mp', nil, 'CharacterCreationSkinColor')
             --SetAdditionalChoices('Freckles', var.Value[1]) --LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            HandleAllScalarMaterialParameters(Apply.entity, 'Freckles', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
         end},
     
         {nil, 'slFrecklesWeight', 'FrecklesWeight', parent, {max = 7}, function(var)
-            ahhTable.Freckles:Scalar(Apply.entity, 'FrecklesWeight', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Freckles:Scalar(Apply.entity, 'FrecklesWeight', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.Freckles:Scalar(Apply.entity, 'FrecklesWeight', var, 'mp', nil, 'CharacterCreationSkinColor')
             --SetAdditionalChoices('FrecklesWeight', var.Value[1]) --LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            HandleAllScalarMaterialParameters(Apply.entity, 'FrecklesWeight', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
         end},
     },
 
     Vitiligo = {
         {nil, 'slVitiligo', 'Vitiligo', parent, {max = 1}, function(var)
-            ahhTable.Vitiligo:Scalar(Apply.entity, 'Vitiligo', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Vitiligo:Scalar(Apply.entity, 'Vitiligo', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.Vitiligo:Scalar(Apply.entity, 'Vitiligo', var, 'mp', nil, 'CharacterCreationSkinColor')
             --SetAdditionalChoices('Vitiligo', var.Value[1]) --LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            HandleAllScalarMaterialParameters(Apply.entity, 'Vitiligo', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
         end},
     
         {nil, 'slVitiligoWeight', 'VitiligoWeight', parent, {max = 1}, function(var)
-            ahhTable.Vitiligo:Scalar(Apply.entity, 'VitiligoWeight', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Vitiligo:Scalar(Apply.entity, 'VitiligoWeight', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.Vitiligo:Scalar(Apply.entity, 'VitiligoWeight', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'VitiligoWeight', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})            
         end},
     },
 
     Sweat = {
         {nil, 'slSweat', 'Sweat (smh)', parent, {max = 2}, function(var)
-            ahhTable.Sweat:Scalar(Apply.entity, 'Sweat', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Sweat:Scalar(Apply.entity, 'Sweat', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.Sweat:Scalar(Apply.entity, 'Sweat', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Sweat', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})                   
         end},
     },
 
     Blood = {
         {nil, 'slBlood', 'Blood', parent, {max = 2}, function(var)
-            ahhTable.Sweat:Scalar(Apply.entity, 'Blood', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
-            --ahhTable.Blood:Scalar(Apply.entity, 'Blood', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Sweat:Scalar(Apply.entity, 'Blood', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Blood:Scalar(Apply.entity, 'Blood', var, 'mp', nil, 'CharacterCreationSkinColor'
+            HandleAllScalarMaterialParameters(Apply.entity, 'Blood', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})                    
         end},
     },
 
     Dirt_body = {
-        {nil, 'slBlood', 'Blood', parent, {max = 2}, function(var)
-            ahhTable.Sweat:Scalar(Apply.entity, 'Dirt', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+        {nil, 'slDirt', 'Dirt', parent, {max = 2}, function(var)
+            --ahhTable.Sweat:Scalar(Apply.entity, 'Dirt', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
             --ahhTable.Blood:Scalar(Apply.entity, 'Blood', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Dirt', var, {'Head', 'NakedBody', 'Private Parts', 'Tail'})                 
         end},
     },
 
-
-    UnsortedB = {
-    },
 
     Eyes_makeup = {
         {'int', 'slIntMakeupIndex', 'Index', parent, {max = 31}, function(var)
             --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeUpIndex', var, nil, {'Head'})
-            ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeUpIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeUpIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'MakeUpIndex', var, {'Head'})
         end},
     
         {'picker', 'pickMakeupColor', 'Color', parent, {}, function(var)
             --ahhTable.Eyes_makeup:Vector3(Apply.entity, 'MakeupColor', var, nil, {'Head'})
-            ahhTable.Eyes_makeup:Vector3(Apply.entity, 'MakeupColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Eyes_makeup:Vector3(Apply.entity, 'MakeupColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'MakeupColor', var, {'Head'})    
         end},
     
         {nil, 'slMakeupInt', 'Intensity', parent, {max = 5}, function(var)
             --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeupIntensity', var, nil, {'Head'})
-            ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeupIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeupIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'MakeupIntensity', var, {'Head'})
         end},
     
         {nil, 'slMakeupMet', 'Metalness', parent, {max = 1}, function(var)
             --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'EyesMakeupMetalness', var, nil, {'Head'})
-            ahhTable.Eyes_makeup:Scalar(Apply.entity, 'EyesMakeupMetalness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'EyesMakeupMetalness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'EyesMakeupMetalness', var, {'Head'})
         end},
     
         {nil, 'slMakeupRough', 'Roughness', parent, {min = -1, max = 1}, function(var)
             --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeupRoughness', var, nil, {'Head'})
-            ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeupRoughness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Eyes_makeup:Scalar(Apply.entity, 'MakeupRoughness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'MakeupRoughness', var, {'Head'})
         end},
     },
     
     Lips_makeup = {
         {'picker', 'pickLipsColor', 'Color', parent, {}, function(var)
             --ahhTable.Lips_makeup:Vector3(Apply.entity, 'Lips_Makeup_Color', var, nil, {'Head'})
-            ahhTable.Lips_makeup:Vector3(Apply.entity, 'Lips_Makeup_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Lips_makeup:Vector3(Apply.entity, 'Lips_Makeup_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Lips_Makeup_Color', var, {'Head'})
         end},
     
         {nil, 'slLipsInt', 'Intensity', parent, {max = 5}, function(var)
             --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupIntensity', var, nil, {'Head'})
-            ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Intensity', var, {'Head'})
         end},
     
         {nil, 'slLipsMet', 'Metalness', parent, {max = 1}, function(var)
             --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupMetalness', var, nil, {'Head'})
-            ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupMetalness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupMetalness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'LipsMakeupMetalness', var, {'Head'})
         end},
     
         {nil, 'slLipsRough', 'Roughness', parent, {min = -1, max = 1}, function(var)
             --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupRoughness', var, nil, {'Head'})
-            ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupRoughness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupRoughness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'LipsMakeupRoughness', var, {'Head'})
         end},
     },
 
     Tattoo = {
         {'int', 'slIntTattooIndex', 'Index', parent, {max = 31}, function(var)
             --ahhTable.Tattoo:Scalar(Apply.entity, 'TattooIndex', var, nil, {'Head'})
-            ahhTable.Tattoo:Scalar(Apply.entity, 'TattooIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Tattoo:Scalar(Apply.entity, 'TattooIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooIndex', var, {'Head'})
         end},
     
         {'picker', 'pickTattooColorR', 'Color R', parent, {}, function(var)
             --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColor', var, nil, {'Head'})
-            ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'TattooColor', var, {'Head'})
         end},
     
         {'picker', 'pickTattooColorG', 'Color G', parent, {}, function(var)
             --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColorG', var, nil, {'Head'})
-            ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColorG', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColorG', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'TattooColorG', var, {'Head'})
         end},
     
         {'picker', 'pickTattooColorB', 'Color B', parent, {}, function(var)
             --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColorB', var, nil, {'Head'})
-            ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'TattooColorB', var, {'Head'})
         end},
     
 
@@ -528,25 +514,28 @@ ahhTable = {
                 Elements['pickTattooIntR'].Color = colorHT
             end
             --ahhTable.Tattoo:Vector(Apply.entity, 'TattooIntensity', var, nil, {'Head'})
-            ahhTable.Tattoo:Vector(Apply.entity, 'TattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Tattoo:Vector(Apply.entity, 'TattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVectorMaterialParameters(Apply.entity, 'TattooIntensity', var, {'Head'})
         end},
 
 
 
             
         {nil, 'slAddHeadTatInt', 'Head AdditionalTattooIntensity', parent, {max = 2}, function(var)
-            ahhTable.Tattoo:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, nil, {'Head'})
+            --ahhTable.Tattoo:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, nil, {'Head'})
             --ahhTable.Tattoo:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor') --idk
+            HandleAllScalarMaterialParameters(Apply.entity, 'AdditionalTattooIntensity', var, {'Head'})
         end},
     
         {'picker', 'pickAddHeadColor', 'Head AdditionalTattooColor', parent, {}, function(var)
-            ahhTable.Tattoo:Vector3(Apply.entity, 'AdditionalTattooColorB', var, nil, {'Head'})
+            --ahhTable.Tattoo:Vector3(Apply.entity, 'AdditionalTattooColorB', var, nil, {'Head'})
             --ahhTable.Tattoo:Vector3(Apply.entity, 'AdditionalTattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor')--idk
+            HandleAllScalarMaterialParameters(Apply.entity, 'AdditionalTattooColorB', var, {'Head'})
         end},
     
         -- {nil, 'pickTattooIntR', 'Intensity R', parent, {min = -5, max = 5}, function(var)
         --     -- HandleActiveMaterialParameters(Apply.entity, 'Head', 'TattooIntensity', 'Vector_1Parameters', var.Value[1]) 
-        --     ahhTable.Tattoo:Vector3(Apply.entity, 'TattooIntensity', var, 'mp_1', nil, 'CharacterCreationSkinColor')
+        --     --ahhTable.Tattoo:Vector3(Apply.entity, 'TattooIntensity', var, 'mp_1', nil, 'CharacterCreationSkinColor')
         --     Elements['pickTattooIntG'].Value = {0,0,0,0}
         --     Elements['pickTattooIntB'].Value = {0,0,0,0}
 
@@ -566,159 +555,182 @@ ahhTable = {
         --     end},
     
         {nil, 'slTattooMet', 'Metalness', parent, {min = 0, max = 1}, function(var)
-            ahhTable.Tattoo:Scalar(Apply.entity, 'TattooMetalness', var, nil, {'Head'})
+            --ahhTable.Tattoo:Scalar(Apply.entity, 'TattooMetalness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooMetalness', var, {'Head'})
         end},
     
         {nil, 'slTattooRough', 'Roughness', parent, {min = -1, max = 1}, function(var)
-            ahhTable.Tattoo:Scalar(Apply.entity, 'TattooRoughnessOffset', var, nil, {'Head'})
+            --ahhTable.Tattoo:Scalar(Apply.entity, 'TattooRoughnessOffset', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooRoughnessOffset', var, {'Head'})
         end},
     
         {nil, 'slTattooCurve', 'Curvature influence', parent, {min = 0, max = 100}, function(var)
-            ahhTable.Tattoo:Scalar(Apply.entity, 'TattooCurvatureInfluence', var, nil, {'Head'})
+            --ahhTable.Tattoo:Scalar(Apply.entity, 'TattooCurvatureInfluence', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooCurvatureInfluence', var, {'Head'})
         end},
     },
     
     Age = {
         {nil, 'slAgeInt', 'Intensity', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Age:Scalar(Apply.entity, 'Age_Weight', var, nil, {'Head'})
+            --ahhTable.Age:Scalar(Apply.entity, 'Age_Weight', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Age_Weight', var, {'Head'})
         end},
     },
 
     Scars = {
         {'int', 'slIntScarIndex', 'Index', parent, {max = 24}, function(var)
-            ahhTable.Scars:Scalar(Apply.entity, 'ScarIndex', var, nil, {'Head'})
+            --ahhTable.Scars:Scalar(Apply.entity, 'ScarIndex', var, nil, {'Head'})
             --ahhTable.Scars:Scalar(Apply.entity, 'ScarIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'ScarIndex', var, {'Head'})
         end},
     
         {nil, 'slScarWeight', 'Intensity', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scars:Scalar(Apply.entity, 'Scar_Weight', var, nil, {'Head'})
+            --ahhTable.Scars:Scalar(Apply.entity, 'Scar_Weight', var, nil, {'Head'})
             --ahhTable.Scars:Scalar(Apply.entity, 'Scar_Weight', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scar_Weight', var, {'Head'})
         end},
     },
     
     Scales = {
         {'int', 'slIntScaleIndex', 'Index', parent, {max = 31}, function(var)
             --ahhTable.Scales:Scalar(Apply.entity, 'CustomIndex', var, nil, {'Head'})
-            ahhTable.Scales:Scalar(Apply.entity, 'CustomIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Scales:Scalar(Apply.entity, 'CustomIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'CustomIndex', var, {'Head'})
         end},
     
         {'picker', 'pickScaleColor', 'Color', parent, {}, function(var)
             --ahhTable.Scales:Vector3(Apply.entity, 'CustomColor', var, nil, {'Head'})
-            ahhTable.Scales:Vector3(Apply.entity, 'CustomColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Scales:Vector3(Apply.entity, 'CustomColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'CustomColor', var, {'Head'})
         end},
     
         {nil, 'slScaleInt', 'Intensity', parent, {min = -10, max = 10}, function(var)
             --ahhTable.Scales:Scalar(Apply.entity, 'CustomIntensity', var, nil, {'Head'})
-            ahhTable.Scales:Scalar(Apply.entity, 'CustomIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Scales:Scalar(Apply.entity, 'CustomIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'CustomIntensity', var, {'Head'})
         end},
     },
     
-    Dirt_face = {
-        {nil, 'slHeadDirtInt', 'Dirt', parent, {max = 1}, function(var)
-            ahhTable.Dirt_face:Scalar(Apply.entity, 'Dirt', var, nil, {'Head'})
-        end},
-    },
-
     Eyes = {
         {'int', 'slEyesHet', 'Heterochromia', parent, {max = 1}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'Heterochromia', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'Heterochromia', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Heterochromia', var, {'Head'})
         end},
     
         {nil, 'slEyesBR', 'Blindness R', parent, {max = 3}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'Blindness', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'Blindness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Blindness', var, {'Head'})
         end},
     
         {nil, 'slEyesBL', 'Blindness L', parent, {max = 3}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'Blindness_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'Blindness_L', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Blindness_L', var, {'Head'})
         end},
     
         {'picker', 'pickEyesC', 'Iris color 1', parent, {}, function(var)
-            ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisColour', var, nil, {'Head'})
+            --ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisColour', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_IrisColour', var, {'Head'})
         end},
     
         {'picker', 'pickEyesCL', 'Iris color 1 L', parent, {}, function(var)
-            ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisColour_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisColour_L', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_IrisColour_L', var, {'Head'})
         end},
     
         {'picker', 'pickEyesC2', 'Iris color 2', parent, {}, function(var)
-            ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisSecondaryColour', var, nil, {'Head'})
+            --ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisSecondaryColour', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_IrisSecondaryColour', var, {'Head'})
         end},
     
         {'picker', 'pickEyesC2L', 'Iris color 2 L', parent, {}, function(var)
-            ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisSecondaryColour_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_IrisSecondaryColour_L', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_IrisSecondaryColour_L', var, {'Head'})
         end},
     
         {'picker', 'pickEyesSC', 'Sclera color', parent, {}, function(var)
-            ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_ScleraColour', var, nil, {'Head'})
+            --ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_ScleraColour', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_ScleraColour', var, {'Head'})
         end},
     
         {'picker', 'pickEyesSCL', 'Sclera color L', parent, {}, function(var)
-            ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_ScleraColour_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Vector3(Apply.entity, 'Eyes_ScleraColour_L', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_ScleraColour_L', var, {'Head'})
         end},
     
         {nil, 'slEyesCI', 'Iris color int', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'SecondaryColourIntensity', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'SecondaryColourIntensity', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'SecondaryColourIntensity', var, {'Head'})
         end},
     
         {nil, 'slEyesCIL', 'Iris color int L', parent, {min = -100, max = 100}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'SecondaryColourIntensity_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'SecondaryColourIntensity_L', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'SecondaryColourIntensity_L', var, {'Head'})
         end},
     
         {nil, 'slEyesEdge', 'IrisEdgeStrength', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'IrisEdgeStrength', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'IrisEdgeStrength', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'IrisEdgeStrength', var, {'Head'})
         end},
     
         {nil, 'slEyesEdgeL', 'IrisEdgeStrength L', parent, {min = -100, max = 100}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'IrisEdgeStrength_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'IrisEdgeStrength_L', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'IrisEdgeStrength_L', var, {'Head'})
         end},
     
         {nil, 'slEyesRed', 'Redness', parent, {max = 100, log = true}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'Redness', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'Redness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Redness', var, {'Head'})
         end},
     
         {nil, 'slEyesRedL', 'Redness L', parent, {max = 100}, function(var)
-            ahhTable.Eyes:Scalar(Apply.entity, 'Redness_L', var, nil, {'Head'})
+            --ahhTable.Eyes:Scalar(Apply.entity, 'Redness_L', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Redness_L', var, {'Head'})
         end},
     },
 
     NonSkinHead = {
         {'picker', 'pickHeadNonSkinColor', 'NonSkinColor', parent, {}, function(var)
-            ahhTable.NonSkinHead:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Head'})
-            -- _SM(Apply.entity):NonSkinColor({'Head', 'NakedBody', 'Private Parts', 'Tail'}, {var.Color[1],var.Color[2],var.Color[3]})
             --ahhTable.NonSkin:Vector3(Apply.entity, 'NonSkinColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinColor', var, {'Head'})
         end},
 
         {nil, 'slHeadNonSkinWeight', 'NonSkin_Weight', parent, {max = 2}, function(var)
-            ahhTable.NonSkinHead:Scalar(Apply.entity, 'NonSkin_Weight', var, nil, {'Head'})
+            --ahhTable.NonSkinHead:Scalar(Apply.entity, 'NonSkin_Weight', var, nil, {'Head'})
             --ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkin_Weight', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'NonSkin_Weight', var, {'Head'})
         end},
 
         {nil, 'slHeadNonSkinMetalness', 'NonSkinMetalness', parent, {max = 1}, function(var)
-            ahhTable.NonSkinHead:Scalar(Apply.entity, 'NonSkinMetalness', var, nil, {'Head'})
+            --ahhTable.NonSkinHead:Scalar(Apply.entity, 'NonSkinMetalness', var, nil, {'Head'})
             --ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkinMetalness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'NonSkinMetalness', var, {'Head'})
         end},
     },
     
 
     Body_tattoos = {
         {'int', 'slBTatI', 'Index', parent, {max = 19}, function(var)
-            -- ahhTable.Body_tattoos:Scalar(Apply.entity, 'BodyTattooIndex', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
-            ahhTable.Body_tattoos:Scalar(Apply.entity, 'BodyTattooIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Body_tattoos:Scalar(Apply.entity, 'BodyTattooIndex', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Scalar(Apply.entity, 'BodyTattooIndex', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'BodyTattooIndex', var, {'NakedBody', 'Tail'})
         end},
     
         {'picker', 'pickBTatCR', 'Color R', parent, {}, function(var)
-            -- ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColor', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
-            ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColor', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColor', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'BodyTattooColor', var, {'NakedBody', 'Tail'})
         end},
     
         {'picker', 'pickBTatCG', 'Color G', parent, {}, function(var)
-            -- ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorG', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
-            ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorG', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorG', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorG', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'BodyTattooColorG', var, {'NakedBody', 'Tail'})
         end},
     
         {'picker', 'pickBTatCB', 'Color B', parent, {}, function(var)
-            -- ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorB', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
-            ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorB', var, nil, {'Head', 'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Vector3(Apply.entity, 'BodyTattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'BodyTattooColorB', var, {'NakedBody', 'Tail'})
         end},
         
         
@@ -749,17 +761,20 @@ ahhTable = {
                 oldColorBT[4] = colorBT[4]
                 Elements['slBTatIntR'].Color = colorBT
             end
-            ahhTable.Body_tattoos:Vector(Apply.entity, 'BodyTattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Body_tattoos:Vector(Apply.entity, 'BodyTattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVectorMaterialParameters(Apply.entity, 'BodyTattooIntensity', var, {'NakedBody', 'Tail'})
         end},
 
         {'picker', 'pickAddBodyColor', 'Body AdditionalTattooColor', parent, {}, function(var)
-            ahhTable.Body_tattoos:Vector3(Apply.entity, 'AdditionalTattooColorB', var, nil, {'NakedBody'})
+            --ahhTable.Body_tattoos:Vector3(Apply.entity, 'AdditionalTattooColorB', var, nil, {'NakedBody'})
             --ahhTable.Body_tattoos:Vector3(Apply.entity, 'AdditionalTattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor') --idk
+            HandleAllVector3MaterialParameters(Apply.entity, 'AdditionalTattooColorB', var, {'NakedBody'})
         end},
 
         {nil, 'slAddBodyTatInt', 'Body AdditionalTattooIntensity', parent, {max = 2}, function(var)
-            ahhTable.Body_tattoos:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, nil, {'NakedBody'})
+            --ahhTable.Body_tattoos:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, nil, {'NakedBody'})
             --ahhTable.Body_tattoos:Scalar(Apply.entity, 'AdditionalTattooIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')--idk
+            HandleAllScalarMaterialParameters(Apply.entity, 'AdditionalTattooIntensity', var, {'NakedBody'})
         end},
     
 
@@ -794,217 +809,269 @@ ahhTable = {
         -- end},
         
         {nil, 'slBTatMet', 'Metalness', parent, {max = 1}, function(var)
-            ahhTable.Body_tattoos:Scalar(Apply.entity, 'TattooMetalness', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Scalar(Apply.entity, 'TattooMetalness', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooMetalness', var, {'NakedBody', 'Tail'})
         end},
     
         {nil, 'slBTatR', 'Roughness', parent, {min = -1, max = 1}, function(var)
-            ahhTable.Body_tattoos:Scalar(Apply.entity, 'TattooRoughnessOffset', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Scalar(Apply.entity, 'TattooRoughnessOffset', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooRoughnessOffset', var, {'NakedBody', 'Tail'})
         end},
     
         {nil, 'slBTatCurve', 'Curvature influence', parent, {max = 100}, function(var)
-            ahhTable.Body_tattoos:Scalar(Apply.entity, 'TattooCurvatureInfluence', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            --ahhTable.Body_tattoos:Scalar(Apply.entity, 'TattooCurvatureInfluence', var, nil, {'NakedBody', 'Private Parts', 'Tail'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'TattooCurvatureInfluence', var, {'NakedBody', 'Tail'})
         end}
     },
 
     Private_parts = {
         {'int', 'slIntPPOpac', 'Toggle', parent, {def = 1}, function(var)
-            ahhTable.Private_parts:Scalar(Apply.entity, 'InvertOpacity', var, nil, {'Private parts'})
+            --ahhTable.Private_parts:Scalar(Apply.entity, 'InvertOpacity', var, nil, {'Private parts'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'InvertOpacity', var, {'Private parts'})
         end},
     },
     
     Scalp = {
         {'picker', 'pickHairScalpColor', 'Hair Scalp Color', parent, {}, function(var)
-            -- ahhTable.Scalp:Vector3(Apply.entity, 'Hair_Scalp_Color', var, nil, {'Head'})
-            ahhTable.Scalp:Vector3(Apply.entity, 'Hair_Scalp_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Scalp:Vector3(Apply.entity, 'Hair_Scalp_Color', var, nil, {'Head'})
+            --ahhTable.Scalp:Vector3(Apply.entity, 'Hair_Scalp_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Hair_Scalp_Color', var, {'Head'})
         end},
     
         {'picker', 'pickHueShiftWeight', 'Hue Shift Weight', parent, {}, function(var)
-            -- ahhTable.Scalp:Vector3(Apply.entity, 'Scalp_HueShiftColorWeight', var, nil, {'Head'})
-            ahhTable.Scalp:Vector3(Apply.entity, 'Scalp_HueShiftColorWeight', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Scalp:Vector3(Apply.entity, 'Scalp_HueShiftColorWeight', var, nil, {'Head'})
+            --ahhTable.Scalp:Vector3(Apply.entity, 'Scalp_HueShiftColorWeight', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Scalp_HueShiftColorWeight', var, {'Head'})
         end},
     
         {'picker', 'pickBeardScalpColor', 'Beard Scalp Color', parent, {}, function(var)
-            ahhTable.Scalp:Vector3(Apply.entity, 'Beard_Scalp_Color', var, nil, {'Head'})
+            --ahhTable.Scalp:Vector3(Apply.entity, 'Beard_Scalp_Color', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Beard_Scalp_Color', var, {'Head'})
         end},
     
         {nil, 'slScalpMinValue', 'Scalp Min Value', parent, {min = -1, max = 1}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_MinValue', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_MinValue', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_MinValue', var, {'Head'})
         end},
     
         {nil, 'slHornMaskWeight', 'Horn Mask Weight', parent, {min = -1, max = 1}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_HornMaskWeight', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_HornMaskWeight', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_HornMaskWeight', var, {'Head'})
         end},
     
         {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_Graying_Intensity', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_Graying_Intensity', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_Graying_Intensity', var, {'Head'})
         end},
     
         {'picker', 'pickGrayingColor', 'Graying Color', parent, {}, function(var)
-            ahhTable.Scalp:Vector3(Apply.entity, 'Hair_Scalp_Graying_Color', var, nil, {'Head'})
+            --ahhTable.Scalp:Vector3(Apply.entity, 'Hair_Scalp_Graying_Color', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Hair_Scalp_Graying_Color', var, {'Head'})
         end},
     
         {nil, 'slColorTransitionMid', 'Color Transition Mid', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_ColorTransitionMidPoint', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_ColorTransitionMidPoint', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_ColorTransitionMidPoint', var, {'Head'})
         end},
     
         {nil, 'slColorTransitionSoft', 'Color Transition Soft', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_ColorTransitionSoftness', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_ColorTransitionSoftness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_ColorTransitionSoftness', var, {'Head'})
         end},
     
         {nil, 'slDepthColorExponent', 'Depth Color Exponent', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_DepthColorExponent', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_DepthColorExponent', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_DepthColorExponent', var, {'Head'})
         end},
     
         {nil, 'slDepthColorIntensity', 'Depth Color Intensity', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_DepthColorIntensity', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_DepthColorIntensity', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_DepthColorIntensity', var, {'Head'})
         end},
     
         {nil, 'slIDContrast', 'ID Contrast', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_IDContrast', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_IDContrast', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_IDContrast', var, {'Head'})
         end},
     
         {nil, 'slColorDepthContrast', 'Color Depth Contrast', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_ColorDepthContrast', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_ColorDepthContrast', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_ColorDepthContrast', var, {'Head'})
         end},
     
         {nil, 'slScalpRoughness', 'Scalp Roughness', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_Roughness', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_Roughness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_Roughness', var, {'Head'})
         end},
     
         {nil, 'slRoughnessContrast', 'Roughness Contrast', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_RoughnessContrast', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_RoughnessContrast', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_RoughnessContrast', var, {'Head'})
         end},
     
         {nil, 'slScalpScatter', 'Scalp Scatter', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_Scatter', var, nil, {'Head'})
+            --ahhTable.Scalp:Scalar(Apply.entity, 'Scalp_Scatter', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Scalp_Scatter', var, {'Head'})
         end},
     },
     
 
     Hair = {
         {'picker', 'pickHairColor', 'Hair Color', parent, {}, function(var)
-            -- ahhTable.Hair:Vector3(Apply.entity, 'Hair_Color', var, nil, {'Hair'})
-            ahhTable.Hair:Vector3(Apply.entity, 'Hair_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.Hair:Vector3(Apply.entity, 'Hair_Color', var, nil, {'Hair'})
+            --ahhTable.Hair:Vector3(Apply.entity, 'Hair_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Hair_Color', var, {'Hair'})
         end},
 
         {nil, 'slHairRoughness', 'Roughness', parent, {min = -1, max = 1}, function(var)
             --ahhTable.Hair:Scalar(Apply.entity, 'Roughness', var, nil, {'Hair'})
-            ahhTable.Hair:Scalar(Apply.entity, 'Roughness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hair:Scalar(Apply.entity, 'Roughness', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Roughness', var, {'Hair'})
         end},
 
         {nil, 'slRootTransitionMid', 'Root Transition Mid', parent, {}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'RootTransitionMidPoint', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'RootTransitionMidPoint', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'RootTransitionMidPoint', var, {'Hair'})
         end},
     
         {nil, 'slRootTransitionSoft', 'Root Transition Soft', parent, {min = -2, max = 2}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'RootTransitionSoftness', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'RootTransitionSoftness', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'RootTransitionSoftness', var, {'Hair'})
         end},
 
         {nil, 'slDepthColorExponent', 'Depth Color Exponent', parent, {}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'DepthColorExponent', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'DepthColorExponent', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'DepthColorExponent', var, {'Hair'})
         end},
     
         {nil, 'slDepthColorIntensity', 'Depth Color Intensity', parent, {}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'DepthColorIntensity', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'DepthColorIntensity', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'DepthColorIntensity', var, {'Hair'})
         end},
     
         {nil, 'slColorDepthContrast', 'Color Depth Contrast', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'ColorDepthContrast', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'ColorDepthContrast', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'ColorDepthContrast', var, {'Hair'})
         end},
 
 
 
         {nil, 'slHairRoughness', 'Roughness contrast', parent, {min = -1, max = 1}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'RoughnessContrast', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'RoughnessContrast', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'RoughnessContrast', var, {'Hair'})
         end},
 
     
         {nil, 'slHairFrizz', 'Hair Frizz', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'HairFrizz', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'HairFrizz', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'HairFrizz', var, {'Hair'})
         end},
     
         {nil, 'slHairSoupleness', 'Hair Soupleness', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'HairSoupleness', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'HairSoupleness', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'HairSoupleness', var, {'Hair'})
         end},
     
         {nil, 'slMaxWindMovement', 'Max Wind Movement', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'MaxWindMovementAmount', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'MaxWindMovementAmount', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'MaxWindMovementAmount', var, {'Hair'})
         end},
     
         {nil, 'slSoftenTipsAlpha', 'Soften Tips Alpha', parent, {}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'SoftenTipsAlpha', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'SoftenTipsAlpha', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'SoftenTipsAlpha', var, {'Hair'})
         end},
 
         {nil, 'slBacklit', 'Backlit', parent, {}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'HairBacklit', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'HairBacklit', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'HairBacklit', var, {'Hair'})
         end},
     
     
         {nil, 'slDreadNoiseBaseColor', 'Dread Noise Base Color', parent, {}, function(var)
-            ahhTable.Hair:Scalar(Apply.entity, 'DreadNoiseBaseColor', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'DreadNoiseBaseColor', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'DreadNoiseBaseColor', var, {'Hair'})
         end},
     
-        {'picker', 'pickHairAcc1', 'Accs Color 1', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc1', 'Accs NonSkinColor', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinColor', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc2', 'Accs Color 2', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'NonSkinTipColor', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc2', 'Accs NonSkinTipColor', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'NonSkinTipColor', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinTipColor', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc3', 'Accs Color 3', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'SkinApproxColor', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc3', 'Accs SkinApproxColor', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'SkinApproxColor', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'SkinApproxColor', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc4', 'Accs Color 4', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Cloth_Primary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc4', 'Accs Cloth_Primary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Cloth_Primary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Cloth_Primary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc5', 'Accs Color 5', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Cloth_Secondary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc5', 'Accs Cloth_Secondary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Cloth_Secondary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Cloth_Secondary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc6', 'Accs Color 6', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Cloth_Tertiary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc6', 'Accs Cloth_Tertiary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Cloth_Tertiary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Cloth_Tertiary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc7', 'Accs Color 7', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Accent_Color', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc7', 'Accs Accent_Color', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Accent_Color', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Accent_Color', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc8', 'Accs Color 8', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Leather_Primary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc8', 'Accs Leather_Primary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Leather_Primary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Leather_Primary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc9', 'Accs Color 9', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Leather_Secondary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc9', 'Accs Leather_Secondary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Leather_Secondary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Leather_Secondary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc10', 'Accs Color 10', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Leather_Tertiary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc10', 'Accs Leather_Tertiary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Leather_Tertiary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Leather_Tertiary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc11', 'Accs Color 11', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Custom_1', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc11', 'Accs Custom_1', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Custom_1', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Custom_1', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc12', 'Accs Color 12', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Custom_2', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc12', 'Accs Custom_2', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Custom_2', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Custom_2', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc13', 'Accs Color 13', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Metal_Primary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc13', 'Accs Metal_Primary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Metal_Primary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Metal_Primary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc14', 'Accs Color 14', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Metal_Secondary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc14', 'Accs Metal_Secondary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Metal_Secondary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Metal_Secondary', var, {'Hair'})
         end},
-        {'picker', 'pickHairAcc15', 'Accs Color 15', parent, {}, function(var)
-            ahhTable.Hair:Vector3(Apply.entity, 'Metal_Tertiary', var, nil, {'Hair'})
+        {'picker', 'pickHairAcc15', 'Accs Metal_Tertiary', parent, {}, function(var)
+            --ahhTable.Hair:Vector3(Apply.entity, 'Metal_Tertiary', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Metal_Tertiary', var, {'Hair'})
         end},
     },
     
     Graying = {
         {'picker', 'pickHairGrayingColor', 'Hair Graying Color', parent, {}, function(var)
             --ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, nil, {'Hair'})
-            ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Hair_Graying_Color', var, {'Hair'})
         end},
     
         {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1.2}, function(var)
             --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, nil, {'Hair'})
-            ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Hair_Graying_Color', var, {'Hair'})
         end},
     
         {nil, 'slGrayingSeed', 'Graying Seed', parent, {min = -10, max = 10, log = true}, function(var)
             --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, nil, {'Hair'})
-            ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Graying_Seed', var, {'Hair'})
         end},
     },
     
@@ -1012,200 +1079,250 @@ ahhTable = {
     Highlights = {
         {'picker', 'pickHighlightColor', 'Highlight Color', parent, {}, function(var)
             --ahhTable.Highlights:Vector3(Apply.entity, 'Highlight_Color', var, nil, {'Hair'})
-            ahhTable.Hair:Vector3(Apply.entity, 'Highlight_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hair:Vector3(Apply.entity, 'Highlight_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Highlight_Color', var, {'Hair'})
         end},
     
         {nil, 'slHighlightFalloff', 'Highlight Falloff', parent, {min = -1, log = true}, function(var)
             --ahhTable.Highlights:Scalar(Apply.entity, 'Highlight_Falloff', var, nil, {'Hair'})
-            ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Falloff', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Falloff', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Highlight_Falloff', var, {'Hair'})
         end},
     
         {nil, 'slHighlightIntensity', 'Highlight Intensity', parent, {max = 3, log = true}, function(var)
             --ahhTable.Highlights:Scalar(Apply.entity, 'Highlight_Intensity', var, nil, {'Hair'})
-            ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Highlight_Intensity', var, {'Hair'})
         end},
     },
     
     Beard = {
         {'int', 'slIntBeardIndex', 'BeardIndex', parent, {min = -1, max = 100}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'BeardIndex', var, nil, {'Head'})
-        end},
-    
-        {'picker', 'pickBeardScalpColor', 'Beard Scalp Color', parent, {}, function(var)
-            --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Scalp_Color', var, nil, {'Hair'})
-            ahhTable.Beard:Vector3(Apply.entity, 'Beard_Scalp_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Beard:Scalar(Apply.entity, 'BeardIndex', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'BeardIndex', var, {'Head'})
         end},
     
         {'picker', 'pickBeardColor', 'Beard Color', parent, {}, function(var)
             --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Color', var, nil, {'Hair'})
-            ahhTable.Beard:Vector3(Apply.entity, 'Beard_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Beard_Color', var, {'Hair'})
+        end},
+
+        {'picker', 'pickBeardScalpColor', 'Beard Scalp Color', parent, {}, function(var)
+            --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Scalp_Color', var, nil, {'Hair'})
+            --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Scalp_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Beard_Scalp_Color', var, {'Hair'})
         end},
     
         {'picker', 'pickBeardGrayingColor', 'Beard Graying Color', parent, {}, function(var)
-            ahhTable.Beard:Vector3(Apply.entity, 'Beard_Graying_Color', var, nil, {'Hair'})
+            --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Graying_Color', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Beard_Graying_Color', var, {'Hair'})
+        end},
+
+        {nil, 'slBeardGrayingInt', 'Beard Graying Intensity', parent, {min = -100, max = 100}, function(var)
+            --ahhTable.Beard:Scalar(Apply.entity, 'Beard_Graying_Intensity', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Beard_Graying_Intensity', var, {'Hair'})
         end},
     
         {'picker', 'pickBeardHighlightColor', 'Beard Highlight Color', parent, {}, function(var)
-            ahhTable.Beard:Vector3(Apply.entity, 'Beard_Highlight_Color', var, nil, {'Hair'})
+            --ahhTable.Beard:Vector3(Apply.entity, 'Beard_Highlight_Color', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Beard_Highlight_Color', var, {'Hair'})
         end},
     
         {nil, 'slBeardMinValue', 'Beard Min Value', parent, {min = -10, max = 10}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'BeardMinValue', var, nil, {'Head'})
+            --ahhTable.Beard:Scalar(Apply.entity, 'BeardMinValue', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'BeardMinValue', var, {'Head'})
         end},
     
         {nil, 'slBeardInt', 'Beard Intesity', parent, {min = -100, max = 100}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'BeardIntesity', var, nil, {'Hair'})
+            --ahhTable.Beard:Scalar(Apply.entity, 'BeardIntesity', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'BeardIntesity', var, {'Hair'})
         end},
     
         {nil, 'slBeardDesat', 'Beard Desaturation', parent, {min = -100, max = 100}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'BeardDesaturation', var, nil, {'Head'})
+            --ahhTable.Beard:Scalar(Apply.entity, 'BeardDesaturation', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'BeardDesaturation', var, {'Head'})
         end},
     
         {nil, 'slBeardDarken', 'Beard Darken', parent, {min = -100, max = 100}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'BeardDarken', var, nil, {'Head'})
+            --ahhTable.Beard:Scalar(Apply.entity, 'BeardDarken', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'BeardDarken', var, {'Head'})
         end},
     
-        {nil, 'slBeardGrayingInt', 'Beard Graying Intensity', parent, {min = -100, max = 100}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'Beard_Graying_Intensity', var, nil, {'Hair'})
-        end},
+
     },
     
     BodyHair = {
         {'picker', 'pickBodyHairC', 'Body Hair Color', parent, {}, function(var)
-            -- ahhTable.BodyHair:Vector3(Apply.entity, 'Body_Hair_Color', var, nil, {'NakedBody', 'Private Parts'})
-            ahhTable.BodyHair:Vector3(Apply.entity, 'Body_Hair_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            -- --ahhTable.BodyHair:Vector3(Apply.entity, 'Body_Hair_Color', var, nil, {'NakedBody', 'Private Parts'})
+            --ahhTable.BodyHair:Vector3(Apply.entity, 'Body_Hair_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Body_Hair_Color', var, {'NakedBody', 'Private Parts'})
         end},
     },
     
 
     Dirt_hair = {
         {nil, 'slHairDirt', 'Dirt', parent, {max = 2}, function(var)
-            ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+            --ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Dirt', var, {'Hair'})
         end},
     },
 
     Horns = {
         {'picker', 'pickHornsColor', 'Color', parent, {}, function(var)
-            ahhTable.Horns:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Horns'})
+            --ahhTable.Horns:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Horns'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinColor', var, {'Horns'})
         end},
     
         {'picker', 'pickHeadNSColor', 'Head Thing Color', parent, {}, function(var)
-            ahhTable.Horns:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Head'})
+            --ahhTable.Horns:Vector3(Apply.entity, 'NonSkinColor', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinColor', var, {'Head'})
         end},
 
         {nil, 'slHornsNonSkinWeight', 'NonSkin_Weight', parent, {max = 2}, function(var)
-            ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkin_Weight', var, nil, {'Head'})
+            --ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkin_Weight', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'NonSkin_Weight', var, {'Head'})
         end},
 
         {nil, 'slHornsNonSkinMetalness', 'NonSkinMetalness', parent, {max = 2}, function(var)
-            ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkinMetalness', var, nil, {'Head'})
+            --ahhTable.NonSkin:Scalar(Apply.entity, 'NonSkinMetalness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'NonSkinMetalness', var, {'Head'})
         end},
     
         {'picker', 'pickHornsTipColor', 'Tip Color', parent, {}, function(var)
-            ahhTable.Horns:Vector3(Apply.entity, 'NonSkinTipColor', var, nil, {'Horns'})
+            --ahhTable.Horns:Vector3(Apply.entity, 'NonSkinTipColor', var, nil, {'Horns'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'NonSkinTipColor', var, {'Horns'})
         end},
     
         {nil, 'slHornReflectance', 'Reflectance', parent, {}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Reflectance', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Reflectance', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Reflectance', var, {'Horns'})
         end},
     
         {'int', 'slHornGlow', 'Toggle Glow', parent, {}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Use_BlackBody', var, nil, {'Horns'})
-            ahhTable.Horns:Scalar(Apply.entity, 'Colour_BlackBody', var, nil, {'Horns'})
-            ahhTable.Horns:Scalar(Apply.entity, 'Use_ColorRamp', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Use_BlackBody', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Colour_BlackBody', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Use_ColorRamp', var, nil, {'Horns'})
+            for _, parameter in pairs({'Use_BlackBody','Colour_BlackBody','Use_ColorRamp'}) do
+                HandleAllScalarMaterialParameters(Apply.entity, parameter, var, {'Horns'})
+            end
         end},
     
         {'picker', 'slHornBlackBody_Colour', 'Glow Color', parent, {}, function(var)
-            ahhTable.Horns:Vector3(Apply.entity, 'BlackBody_Colour', var, nil, {'Horns'})
+            --ahhTable.Horns:Vector3(Apply.entity, 'BlackBody_Colour', var, nil, {'Horns'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'BlackBody_Colour', var, {'Horns'})
         end},
     
         {nil, 'slHornIntensity', 'Glow Intensity', parent, {max = 200, log = true}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Intensity', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Intensity', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Intensity', var, {'Horns'})
         end},
     
         {nil, 'slHornBlackbody_PreRamp_Power', 'Also Glow Intensity', parent, {}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Blackbody_PreRamp_Power', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Blackbody_PreRamp_Power', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Blackbody_PreRamp_Power', var, {'Horns'})
         end},
     
         {nil, 'slHornEmissive_Mult', 'Emissive Mult', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Emissive_Mult', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Emissive_Mult', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Emissive_Mult', var, {'Horns'})
         end},
     
         {'int', 'slHornUse_HeartBeat', 'Use HeartBeat', parent, {}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Use_HeartBeat', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Use_HeartBeat', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Use_HeartBeat', var, {'Horns'})
         end},
     
         {nil, 'slHornLength', 'Length', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'Length', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'Length', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Length', var, {'Horns'})
         end},
     
         {nil, 'slHornamplitude', 'Amplitude', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'amplitude', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'amplitude', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'amplitude', var, {'Horns'})
         end},
     
         {nil, 'slHornBPM', 'BPM', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.Horns:Scalar(Apply.entity, 'BPM', var, nil, {'Horns'})
+            --ahhTable.Horns:Scalar(Apply.entity, 'BPM', var, nil, {'Horns'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'BPM', var, {'Horns'})
         end},
     },
     
 
     GlowHead = {
         {'picker', 'pickHeadGlowColor', 'Color', parent, {}, function(var)
-            ahhTable.GlowHead:Vector3(Apply.entity, 'GlowColor', var, nil, {'Head'})
+            --ahhTable.GlowHead:Vector3(Apply.entity, 'GlowColor', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'GlowColor', var, {'Head'})
         end},
     
         {nil, 'slHeadGlowMult', 'Multiplier', parent, {max = 5}, function(var)
-            ahhTable.GlowHead:Scalar(Apply.entity, 'GlowMultiplier', var, nil, {'Head'})
+            --ahhTable.GlowHead:Scalar(Apply.entity, 'GlowMultiplier', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'GlowMultiplier', var, {'Head'})
         end},
     
         {nil, 'slHeadAnimdSpeed', 'Animation speed', parent, {max = 10}, function(var)
-            ahhTable.GlowHead:Scalar(Apply.entity, 'AnimationSpeed', var, nil, {'Head'})
+            --ahhTable.GlowHead:Scalar(Apply.entity, 'AnimationSpeed', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'AnimationSpeed', var, {'Head'})
         end},
     },
     
     GlowBody = {
         {'picker', 'pickBodyGlowColor', 'Color', parent, {}, function(var)
-            ahhTable.GlowBody:Vector3(Apply.entity, 'GlowColor', var, nil, {'NakedBody'})
+            --ahhTable.GlowBody:Vector3(Apply.entity, 'GlowColor', var, nil, {'NakedBody'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'GlowColor', var, {'NakedBody'})
         end},
     
         {nil, 'slBodyGlowMult', 'Multiplier', parent, {max = 5}, function(var)
-            ahhTable.GlowBody:Scalar(Apply.entity, 'GlowMultiplier', var, nil, {'NakedBody'})
+            --ahhTable.GlowBody:Scalar(Apply.entity, 'GlowMultiplier', var, nil, {'NakedBody'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'GlowMultiplier', var, {'NakedBody'})
         end},
     
         {nil, 'slBodyAnimdSpeed', 'Animation speed', parent, {max = 10}, function(var)
-            ahhTable.GlowBody:Scalar(Apply.entity, 'AnimationSpeed', var, nil, {'NakedBody'})
+            --ahhTable.GlowBody:Scalar(Apply.entity, 'AnimationSpeed', var, nil, {'NakedBody'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'AnimationSpeed', var, {'NakedBody'})
         end},
     },
     
     GlowEyes = {
         {nil, 'slEyesGlowBright', 'Brightness', parent, {min = -200, max = 200}, function(var)
-            ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightness', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightness', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'GlowBrightness', var, {'Head'})
         end},
     
         {nil, 'slEyesGlowBrightL', 'Brightness L', parent, {min = -200, max = 200}, function(var)
-            ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightness_L', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightness_L', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'GlowBrightness_L', var, {'Head'})
         end},
     
         {nil, 'slEyesGlowBrightPup', 'Brightness pupil', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightnessPupil', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightnessPupil', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'GlowBrightnessPupil', var, {'Head'})
         end},
     
         {nil, 'slEyesFxMasking', 'Fx masking', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightnessPupil', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightnessPupil', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'FxMasking', var, {'Head'})
         end},
     
         {nil, 'slEyesFxMaskingL', 'Fx masking L', parent, {min = -100, max = 100, log = true}, function(var)
-            ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightnessPupil', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Scalar(Apply.entity, 'GlowBrightnessPupil', var, nil, {'Head'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'FxMasking_L', var, {'Head'})
         end},
     
         {'picker', 'slEyesGlowColor', 'Color', parent, {}, function(var)
-            ahhTable.GlowEyes:Vector3(Apply.entity, 'Eyes_GlowColour', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Vector3(Apply.entity, 'Eyes_GlowColour', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_GlowColour', var, {'Head'})
         end},
     
         {'picker', 'slEyesGlowColorL', 'Color L', parent, {}, function(var)
-            ahhTable.GlowEyes:Vector3(Apply.entity, 'Eyes_GlowColour_L', var, nil, {'Head'})
+            --ahhTable.GlowEyes:Vector3(Apply.entity, 'Eyes_GlowColour_L', var, nil, {'Head'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Eyes_GlowColour_L', var, {'Head'})
         end},
-    }
+    },
+
+        UnsortedB = {
+    },
 }
 --#endregion
 
@@ -1312,7 +1429,8 @@ function CCEE:Hair()
     pcikEyeLC.NoAlpha = true
     pcikEyeLC.OnChange = function()
         -- HandleActiveMaterialParameters(_C(), 'Head', 'Eyelashes_Color', 'Vector3Parameters', pcikEyeLC.Color)
-        ahhTable.Hair:Vector3(Apply.entity, 'Eyelashes_Color', pcikEyeLC, 'mp', nil, 'CharacterCreationSkinColor')
+        --ahhTable.Hair:Vector3(Apply.entity, 'Eyelashes_Color', pcikEyeLC, 'mp', nil, 'CharacterCreationSkinColor')
+        HandleAllVector3MaterialParameters(Apply.entity, 'Eyelashes_Color', pcikEyeLC, {'Head'})
     end
 
     local browTree = hairCollapse:AddTree('Eyebrow')
@@ -1323,7 +1441,8 @@ function CCEE:Hair()
     pickEyeBC.NoAlpha = true
     pickEyeBC.OnChange = function()
         -- HandleActiveMaterialParameters(_C(), 'Head', 'Eyebrow_Color', 'Vector3Parameters', pickEyeBC.Color)
-        ahhTable.Hair:Vector3(Apply.entity, 'Eyebrow_Color', pickEyeBC, 'mp', nil, 'CharacterCreationSkinColor')
+        --ahhTable.Hair:Vector3(Apply.entity, 'Eyebrow_Color', pickEyeBC, 'mp', nil, 'CharacterCreationSkinColor')
+        HandleAllVector3MaterialParameters(Apply.entity, 'Eyebrow_Color', pickEyeBC, {'Head'})
     end
 
     Elements:PopulateTab(ahhTable['Scalp'], parent, 'Scalp')

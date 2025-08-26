@@ -595,6 +595,9 @@ function Apply:Scalar(entity, parameterName, var, type, attachments, presetType)
         for _, attachment in pairs(attachments) do
             HandleActiveMaterialParameters(entity, attachment, parameterName, 'ScalarParameters', var.Value[1])
         end
+    HandleMaterialPresetParameters(_C(), parameterName, 'ScalarParameters', var.Value[1], nil, presetType)
+    for _, attachment in pairs(attachments) do
+        HandleActiveMaterialParameters(entity, attachment, parameterName, 'ScalarParameters', var.Value[1])
     end
 end
 
@@ -621,6 +624,9 @@ function Apply:Vector3(entity, parameterName, var, type, attachments, presetType
         for _, attachment in pairs(attachments) do
             HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
         end
+    HandleMaterialPresetParameters(_C(), parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]}, nil, presetType)
+    for _, attachment in pairs(attachments) do
+         HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
     end
 end
 
@@ -656,6 +662,28 @@ function Apply:Vector(entity, parameterName, var, type, attachments, presetType)
         for _, attachment in pairs(attachments) do
             HandleActiveMaterialParameters(entity, attachment, parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]})
         end
+    HandleMaterialPresetParameters(_C(), parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]}, nil, presetType)
+    for _, attachment in pairs(attachments) do
+        HandleActiveMaterialParameters(entity, attachment, parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]})
+    end
+function HandleAllScalarMaterialParameters(entity, parameterName, var, attachments)
+    HandleMaterialPresetParameters(_C(), parameterName, 'ScalarParameters', var.Value[1], nil, nil)
+    for _, attachment in pairs(attachments) do
+        HandleActiveMaterialParameters(entity, attachment, parameterName, 'ScalarParameters', var.Value[1])
+    end
+end
+
+function HandleAllVector3MaterialParameters(entity, parameterName, var, attachments)
+    HandleMaterialPresetParameters(_C(), parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]}, nil, nil)
+    for _, attachment in pairs(attachments) do
+        HandleActiveMaterialParameters(entity, attachment, parameterName, 'Vector3Parameters', {var.Color[1],var.Color[2],var.Color[3]})
+    end
+end
+
+function HandleAllVectorMaterialParameters(entity, parameterName, var, attachments)
+    HandleMaterialPresetParameters(_C(), parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]}, nil, nil)
+    for _, attachment in pairs(attachments) do
+        HandleActiveMaterialParameters(entity, attachment, parameterName, 'VectorParameters', {var.Color[1],var.Color[2],var.Color[3],var.Color[4]})
     end
 end
 
