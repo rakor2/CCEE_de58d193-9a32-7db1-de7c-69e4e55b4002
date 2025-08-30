@@ -1,14 +1,14 @@
 function getCharacterCreationAppearance(entity)
-    local savedAppearance = {}
+    local SavedAppearance = {}
     local CCA = entity.CharacterCreationAppearance
     if CCA then
-        savedAppearance.AdditionalChoices = {}
+        SavedAppearance.AdditionalChoices = {}
         for i = 1, #CCA.AdditionalChoices do
-            savedAppearance.AdditionalChoices[i] = CCA.AdditionalChoices[i]
+            SavedAppearance.AdditionalChoices[i] = CCA.AdditionalChoices[i]
         end
-        savedAppearance.Elements = {}
+        SavedAppearance.Elements = {}
         for i = 1, #CCA.Elements do
-            savedAppearance.Elements[i] = {
+            SavedAppearance.Elements[i] = {
                 Color = CCA.Elements[i].Color,
                 ColorIntensity = CCA.Elements[i].ColorIntensity,
                 GlossyTint = CCA.Elements[i].GlossyTint,
@@ -16,31 +16,31 @@ function getCharacterCreationAppearance(entity)
                 MetallicTint = CCA.Elements[i].MetallicTint
             }
         end
-        savedAppearance.EyeColor = CCA.EyeColor
-        savedAppearance.HairColor = CCA.HairColor
-        savedAppearance.SecondEyeColor = CCA.SecondEyeColor
-        savedAppearance.SkinColor = CCA.SkinColor
-        savedAppearance.Visuals = {}
+        SavedAppearance.EyeColor = CCA.EyeColor
+        SavedAppearance.HairColor = CCA.HairColor
+        SavedAppearance.SecondEyeColor = CCA.SecondEyeColor
+        SavedAppearance.SkinColor = CCA.SkinColor
+        SavedAppearance.Visuals = {}
         for i = 1, #CCA.Visuals do
-            savedAppearance.Visuals[i] = CCA.Visuals[i]
+            SavedAppearance.Visuals[i] = CCA.Visuals[i]
         end
     end
-    return savedAppearance
+    return SavedAppearance
 end
 
 function getDummyAppearance(entity)
     DPrint('1')
-    local savedAppearance = {}
+    local SavedAppearance = {}
     local dummyCCA = entity.ClientCCDummyDefinition
     if dummyCCA and dummyCCA.Visual then
         local vis = dummyCCA.Visual
-        savedAppearance.AdditionalChoices = {}
+        SavedAppearance.AdditionalChoices = {}
         for i = 1, #vis.AdditionalChoices do
-            savedAppearance.AdditionalChoices[i] = vis.AdditionalChoices[i]
+            SavedAppearance.AdditionalChoices[i] = vis.AdditionalChoices[i]
         end
-        savedAppearance.Elements = {}
+        SavedAppearance.Elements = {}
         for i = 1, #vis.Elements do
-            savedAppearance.Elements[i] = {
+            SavedAppearance.Elements[i] = {
                 Color = vis.Elements[i].Color,
                 ColorIntensity = vis.Elements[i].ColorIntensity,
                 GlossyTint = vis.Elements[i].GlossyTint,
@@ -48,31 +48,31 @@ function getDummyAppearance(entity)
                 MetallicTint = vis.Elements[i].MetallicTint
             }
         end
-        savedAppearance.EyeColor = vis.EyeColor
-        savedAppearance.HairColor = vis.HairColor
-        savedAppearance.SecondEyeColor = vis.SecondEyeColor
-        savedAppearance.SkinColor = vis.SkinColor
-        savedAppearance.Visuals = {}
+        SavedAppearance.EyeColor = vis.EyeColor
+        SavedAppearance.HairColor = vis.HairColor
+        SavedAppearance.SecondEyeColor = vis.SecondEyeColor
+        SavedAppearance.SkinColor = vis.SkinColor
+        SavedAppearance.Visuals = {}
         for i = 1, #vis.Visuals do
-            savedAppearance.Visuals[i] = vis.Visuals[i]
+            SavedAppearance.Visuals[i] = vis.Visuals[i]
         end
     end
     DPrint('4')
-    DDump(savedAppearance)
-    return savedAppearance
+    DDump(SavedAppearance)
+    return SavedAppearance
 end
 
 function getCharacterCreationAppearance2(entity)
-    local savedAppearance = {}
+    local SavedAppearance = {}
     local CCA = entity.CharacterCreationAppearance
     if CCA then
-        savedAppearance.AdditionalChoices = {}
+        SavedAppearance.AdditionalChoices = {}
         for i = 1, #CCA.AdditionalChoices do
-            savedAppearance.AdditionalChoices[i] = CCA.AdditionalChoices[i]
+            SavedAppearance.AdditionalChoices[i] = CCA.AdditionalChoices[i]
         end
-        savedAppearance.Elements = {}
+        SavedAppearance.Elements = {}
         for i = 1, #CCA.Elements do
-            savedAppearance.Elements[i] = {
+            SavedAppearance.Elements[i] = {
                 Color = CCA.Elements[i].Color,
                 ColorIntensity = CCA.Elements[i].ColorIntensity,
                 GlossyTint = CCA.Elements[i].GlossyTint,
@@ -80,35 +80,35 @@ function getCharacterCreationAppearance2(entity)
                 MetallicTint = CCA.Elements[i].MetallicTint
             }
         end
-        savedAppearance.EyeColor = CCA.EyeColor
-        savedAppearance.HairColor = CCA.HairColor
-        savedAppearance.SecondEyeColor = CCA.SecondEyeColor
-        savedAppearance.Visuals = {}
+        SavedAppearance.EyeColor = CCA.EyeColor
+        SavedAppearance.HairColor = CCA.HairColor
+        SavedAppearance.SecondEyeColor = CCA.SecondEyeColor
+        SavedAppearance.Visuals = {}
         for i = 1, #CCA.Visuals do
-            savedAppearance.Visuals[i] = CCA.Visuals[i]
+            SavedAppearance.Visuals[i] = CCA.Visuals[i]
         end
     end
-    return savedAppearance
+    return SavedAppearance
 end
 
-function applyCharacterCreationAppearance(charEntity, savedAppearance)
+function applyCharacterCreationAppearance(charEntity, SavedAppearance)
     local CCA = charEntity.CharacterCreationAppearance
-    for i = 1, #savedAppearance.AdditionalChoices do
-        CCA.AdditionalChoices[i] = savedAppearance.AdditionalChoices[i]
+    for i = 1, #SavedAppearance.AdditionalChoices do
+        CCA.AdditionalChoices[i] = SavedAppearance.AdditionalChoices[i]
     end
-    for i = 1, #savedAppearance.Elements do
-        CCA.Elements[i].Color = savedAppearance.Elements[i].Color
-        CCA.Elements[i].ColorIntensity = savedAppearance.Elements[i].ColorIntensity
-        CCA.Elements[i].GlossyTint = savedAppearance.Elements[i].GlossyTint
-        CCA.Elements[i].Material = savedAppearance.Elements[i].Material
-        CCA.Elements[i].MetallicTint = savedAppearance.Elements[i].MetallicTint
+    for i = 1, #SavedAppearance.Elements do
+        CCA.Elements[i].Color = SavedAppearance.Elements[i].Color
+        CCA.Elements[i].ColorIntensity = SavedAppearance.Elements[i].ColorIntensity
+        CCA.Elements[i].GlossyTint = SavedAppearance.Elements[i].GlossyTint
+        CCA.Elements[i].Material = SavedAppearance.Elements[i].Material
+        CCA.Elements[i].MetallicTint = SavedAppearance.Elements[i].MetallicTint
     end
-    CCA.EyeColor = savedAppearance.EyeColor
-    CCA.HairColor = savedAppearance.HairColor
-    CCA.SecondEyeColor = savedAppearance.SecondEyeColor
-    CCA.SkinColor = savedAppearance.SkinColor
-    for i = 1, #savedAppearance.Visuals do
-        CCA.Visuals[i] = savedAppearance.Visuals[i]
+    CCA.EyeColor = SavedAppearance.EyeColor
+    CCA.HairColor = SavedAppearance.HairColor
+    CCA.SecondEyeColor = SavedAppearance.SecondEyeColor
+    CCA.SkinColor = SavedAppearance.SkinColor
+    for i = 1, #SavedAppearance.Visuals do
+        CCA.Visuals[i] = SavedAppearance.Visuals[i]
     end
 end
 
