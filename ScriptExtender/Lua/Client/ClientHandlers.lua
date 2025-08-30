@@ -1,51 +1,4 @@
 
---[[
-PARAMETERS IN SKIN MATERIAL PRESET:
-HemoglobinColor
-HemoglobinAmount
-MelaninColor
-MelaninAmount
-MelaninDarkThreshold
-MelaninDarkMultiplier
-MelaninRemovalAmount
-VeinColor
-VeinAmount
-YellowingColor
-YellowingAmount
-BodyTattooIndex
-BodyTattooIntensity
-BodyTattooColor 
-BodyTattooColorG
-BodyTattooColorB
-TattooIndex
-TattooColor
-TattooColorG
-TattooColorB
-TattooIntensity
-MakeUpIndex
-MakeupIntensity
-MakeupColor
-MakeupRoughness
-LipsMakeupIntensity
-Lips_Makeup_Color
-LipsMakeupRoughness
-CustomIndex
-CustomIntensity
-CustomColor
-Body_Hair_Color
-TattooCurvatureInfluence
-Hair_Color
-Hair_Scalp_Color
-Scalp_HueShiftColorWeight
-Hair_Color
-Beard_Scalp_Color
-Beard_Color
-Body_Hair_Color
-Eyelashes_Color
-Eyebrow_Color
-]]
-
-
 CCEE = {}
 UI = {}
 Window = {}
@@ -122,7 +75,7 @@ MoneyCounter()
 
 
 
----Checks if character is in the mirror (for some reason the osi listeners doesn't return characters)
+---Checks if character is in the mirror (for some reason the osi listeners don't return characters)
 ---and also does some bs
 ---@param entity EntityHandle
 ---@return EntityHandle #If user in the mirror returns visually seen СС dummy entity, if not - _C()
@@ -500,7 +453,7 @@ end
 --#endregion
 
 
-
+--#region
 ---Gets all PM dummies for currrent scene
 -- function getPMDummies()
 --     local Dummies = {}
@@ -516,7 +469,7 @@ end
 --     end
 --     return Dummies
 -- end
-
+--#endregion
 
 
 ---Gets different CC dummy, not the one you visually see in the mirror
@@ -583,6 +536,7 @@ end)
 
 ---TBD: DELETE ME
 --#region
+
 ---@param parameterName MaterialParameterName
 ---@param var ExtuiSliderScalar
 ---@param type string|nil -- 'mp' = MaterialPreset, nil = HandleActiveMaterialParameters
@@ -776,8 +730,10 @@ function SetMaterialPresetParameterValue(entity, parameterName, parameterType, v
         -- DPrint('MaterialPreset')
         local entityUuid = entity.Uuid.EntityUuid
         for _, parameter in pairs(materialPreset.Presets[parameterType]) do
-            if parameter.Parameter == parameterName then
-                parameter.Value = value
+            if materialPreset.Presets[parameterType] then 
+                if parameter.Parameter == parameterName then
+                    parameter.Value = value
+                end
             end
         end
         -- Utils:AntiSpam(5, function ()
@@ -812,6 +768,7 @@ function SaveMaterialPresetParameterChange(entity, parameterName, parameterType,
 end
 
 
+--#region Parameter tables for match_parameter
 
 local TattooPrarmeters = {
     'TattooIndex',
@@ -877,8 +834,6 @@ local ScarPrarmeters = {
 --#endregion
 
 function HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset, presetType)
-    --temporary
-    if parameterName:lower():find('tattoo')
     
     local function match_parameter(parameterName, tbl)
         for _, parameterMatch in pairs(tbl) do
@@ -892,30 +847,24 @@ function HandleMaterialPresetParameters(entity, parameterName, parameterType, va
 
     if match_parameter(parameterName, TattooPrarmeters)
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[1].Material ~= Utils.ZEROUUID then
-    Ext.Net.PostMessageToServer('CCEE_SetTattooZero', _C().Uuid.EntityUuid)
         Ext.Net.PostMessageToServer('CCEE_SetTattooZero', _C().Uuid.EntityUuid)
 
-    elseif parameterName:lower():find('make')
     elseif match_parameter(parameterName, MakeupPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[2].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetMakeUpZero', _C().Uuid.EntityUuid)
 
-    elseif parameterName:lower():find('custom')
     elseif match_parameter(parameterName, CutsomPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[3].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetScalesZero', _C().Uuid.EntityUuid)
 
-    elseif parameterName == 'Hair_Graying_Color'
     elseif match_parameter(parameterName, HairGrayingPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[4].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetGrayingZero', _C().Uuid.EntityUuid)
 
-    elseif parameterName == 'Highlight_Color'
     elseif match_parameter(parameterName, HairHightPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[5].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetHighZero', _C().Uuid.EntityUuid)
 
-    elseif parameterName:lower():find('scar')
     elseif match_parameter(parameterName, ScarPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[6].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetScarsZero', _C().Uuid.EntityUuid)
@@ -924,20 +873,17 @@ function HandleMaterialPresetParameters(entity, parameterName, parameterType, va
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[7].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetLipsZero', _C().Uuid.EntityUuid)
         
-    elseif parameterName == 'Hair_Color'
+    elseif match_parameter(parameterName, HairPrarmeters)
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.HairColor ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetHairZero', _C().Uuid.EntityUuid)
     end
+
     local materialPreset = getMaterialPreset(entity, presetType) or materialPreset
+
     if materialPreset then
         SetMaterialPresetParameterValue(entity, parameterName, parameterType, value, materialPreset)
         SaveMaterialPresetParameterChange(entity, parameterName, parameterType, value, materialPreset)
     end
-
-    -- Utils:AntiSpam(GlobalsIMGUI.applyDelay.Value[1], function ()
-    --     Apply_CharacterActiveMaterialParameters(entity.Uuid.EntityUuid)
-    -- end)
-
 end
 
 
@@ -1002,6 +948,8 @@ function SetActiveMaterialParameterValue(entity, attachment, parameterName, para
         end
     end
 end
+
+
 
 Ext.RegisterConsoleCommand('xdd', function (cmd, ...)
     HandleActiveMaterialParameters(Apply.entity, 'Head', 'normalmap', 'Texture2DParameters', '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e')                    
@@ -1130,49 +1078,6 @@ end
 
 
 
-
--- local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable, keyUsedTable)
---     Globals.AllParameters.CCEEModStuff[keyUsedTable] = Globals.AllParameters.CCEEModStuff[keyUsedTable] or {}
---     Globals.AllParameters.CCEEModStuff[keyMapTable] = Globals.AllParameters.CCEEModStuff[keyMapTable] or {}
---     local entity = Ext.Entity.Get(entity)
---     if Globals.AllParameters.CCEEModStuff[keyMapTable] and Globals.AllParameters.CCEEModStuff[keyMapTable][entity.Uuid.EntityUuid] then
---         Ext.Net.PostMessageToServer('CCEE_SendCCEEModVars', Ext.Json.Stringify(Globals.AllParameters.CCEEModStuff))
---         return Globals.AllParameters.CCEEModStuff[keyMapTable][entity.Uuid.EntityUuid]
---     end
---     for i = 1, #typeTable do
---         local uuid = typeTable[i]
---         if not Globals.AllParameters.CCEEModStuff[keyUsedTable][uuid] then
---             Globals.AllParameters.CCEEModStuff[keyMapTable][entity.Uuid.EntityUuid] = uuid
---             Globals.AllParameters.CCEEModStuff[keyUsedTable][uuid] = true
-
---             local cc = {
---                 uuid = entity.Uuid.EntityUuid,
---                 ccUuid = Globals.AllParameters.CCEEModStuff[keyMapTable][entity.Uuid.EntityUuid]
---             }
---             if keyMapTable == 'HairMap' then
---                 Ext.Net.PostMessageToServer('CCEE_ApplyHair', Ext.Json.Stringify(cc)) --not in use
---             elseif keyMapTable == 'SkinMap' then
---                 Ext.Net.PostMessageToServer('CCEE_ApplySkin', Ext.Json.Stringify(cc))
---             elseif keyMapTable == 'TattooMap' then
---                 cc.index = getElementIndex(entity, 'Tattoo')
---                 Ext.Net.PostMessageToServer('CCEE_ApplyTattoo', Ext.Json.Stringify(cc)) --not in use
---             else
---                 --EyeColor
---             end
---             return uuid
---         end
---     end
---     local data = {
---         keyMapTable = keyMapTable,
---         keyUsedTable = keyUsedTable,
---         mapTable = Globals.AllParameters.CCEEModStuff[keyMapTable],
---         usedTable = Globals.AllParameters.CCEEModStuff[keyUsedTable],
---     }
---     Ext.Net.PostMessageToServer('CCEE_UsedMaterialsMap', Ext.Json.Stringify(data))
---     Ext.Net.PostMessageToServer('CCEE_SendCCEEModVars', Ext.Json.Stringify(Globals.AllParameters.CCEEModStuff))
--- end
-
-
 local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable, keyUsedTable)
     Globals.AllParameters.CCEEModStuff[keyMapTable] = Globals.AllParameters.CCEEModStuff[keyMapTable] or {}
     local entity = Ext.Entity.Get(entity)
@@ -1212,6 +1117,7 @@ local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable,
                 ccUuid = uuid
             }
             Ext.Net.PostMessageToServer('CCEE_ApplySkin', Ext.Json.Stringify(cc))
+            --#region
             -- if keyMapTable == 'HairMap' then
             --     Ext.Net.PostMessageToServer('CCEE_ApplyHair', Ext.Json.Stringify(cc)) --not in use
             -- elseif keyMapTable == 'SkinMap' then
@@ -1222,6 +1128,7 @@ local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable,
             -- else
             --     --EyeColor
             -- end
+            --#endregion
             local data = {
                 keyMapTable = keyMapTable,
                 mapTable = Globals.AllParameters.CCEEModStuff[keyMapTable],

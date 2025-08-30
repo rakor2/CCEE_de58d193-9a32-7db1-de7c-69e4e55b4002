@@ -441,11 +441,9 @@ ahhTable = {
             HandleAllVector3MaterialParameters(Apply.entity, 'Lips_Makeup_Color', var, {'Head'})
         end},
     
-        {nil, 'slLipsInt', 'Intensity', parent, {max = 5}, function(var)
         {nil, 'slLipsInt', 'LipsMakeupIntensity', parent, {max = 5}, function(var)
             --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupIntensity', var, nil, {'Head'})
             --ahhTable.Lips_makeup:Scalar(Apply.entity, 'LipsMakeupIntensity', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllScalarMaterialParameters(Apply.entity, 'Intensity', var, {'Head'})
             HandleAllScalarMaterialParameters(Apply.entity, 'LipsMakeupIntensity', var, {'Head'})
         end},
     
@@ -534,7 +532,6 @@ ahhTable = {
         {'picker', 'pickAddHeadColor', 'Head AdditionalTattooColor', parent, {}, function(var)
             --ahhTable.Tattoo:Vector3(Apply.entity, 'AdditionalTattooColorB', var, nil, {'Head'})
             --ahhTable.Tattoo:Vector3(Apply.entity, 'AdditionalTattooColorB', var, 'mp', nil, 'CharacterCreationSkinColor')--idk
-            HandleAllScalarMaterialParameters(Apply.entity, 'AdditionalTattooColorB', var, {'Head'})
             HandleAllVector3MaterialParameters(Apply.entity, 'AdditionalTattooColorB', var, {'Head'})
         end},
     
@@ -1070,7 +1067,6 @@ ahhTable = {
         {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1.2}, function(var)
             --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, nil, {'Hair'})
             --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllScalarMaterialParameters(Apply.entity, 'Hair_Graying_Color', var, {'Hair'})
             HandleAllScalarMaterialParameters(Apply.entity, 'Graying_Intensity', var, {'Hair'})
         end},
     

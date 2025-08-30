@@ -198,7 +198,7 @@ Ext.RegisterNetListener('CCEE_UsedMaterialsMap', function (channel, payload, use
     --Helpers.ModVars.Get(ModuleUUID).CCEE_VARS = vars
 end)
 
---#region Apply CharacterCreationAppearance and do some other things
+--#region assign skin materials to character and nullify material presets
 
 Ext.RegisterNetListener('CCEE_ApplySkin', function (channel, payload, user)
     --DPrint('CCEE_ApplySkin')
@@ -209,14 +209,6 @@ Ext.RegisterNetListener('CCEE_ApplySkin', function (channel, payload, user)
     end
 end)
 
-
-Ext.RegisterNetListener('CCEE_ApplyHair', function (channel, payload, user)
-    --DPrint('CCEE_ApplyHair')
-    local data = Ext.Json.Parse(payload)
-    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.HairColor = data.ccUuid
-    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
-end)
-
 Ext.RegisterNetListener('CCEE_SetHairZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
     entity.CharacterCreationAppearance.HairColor = Utils.ZEROUUID
@@ -225,7 +217,6 @@ Ext.RegisterNetListener('CCEE_SetHairZero', function (channel, payload, user)
         Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
     end
 end)
-
 
 Ext.RegisterNetListener('CCEE_SetGrayingZero', function (channel, payload, user)
     local entity = Ext.Entity.Get(payload)
@@ -245,13 +236,6 @@ Ext.RegisterNetListener('CCEE_SetHighZero', function (channel, payload, user)
     end
 end)
 
-Ext.RegisterNetListener('CCEE_ApplyTattoo', function (channel, payload, user)
-    --DPrint('CCEE_ApplyTattoo')
-    local data = Ext.Json.Parse(payload)
-    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[data.index].Material = data.ccUuid
-    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
-end)
-
 Ext.RegisterNetListener('CCEE_SetTattooZero', function (channel, payload, user)
     --DPrint('CCEE_SetTattooZero')
     local entity = Ext.Entity.Get(payload)
@@ -260,14 +244,6 @@ Ext.RegisterNetListener('CCEE_SetTattooZero', function (channel, payload, user)
     if entity and entity.UserReservedFor then
         Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
     end
-end)
-
-
-Ext.RegisterNetListener('CCEE_ApplyMakeUp', function (channel, payload, user)
-    --DPrint('CCEE_ApplyMakeUp')
-    local data = Ext.Json.Parse(payload)
-    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[2].Material = data.ccUuid
-    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
 end)
 
 Ext.RegisterNetListener('CCEE_SetMakeUpZero', function (channel, payload, user)
@@ -280,15 +256,6 @@ Ext.RegisterNetListener('CCEE_SetMakeUpZero', function (channel, payload, user)
     end
 end)
 
-
-Ext.RegisterNetListener('CCEE_ApplyScales', function (channel, payload, user)
-    --DPrint('CCEE_ApplyScales')
-    local data = Ext.Json.Parse(payload)
-    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[3].Material = data.ccUuid
-    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
-end)
-
-
 Ext.RegisterNetListener('CCEE_SetScalesZero', function (channel, payload, user)
     --DPrint('CCEE_SetScalesZero')
     local entity = Ext.Entity.Get(payload)
@@ -298,15 +265,7 @@ Ext.RegisterNetListener('CCEE_SetScalesZero', function (channel, payload, user)
         Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
     end
 end)
-
-
-Ext.RegisterNetListener('CCEE_ApplyScars', function (channel, payload, user)
-    --DPrint('CCEE_ApplyScars')
-    local data = Ext.Json.Parse(payload)
-    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[6].Material = data.ccUuid
-    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
-end)
-
+ 
 Ext.RegisterNetListener('CCEE_SetScarsZero', function (channel, payload, user)
     --DPrint('CCEE_SetScarsZero')
     local entity = Ext.Entity.Get(payload)
@@ -325,6 +284,46 @@ Ext.RegisterNetListener('CCEE_SetLipsZero', function (channel, payload, user)
         Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
     end
 end)
+
+--#region 
+--[[
+Ext.RegisterNetListener('CCEE_ApplyHair', function (channel, payload, user)
+    --DPrint('CCEE_ApplyHair')
+    local data = Ext.Json.Parse(payload)
+    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.HairColor = data.ccUuid
+    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyTattoo', function (channel, payload, user)
+    --DPrint('CCEE_ApplyTattoo')
+    local data = Ext.Json.Parse(payload)
+    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[data.index].Material = data.ccUuid
+    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyMakeUp', function (channel, payload, user)
+    --DPrint('CCEE_ApplyMakeUp')
+    local data = Ext.Json.Parse(payload)
+    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[2].Material = data.ccUuid
+    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyScales', function (channel, payload, user)
+    --DPrint('CCEE_ApplyScales')
+    local data = Ext.Json.Parse(payload)
+    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[3].Material = data.ccUuid
+    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
+end)
+
+Ext.RegisterNetListener('CCEE_ApplyScars', function (channel, payload, user)
+    --DPrint('CCEE_ApplyScars')
+    local data = Ext.Json.Parse(payload)
+    Ext.Entity.Get(data.uuid).CharacterCreationAppearance.Elements[6].Material = data.ccUuid
+    Ext.Entity.Get(data.uuid):Replicate('CharacterCreationAppearance')
+end)
+]]
+--#endregion
+
 --#endregion
 
 
@@ -509,7 +508,7 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                                 entity.CharacterCreationAppearance.Elements[2].Material = Utils.ZEROUUID
                             end
                             if lookup(CCEEParams[1], 'Head', 'ScalarParameters', 'CustomIndex') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'CustomColor') then
-                                entity.CharacterCreationAppearance.Elements[3].Material = Utils.ZEROUUID
+                                entity.CharacterCreationAppearance.Elements[3].Material = Utils.ZEROUUID    
                             end
                             if lookup(CCEEParams[1], 'Hair', 'ScalarParameters', 'Graying_Intensity') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'Hair_Graying_Color') then
                                 entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
