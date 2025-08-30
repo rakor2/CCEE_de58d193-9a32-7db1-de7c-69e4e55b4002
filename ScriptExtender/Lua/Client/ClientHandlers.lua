@@ -812,31 +812,117 @@ function SaveMaterialPresetParameterChange(entity, parameterName, parameterType,
 end
 
 
+
+local TattooPrarmeters = {
+    'TattooIndex',
+    'TattooColor',
+    'TattooColorG',
+    'TattooColorB',
+    'TattooIntensity',
+}
+
+local MakeupPrarmeters = {
+    'MakeUpIndex',
+    'MakeupColor',
+    'MakeupIntensity',
+    'EyesMakeupMetalness',
+    'MakeupRoughness',
+}
+
+local LipsMakeupPrarmeters = {
+    'Lips_Makeup_Color',
+    'LipsMakeupIntensity',
+    'LipsMakeupMetalness',
+    'LipsMakeupRoughness',
+}
+
+local CutsomPrarmeters = {
+    'CustomIndex',
+    'CustomColor',
+    'CustomIntensity',
+}
+
+local HairPrarmeters = {
+    'Hair_Color',
+    'Hair_Graying_Color',
+    'Graying_Intensity',
+    'Graying_Seed',
+    'Highlight_Color',
+    'Highlight_Falloff',
+    'Highlight_Intensity',
+    'Eyebrow_Color',
+    'Eyelashes_Color',
+    'Roughness',
+    'RoughnessContrast',
+    'Hair_Scalp_Color',
+}
+
+local HairGrayingPrarmeters = {
+    'Hair_Graying_Color',
+    'Graying_Intensity',
+    'Graying_Seed',
+}
+
+local HairHightPrarmeters = {
+    'Highlight_Color',
+    'Highlight_Falloff',
+    'Highlight_Intensity',
+}
+
+local ScarPrarmeters = {
+    'ScarIndex',
+    'Scar_Weight',
+}
+
+--#endregion
+
 function HandleMaterialPresetParameters(entity, parameterName, parameterType, value, materialPreset, presetType)
     --temporary
     if parameterName:lower():find('tattoo')
+    
+    local function match_parameter(parameterName, tbl)
+        for _, parameterMatch in pairs(tbl) do
+            if parameterMatch == parameterName then
+                return true
+            end
+        end
+    end
+
+    --temporary I guess
+
+    if match_parameter(parameterName, TattooPrarmeters)
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[1].Material ~= Utils.ZEROUUID then
     Ext.Net.PostMessageToServer('CCEE_SetTattooZero', _C().Uuid.EntityUuid)
+        Ext.Net.PostMessageToServer('CCEE_SetTattooZero', _C().Uuid.EntityUuid)
 
     elseif parameterName:lower():find('make')
+    elseif match_parameter(parameterName, MakeupPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[2].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetMakeUpZero', _C().Uuid.EntityUuid)
 
     elseif parameterName:lower():find('custom')
+    elseif match_parameter(parameterName, CutsomPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[3].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetScalesZero', _C().Uuid.EntityUuid)
 
     elseif parameterName == 'Hair_Graying_Color'
+    elseif match_parameter(parameterName, HairGrayingPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[4].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetGrayingZero', _C().Uuid.EntityUuid)
 
     elseif parameterName == 'Highlight_Color'
+    elseif match_parameter(parameterName, HairHightPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[5].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetHighZero', _C().Uuid.EntityUuid)
 
     elseif parameterName:lower():find('scar')
+    elseif match_parameter(parameterName, ScarPrarmeters) 
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[6].Material ~= Utils.ZEROUUID then
         Ext.Net.PostMessageToServer('CCEE_SetScarsZero', _C().Uuid.EntityUuid)
+
+    elseif match_parameter(parameterName, LipsMakeupPrarmeters) 
+    and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.Elements[7].Material ~= Utils.ZEROUUID then
+        Ext.Net.PostMessageToServer('CCEE_SetLipsZero', _C().Uuid.EntityUuid)
         
     elseif parameterName == 'Hair_Color'
     and entity and entity.CharacterCreationAppearance and entity.CharacterCreationAppearance.HairColor ~= Utils.ZEROUUID then
