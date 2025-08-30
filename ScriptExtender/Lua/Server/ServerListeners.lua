@@ -317,6 +317,14 @@ Ext.RegisterNetListener('CCEE_SetScarsZero', function (channel, payload, user)
     end
 end)
 
+Ext.RegisterNetListener('CCEE_SetLipsZero', function (channel, payload, user)
+    local entity = Ext.Entity.Get(payload)
+    entity.CharacterCreationAppearance.Elements[7].Material = Utils.ZEROUUID
+    entity:Replicate('CharacterCreationAppearance')
+    if entity and entity.UserReservedFor then
+        Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    end
+end)
 --#endregion
 
 

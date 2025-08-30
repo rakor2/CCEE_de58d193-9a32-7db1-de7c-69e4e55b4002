@@ -261,6 +261,13 @@ function ConfirmWorkaround(entity)
             else
                 DPrint('Scar: ' .. DummyVisual.Elements[6].Material)
             end
+            --Lips makeup
+            if EntityCCA.Elements[7].Material == Utils.ZEROUUID then
+                DummyVisual.Elements[7].Material = '3c642923-f0ec-4df2-a918-8ac63d7b8d26'
+            else
+                DPrint('Face: ' .. DummyVisual.Elements[7].Material)
+            end
+
         end
     end
 end
