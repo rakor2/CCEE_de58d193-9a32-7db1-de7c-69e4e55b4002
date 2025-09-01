@@ -1,5 +1,5 @@
 ---@diagnostic disable: param-type-mismatch
-local OPENQUESTIONMARK = true
+local OPENQUESTIONMARK = false
 
 
 function UI:Init()
@@ -100,25 +100,20 @@ function Window:CCEEWindow()
             end)
 
         end
-
         local tp103 = resetCharacter:Tooltip()
         tp103:AddText([[
         Resets MOD'S parameters (THE ones in THE WINDOW) for current character]])
 
 
         confirmResetChar = p:AddButton('Confirm')
-
         confirmResetChar:SetColor("Button", {0.55, 0.0, 0.0, 1.00})
         confirmResetChar:SetColor("ButtonHovered", {0.35, 0.0, 0.0, 1.0})
         confirmResetChar:SetColor("ButtonActive", {0.25, 0.0, 0.0, 1.0})
         confirmResetChar.Size = {159,35}
-
         confirmResetChar.SameLine = false
         confirmResetChar.Visible = false
         confirmResetChar.OnClick = function ()
-
             Ext.Timer.Cancel(confirmTimer)
-
             Ext.Net.PostMessageToServer('CCEE_ResetCurrentCharacter', _C().Uuid.EntityUuid)
             if _C().Uuid and Globals.AllParameters.ActiveMatParameters and Globals.AllParameters.ActiveMatParameters[uuid] ~= nil and Globals.AllParameters.MatPresetParameters[uuid] ~= nil then
                 local uuid = _C().Uuid.EntityUuid
@@ -127,10 +122,8 @@ function Window:CCEEWindow()
                 --lastParametersMV[uuid] = nil
                 Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(Globals.AllParameters.ActiveMatParameters))
             end
-
             resetCharacter.Visible = true
             confirmResetChar.Visible = false
-
         end
 
         local resetBtn = p:AddButton('Reload SE')
@@ -138,23 +131,23 @@ function Window:CCEEWindow()
         resetBtn.OnClick = function ()
             Ext.Debug.Reset()
         end
-
         local tp4 = resetBtn:Tooltip()
         tp4:AddText([[
         Hit the buttone if something went wrong]])
 
+
         local backupPM = p:AddButton('Force dummies')
-        backupPM.SameLine = false
+        backupPM.SameLine = true
         backupPM.OnClick = function ()
             Apply_PMDummiesActiveMaterialParameters()
             Apply_CCDummyVActiveMaterialsParameters()
             Apply_TLPreviwDummiesActiveMaterialsParameters()
         end
-
         local tp10 = backupPM:Tooltip()
         tp10:AddText([[
         Loads stored data from the save file for every character in PM
         Useful if visually MOD'S parameters (THE ones in THE WINDOW) got reset]])
+
 
         -- local tp5 = backupPM:Tooltip()
         -- tp5:AddText([[
@@ -169,8 +162,6 @@ function Window:CCEEWindow()
                 Apply_AllCharactersActiveMaterialParameters()
             end)
         end
-
-
         local tp3 = forceLoad:Tooltip() 
         tp3:AddText([[
         Loads stored data from the save file for every character in scene
@@ -178,7 +169,30 @@ function Window:CCEEWindow()
 
 
         
+        local btnTransferParams = p:AddButton('Transfer skin/hair color')
+        btnTransferParams.OnClick = function ()
+            local entity = _C()
+            SaveSkinMaterialPresetParameters(entity)
+            AssignSkinToCharacter(entity)
+            ApplySavedMaterialPresetParametersToCCEESkin(entity)
+            GlobalsIMGUI.textSkinPreset.Label = 'Transfered' --TBD: make an actual safety check
+            Elements:UpdateElements(_C())
+            Helpers.Timer:OnTicks(40, function ()
+                GlobalsIMGUI.textSkinPreset.Label = ''
+            end)
+        end
+        local tp155 = btnTransferParams:Tooltip() 
+        tp155:AddText([[
+        Saves default skin preset color, then assigns CCEE skin preset and applies the color
+        Same for hair]])
 
+
+        
+
+
+        GlobalsIMGUI.textSkinPreset = p:AddText('Current skin UUID')
+        GlobalsIMGUI.textSkinPreset.SameLine = true
+        GlobalsIMGUI.textSkinPreset.Label = '' --skin material preset uuid
 
 
         local sepa = p:AddSeparatorText('')
@@ -2576,7 +2590,6 @@ end
 
 UI:Init()
 
-Utils:D(Elements, '_CCEE_Elements')
 
 
 --#region ahhTable

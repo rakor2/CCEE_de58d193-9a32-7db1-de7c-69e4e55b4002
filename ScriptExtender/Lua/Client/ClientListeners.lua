@@ -362,3 +362,4 @@ end
 Ext.Events.SessionLoaded:Subscribe(function (e)
     Ext.Entity.OnSystemUpdate("ClientCharacterIconRender", OnClientCharacterIconRender)
 end)
+

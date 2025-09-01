@@ -1077,6 +1077,48 @@ function SetAdditionalChoices(choice, value)
 end
 
 
+---@param entity EntityHandle
+---@return MaterialPreset
+function getMaterialPreset2(cca)
+    local skinUuid = cca.SkinColor
+    local matPresetUuid = Ext.StaticData.Get(skinUuid, 'CharacterCreationSkinColor').MaterialPresetUUID
+    local mt = Ext.Resource.Get(matPresetUuid,'MaterialPreset')  --'2cac4615-e3ac-8b17-906b-7fb8b2775981'
+    return mt
+end
+
+
+
+function SaveSkinMaterialPresetParameters(entity)
+    Globals.SavedMaterialParameters = {}
+    local cca = getCharacterCreationAppearance(entity)
+    local MaterialPreset = getMaterialPreset2(cca)
+    for parameterType, parameterParameters in pairs(MaterialPreset.Presets) do
+        if parameterType == 'ScalarParameters' or parameterType == 'Vector3Parameters' or parameterType == 'VectorParameters' then
+            for _, parameter in pairs(parameterParameters) do 
+                SLOP:tableCheck(Globals.SavedMaterialParameters, parameterType)[parameter.Parameter] = parameter.Value
+            end
+        end
+    end
+    --DDump(Globals.SavedMaterialParameters)
+end
+
+
+function ApplySavedMaterialPresetParametersToCCEESkin(entity)
+    local cca = getCharacterCreationAppearance(entity)
+    local MaterialPreset = getMaterialPreset2(cca)
+    for parameterType, parameterNames in pairs(Globals.SavedMaterialParameters) do 
+        for parameterName, value in pairs(parameterNames) do 
+            if parameterType == 'ScalarParameters' or parameterType == 'Vector3Parameters' or parameterType == 'VectorParameters' then
+                --temporary
+                HandleMaterialPresetParameters(entity, parameterName, parameterType, value, MaterialPreset)
+                for _, attachment in pairs({'Head', 'NakedBody', 'Private Parts', 'Tail'}) do
+                    HandleActiveMaterialParameters(entity, attachment, parameterName, parameterType, value)
+                end
+            end
+        end
+    end
+    Globals.SavedMaterialParameters = nil
+end
 
 local function assignCharacterCreationAppearance(entity, typeTable, keyMapTable, keyUsedTable)
     Globals.AllParameters.CCEEModStuff[keyMapTable] = Globals.AllParameters.CCEEModStuff[keyMapTable] or {}
