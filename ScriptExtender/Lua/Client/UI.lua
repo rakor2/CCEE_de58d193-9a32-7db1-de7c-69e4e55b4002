@@ -1,6 +1,7 @@
 ---@diagnostic disable: param-type-mismatch
 local OPENQUESTIONMARK = false
 
+IMGUI:AntiStupiditySystem()
 
 function UI:Init()
     Window:CCEEMCM()
