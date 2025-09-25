@@ -237,6 +237,7 @@ end
 
 
 ---temp abomination (temp?)
+---TBD: pairsofication
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment | string
 ---@return Visual[]
@@ -484,30 +485,34 @@ function getCCDummy(entity)
     end
 end
 
+
 ---Matches character and its photo mode dummy
 ---Workaround until photo mode is mapped
 ---@param charUuid Uuid
 ---@return EntityHandle
 function getPMDummy(charUuid)
-    local Dummies = {}
     local entity = Ext.Entity.Get(charUuid)
-    local visual = Ext.Entity.GetAllEntitiesWithComponent("Visual")  --Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
-    for i = 1, #visual do
-        if visual[i].Visual and visual[i].Visual.Visual
-            and visual[i].Visual.Visual.VisualResource
-            and visual[i].Visual.Visual.VisualResource.Template == "EMPTY_VISUAL_TEMPLATE"
-            and visual[i]:GetAllComponentNames(false)[2] == "ecl::dummy::AnimationStateComponent"
-        then
-            table.insert(Dummies, visual[i])
-        end
-    end
-    for i = 1, #Dummies do
-        if entity.Transform.Transform.Translate[1] == Dummies[i].Transform.Transform.Translate[1]
-            and entity.Transform.Transform.Translate[2] == Dummies[i].Transform.Transform.Translate[2] 
-            and entity.Transform.Transform.Translate[3] == Dummies[i].Transform.Transform.Translate[3] then
-            return Dummies[i]
-        end
-    end
+    --#region
+    -- local Dummies = {}
+    -- local visual = Ext.Entity.GetAllEntitiesWithComponent("Visual")  --Ext.Entity.GetAllEntitiesWithComponent("ClientEquipmentVisuals")
+    -- for i = 1, #visual do
+    --     if visual[i].Visual and visual[i].Visual.Visual
+    --         and visual[i].Visual.Visual.VisualResource
+    --         and visual[i].Visual.Visual.VisualResource.Template == "EMPTY_VISUAL_TEMPLATE"
+    --         and hasPMDummyComponent(entity)
+    --     then
+    --         table.insert(Dummies, visual[i])
+    --     end
+    -- end
+    -- for i = 1, #Dummies do
+    --     if entity.Transform.Transform.Translate[1] == Dummies[i].Transform.Transform.Translate[1]
+    --         and entity.Transform.Transform.Translate[2] == Dummies[i].Transform.Transform.Translate[2] 
+    --         and entity.Transform.Transform.Translate[3] == Dummies[i].Transform.Transform.Translate[3] then
+    --         return Dummies:Get(charUuid) --Dummies[i] 
+    --     end
+    -- end
+    --#endregion
+    return Dummy:Get(entity) ---TBD:
 end
 
 function getFirsCCDummy() --maybe idk, looks wonky; works for one client tho
@@ -527,11 +532,6 @@ function getFirsCCThings()
         end
     end
 end
-
-Ext.RegisterConsoleCommand('dum', function (cmd, ...)
-    Globals.States.CCState = true
-    Apply.entity = getFirsCCDummy()
-end)
 
 
 ---TBD: DELETE ME
@@ -1265,10 +1265,10 @@ function Apply_CharacterMaterialPresetPararmeters(charUuid)
     DPrint('Apply_CharacterMaterialPresetPararmeters')
     local timer = 0
     local entity = Ext.Entity.Get(charUuid)
-    local uuid = entity.Uuid.EntityUuid
+    --local uuid = entity.Uuid.EntityUuid
     if entity and Globals.AllParameters.MatPresetParameters and Globals.AllParameters.MatPresetParameters[charUuid] then
     DPrint('Character: ' .. entity.DisplayName.Name:Get())
-        for materialUuids, parameterTypes in pairs(Globals.AllParameters.MatPresetParameters[uuid]) do
+        for materialUuids, parameterTypes in pairs(Globals.AllParameters.MatPresetParameters[charUuid]) do
             timer = timer + APPLY_DELAY
             Helpers.Timer:OnTicks(timer, function()
             for parameterType, parameterNames in pairs(parameterTypes) do
@@ -1353,7 +1353,7 @@ function Apply_PMDummiesActiveMaterialParameters()
     DPrint('Apply_PMDummiesActiveMaterialParameters')
     if Globals.AllParameters.ActiveMatParameters then
         for uuid, attachments in pairs(Globals.AllParameters.ActiveMatParameters) do
-            local entity = getPMDummy(uuid)
+            local entity = Dummy:Get(Ext.Entity.Get(uuid))
             for attachment, parameterTypes in pairs(attachments) do
                 for parameterType, parameterNames in pairs(parameterTypes) do
                     for parameterName, value in pairs(parameterNames) do
@@ -1574,18 +1574,18 @@ function SavePreset(fileName)
         CCEEParams = nil
     end
 
-    local dataSave = {
+    local DataSave = {
         {SkinMaterialParams = {rippedMatParameters or {}}},
         {CCEEParams = {CCEEParams or {}}},
         {DefaultCC = cca}
     }
     -- Presets.FileName = fileName
-    -- Presets:AddOrChange('Preset', dataSave)
+    -- Presets:AddOrChange('Preset', DataSave)
     -- Presets:SaveToFile()
     -- Presets.Data = {}
     RegisterPresetName(fileName)
-    Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(dataSave))
-    dataSave = nil
+    Ext.IO.SaveFile('CCEE/' .. fileName .. '.json', Ext.Json.Stringify(DataSave))
+    DataSave = nil
     presetsInfoLable(fileName .. ' saved')
 end
 
@@ -1828,3 +1828,9 @@ Ext.RegisterConsoleCommand('xd3', function (cmd, ...)
     setTexture('9216fcc5-1a18-c0f2-3d2f-3214d2477761', '9216fcc5-1a18-c0f2-3d2f-3214d2477761')
 end)
 
+
+--[[
+for _,v in ipairs(Ext.StaticData.GetAll('CharacterCreationAppearanceMaterial')) do
+        _D(Ext.StaticData.Get(v, 'CharacterCreationAppearanceMaterial'))
+end
+]]--
