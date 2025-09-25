@@ -93,10 +93,14 @@ function Window:CCEEWindow()
 
     function CCEE:CoolThings()
 
-        -- local STOPPPPP = p:AddButton('Idle')
-        -- STOPPPPP.OnClick = function()
-        --     Ext.Net.PostMessageToServer('CCEE_Stop', '')
-        -- end
+        local STOPPPPP = p:AddButton('Idle')
+        STOPPPPP.OnClick = function()
+            Ext.Net.PostMessageToServer('CCEE_Stop', '')
+        end
+        local tp101233 = STOPPPPP:Tooltip()
+        tp101233:AddText([[
+        Hide/unhide to quit]])
+
 
 
         local resetCharacter = p:AddButton('Reset character')

@@ -444,7 +444,7 @@ end)
 
 
 Ext.RegisterNetListener('CCEE_Stop', function (channel, payload, user)
-    Osi.PlayLoopingAnimation(_C().Uuid.EntityUuid, "", '', "", "", "", "", "")
+    Osi.PlayLoopingAnimation(_C().Uuid.EntityUuid, "", '0f07ec6e-4ef0-434e-9a51-1353260ccff8', "", "", "", "", "")
 end)
 
 
