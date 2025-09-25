@@ -1,6 +1,6 @@
 ---@diagnostic disable: param-type-mismatch
-local OPENQUESTIONMARK = false
 
+local OPENQUESTIONMARK = false
 IMGUI:AntiStupiditySystem()
 
 function UI:Init()
@@ -19,6 +19,7 @@ function UI:Init()
     CCEE:Reset()
     CCEE:Dev()
 end
+
 
 
 
@@ -67,6 +68,7 @@ function Window:CCEEWindow()
     MCM.SetKeybindingCallback('ccee_enter_mirror', function()
         Ext.Net.PostMessageToServer('CCEE_Mirror', _C().Uuid.EntityUuid)
     end)
+
 
     -- MCM.SetKeybindingCallback('ccee_apply_pm_parameters', function()
     --     Helpers.Timer:OnTicks(2, function ()
@@ -130,6 +132,7 @@ function Window:CCEEWindow()
         confirmResetChar.Visible = false
         confirmResetChar.OnClick = function ()
             Ext.Timer.Cancel(confirmTimer)
+            ConfirmWorkaround(_C())
             Ext.Net.PostMessageToServer('CCEE_ResetCurrentCharacter', _C().Uuid.EntityUuid)
             if _C().Uuid and Globals.AllParameters.ActiveMatParameters and Globals.AllParameters.ActiveMatParameters[uuid] ~= nil and Globals.AllParameters.MatPresetParameters[uuid] ~= nil then
                 local uuid = _C().Uuid.EntityUuid
@@ -141,15 +144,6 @@ function Window:CCEEWindow()
             resetCharacter.Visible = true
             confirmResetChar.Visible = false
         end
-
-        local resetBtn = p:AddButton('Reload SE')
-        resetBtn.SameLine = true
-        resetBtn.OnClick = function ()
-            Ext.Debug.Reset()
-        end
-        local tp4 = resetBtn:Tooltip()
-        tp4:AddText([[
-        Hit the buttone if something went wrong]])
 
 
         local backupPM = p:AddButton('Force dummies')
@@ -203,8 +197,20 @@ function Window:CCEEWindow()
         Same for hair]])
 
 
-        
+        local testsCheck = p:AddCheckbox('All parameters')
+        testsCheck.IDContext = 'adasd22'
+        testsCheck.OnChange = function ()
+            if testsCheck.Checked then
+                CCEE:Tests()
+            else
+                sepate:Destroy()
+                testParams2:Destroy()
+            end
+        end
 
+
+        testsSave = p:AddCheckbox('Save all parameters')
+        testsSave.SameLine = true
 
         GlobalsIMGUI.textSkinPreset = p:AddText('Current skin UUID')
         GlobalsIMGUI.textSkinPreset.SameLine = true
@@ -1505,7 +1511,7 @@ function CCEE:Glow()
 
     local parent = glowCollapse
 
-    local textGlow = parent:AddBulletText('Only works if texture has glow')
+    local textGlow = parent:AddBulletText('Only works if Glow parameters is available in the current eye preset')
     textGlow:SetColor('Text',  {1.00, 0.75, 0.75, 1.00})
 
     Elements:PopulateTab(ahhTable['GlowHead'], parent, 'Head')
@@ -1770,27 +1776,23 @@ function CCEE:Dev()
         Ext.Net.PostMessageToServer('CCEE_dumpVars', '')
     end
 
+    local resetBtn = devTab:AddButton('Reload SE')
+    resetBtn.SameLine = true
+    resetBtn.OnClick = function ()
+        Ext.Debug.Reset()
+    end
+    local tp4 = resetBtn:Tooltip()
+    tp4:AddText([[
+    Hit the buttone if something went wrong]])
+
+
     local openMirror = devTab:AddButton('Mirror')
     openMirror.SameLine = true
     openMirror.OnClick = function ()
         Ext.Net.PostMessageToServer('CCEE_Mirror', _C().Uuid.EntityUuid)
     end
 
-    local testsCheck = devTab:AddCheckbox('All parameters (they do not save)')
-    testsCheck.IDContext = 'adasd22'
-    testsCheck.OnChange = function ()
-        if testsCheck.Checked then
-            CCEE:Tests()
-        else
-            sepate:Destroy()
-            testParams2:Destroy()
-        end
-    end
-
-    testsSave = devTab:AddCheckbox('Save all parameters')
     
-
-
     GlobalsIMGUI.firstCC = devTab:AddCheckbox([[I'm in THE first character creation]])
     GlobalsIMGUI.firstCC.OnChange = function ()
         if GlobalsIMGUI.firstCC.Checked then
@@ -1803,6 +1805,7 @@ function CCEE:Dev()
             Globals.States.firstCC = false
         end
     end
+
 
     -- local zeroBtn = devTab:AddButton('Zero')
     -- zeroBtn.OnClick = function ()
@@ -1823,6 +1826,9 @@ function CCEE:Tests()
     sepate = p:AddSeparatorText('')
     local parent = p
     testParams2 = parent:AddCollapsingHeader('All parameters')
+    local x = testParams2:AddBulletText([[Check the save checkbox to be able to save the parameters
+Do not edit parameters that already exist in the block above]]);
+    x:SetColor('Text',  {1.00, 0.75, 0.75, 1.00})
     function Tests:All()
         Tree = Tree or {}
         Tree1 = Tree1 or {}

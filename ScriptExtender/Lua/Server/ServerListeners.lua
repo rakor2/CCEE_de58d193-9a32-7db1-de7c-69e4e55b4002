@@ -434,8 +434,6 @@ end)
 
 
 
-
-
 Ext.RegisterNetListener('CCEE_Mirror', function (channel, payload, user)
     Osi.StartChangeAppearance(payload)
 end)
@@ -480,7 +478,7 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
             Osi.RemoveCustomVisualOvirride(data.uuid, v)
         end
     end)
-    local baseTimer = 4
+    local baseTimer = 10
     Helpers.Timer:OnTicks(baseTimer, function ()
         if DefaultCC then
             for _, visUuid in pairs(DefaultCC.Visuals) do
@@ -608,9 +606,9 @@ for k, v in pairs(c) do
 end
 ]]--
 
-Ext.RegisterConsoleCommand('d', function (cmd, ...)
-     DDump(Mods.CCEE.Helpers.ModVars.Get('de58d193-9a32-7db1-de7c-69e4e55b4002'))
-end)
+-- Ext.RegisterConsoleCommand('d', function (cmd, ...)
+--      DDump(Mods.CCEE.Helpers.ModVars.Get('de58d193-9a32-7db1-de7c-69e4e55b4002'))
+-- end)
 
 
 
@@ -658,3 +656,27 @@ _C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.AppliedMateri
 
 
 ]]
+
+
+
+
+-- Channels.xd:SetHandler(function (payload)
+--     DPrint('Hello from server')
+--     DDump(payload)
+-- end)
+
+
+
+-- Channels.xd:SetRequestHandler(function (data, user)
+--     DPrint('Hello from SetRequestHandler server ')
+--     DDump(data)
+--     return {RequestData = {'RequestData'}}
+-- end)
+
+
+
+-- function NetTestServer()
+--     local payload = {3,4}
+--     Channels.xd:Broadcast(payload)
+--     Channels.xd:RequestToClient()
+-- end
