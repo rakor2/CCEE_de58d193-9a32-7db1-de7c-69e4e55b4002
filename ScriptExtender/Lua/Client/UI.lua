@@ -39,12 +39,20 @@ end
 
 function Window:CCEEWindow()
 
+    local ViewportSize = Ext.IMGUI.GetViewportSize()
+    local DefaultSize = {700, 1000}
+
     cceeWindow = Ext.IMGUI.NewWindow("CCEE")
     cceeWindow.Open = OPENQUESTIONMARK
     cceeWindow.Closeable = true
     cceeWindow.AlwaysAutoResize = false
-    cceeWindow:SetSize({643, 700})
-
+    cceeWindow.Scaling = 'Scaled'
+    cceeWindow:SetPos({ViewportSize[1] / 6, ViewportSize[2] / 10})
+    if ViewportSize[1] <= 1920 and ViewportSize[2] <= 1080 then
+        cceeWindow:SetSize({DefaultSize[1]/1.333, DefaultSize[2]/1.333})
+    else
+        cceeWindow:SetSize(DefaultSize)
+    end
 
     StyleV2:RegisterWindow(cceeWindow)
 
