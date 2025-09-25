@@ -64,6 +64,9 @@ function Window:CCEEWindow()
         cceeWindow.Open = not cceeWindow.Open
     end)
 
+    MCM.SetKeybindingCallback('ccee_enter_mirror', function()
+        Ext.Net.PostMessageToServer('CCEE_Mirror', _C().Uuid.EntityUuid)
+    end)
 
     -- MCM.SetKeybindingCallback('ccee_apply_pm_parameters', function()
     --     Helpers.Timer:OnTicks(2, function ()
