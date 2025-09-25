@@ -13,7 +13,20 @@
                             {
                                 "Id": "ccee_toggle_window",
                                 "Name": "! Toggle window",
-                                "Description": "looks boring with no description",
+                                "Type": "keybinding_v2",
+                                "Default": {
+                                    "Keyboard": {
+                                        "Key": "",
+                                        "ModifierKeys": []
+                                    }
+                                },
+                                "Options": {
+                                    "BlockIfLevelNotStarted": true
+                                }
+                            },
+                            {
+                                "Id": "ccee_enter_mirror",
+                                "Name": "Enter mirror",
                                 "Type": "keybinding_v2",
                                 "Default": {
                                     "Keyboard": {

@@ -1,1 +1,1 @@
-local xd = xd
+local xd

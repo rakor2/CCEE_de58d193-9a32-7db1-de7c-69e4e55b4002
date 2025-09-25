@@ -236,7 +236,7 @@ end
 
 local modName = Ext.Mod.GetMod(ModuleUUID).Info.Name
 
-SimplePrint = SimplePrinter:New{Prefix = tostring('CCEE'), ApplyColor = true}
+SimplePrint = SimplePrinter:New{Prefix = tostring(modName), ApplyColor = true}
 function DPrint(...) SimplePrint:SetFontColor(0, 255, 158) SimplePrint:Print(...) end
 function DTest(...) SimplePrint:SetFontColor(228, 101, 255) SimplePrint:PrintTest(...) end
 function DDebug(...) SimplePrint:SetFontColor(255, 224, 81) SimplePrint:PrintDebug(...) end
