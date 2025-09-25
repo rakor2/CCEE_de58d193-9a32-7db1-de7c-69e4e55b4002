@@ -954,6 +954,64 @@ ahhTable = {
             --ahhTable.Hair:Vector3(Apply.entity, 'Hair_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
             HandleAllVector3MaterialParameters(Apply.entity, 'Hair_Color', var, {'Hair'})
         end},
+        
+        {'picker', 'pickHairGrayingColor', 'Hair Graying Color', parent, {}, function(var)
+            --ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, nil, {'Hair'})
+            --ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Hair_Graying_Color', var, {'Hair'})
+        end},
+    
+        {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1.2}, function(var)
+            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, nil, {'Hair'})
+            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Graying_Intensity', var, {'Hair'})
+        end},
+    
+        {nil, 'slGrayingSeed', 'Graying Seed', parent, {min = -10, max = 10, log = true}, function(var)
+            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, nil, {'Hair'})
+            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Graying_Seed', var, {'Hair'})
+        end},
+
+        {'picker', 'pickHighlightColor', 'Highlight Color', parent, {}, function(var)
+            --ahhTable.Highlights:Vector3(Apply.entity, 'Highlight_Color', var, nil, {'Hair'})
+            --ahhTable.Hair:Vector3(Apply.entity, 'Highlight_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllVector3MaterialParameters(Apply.entity, 'Highlight_Color', var, {'Hair'})
+        end},
+    
+        {nil, 'slHighlightFalloff', 'Highlight Falloff', parent, {min = -1, log = true}, function(var)
+            --ahhTable.Highlights:Scalar(Apply.entity, 'Highlight_Falloff', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Falloff', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Highlight_Falloff', var, {'Hair'})
+        end},
+    
+        {nil, 'slHighlightIntensity', 'Highlight Intensity', parent, {max = 3, log = true}, function(var)
+            --ahhTable.Highlights:Scalar(Apply.entity, 'Highlight_Intensity', var, nil, {'Hair'})
+            --ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
+            HandleAllScalarMaterialParameters(Apply.entity, 'Highlight_Intensity', var, {'Hair'})
+        end},
+
+        {nil, 'slHairDirt', 'Dirt', parent, {max = 2}, function(var)
+            --ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Dirt', var, {'Hair'})
+        end},
+
+        {'picker', 'slHairDirtColor', 'Dirt color', parent, {max = 2}, function(var)
+            --ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'DirtColor', var, {'Hair'})
+        end},
+
+        {nil, 'slHairBlood', 'Blood', parent, {max = 2}, function(var)
+            --ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+            HandleAllScalarMaterialParameters(Apply.entity, 'Blood', var, {'Hair'})
+        end},
+
+        
+        {'picker', 'slHairBloodColor', 'Blood color', parent, {max = 2}, function(var)
+            --ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
+            HandleAllVector3MaterialParameters(Apply.entity, 'Blood_Color', var, {'Hair'})
+        end},
+
 
         {nil, 'slHairRoughness', 'Roughness', parent, {min = -1, max = 1}, function(var)
             --ahhTable.Hair:Scalar(Apply.entity, 'Roughness', var, nil, {'Hair'})
@@ -1087,46 +1145,6 @@ ahhTable = {
         end},
     },
     
-    Graying = {
-        {'picker', 'pickHairGrayingColor', 'Hair Graying Color', parent, {}, function(var)
-            --ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, nil, {'Hair'})
-            --ahhTable.Graying:Vector3(Apply.entity, 'Hair_Graying_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllVector3MaterialParameters(Apply.entity, 'Hair_Graying_Color', var, {'Hair'})
-        end},
-    
-        {nil, 'slGrayingIntensity', 'Graying Intensity', parent, {max = 1.2}, function(var)
-            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, nil, {'Hair'})
-            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllScalarMaterialParameters(Apply.entity, 'Graying_Intensity', var, {'Hair'})
-        end},
-    
-        {nil, 'slGrayingSeed', 'Graying Seed', parent, {min = -10, max = 10, log = true}, function(var)
-            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, nil, {'Hair'})
-            --ahhTable.Graying:Scalar(Apply.entity, 'Graying_Seed', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllScalarMaterialParameters(Apply.entity, 'Graying_Seed', var, {'Hair'})
-        end},
-    },
-    
-    
-    Highlights = {
-        {'picker', 'pickHighlightColor', 'Highlight Color', parent, {}, function(var)
-            --ahhTable.Highlights:Vector3(Apply.entity, 'Highlight_Color', var, nil, {'Hair'})
-            --ahhTable.Hair:Vector3(Apply.entity, 'Highlight_Color', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllVector3MaterialParameters(Apply.entity, 'Highlight_Color', var, {'Hair'})
-        end},
-    
-        {nil, 'slHighlightFalloff', 'Highlight Falloff', parent, {min = -1, log = true}, function(var)
-            --ahhTable.Highlights:Scalar(Apply.entity, 'Highlight_Falloff', var, nil, {'Hair'})
-            --ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Falloff', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllScalarMaterialParameters(Apply.entity, 'Highlight_Falloff', var, {'Hair'})
-        end},
-    
-        {nil, 'slHighlightIntensity', 'Highlight Intensity', parent, {max = 3, log = true}, function(var)
-            --ahhTable.Highlights:Scalar(Apply.entity, 'Highlight_Intensity', var, nil, {'Hair'})
-            --ahhTable.Hair:Scalar(Apply.entity, 'Highlight_Intensity', var, 'mp', nil, 'CharacterCreationSkinColor')
-            HandleAllScalarMaterialParameters(Apply.entity, 'Highlight_Intensity', var, {'Hair'})
-        end},
-    },
     
     Beard = {
         {'int', 'slIntBeardIndex', 'BeardIndex', parent, {min = -1, max = 100}, function(var)
@@ -1192,13 +1210,6 @@ ahhTable = {
         end},
     },
     
-
-    Dirt_hair = {
-        {nil, 'slHairDirt', 'Dirt', parent, {max = 2}, function(var)
-            --ahhTable.Beard:Scalar(Apply.entity, 'Dirt', var, nil, {'Hair'})
-            HandleAllScalarMaterialParameters(Apply.entity, 'Dirt', var, {'Hair'})
-        end},
-    },
 
     Horns = {
         {'picker', 'pickHornsColor', 'Color', parent, {}, function(var)
@@ -1479,15 +1490,9 @@ function CCEE:Hair()
 
     Elements:PopulateTab(ahhTable['Hair'], parent, 'Hair')
 
-    Elements:PopulateTab(ahhTable['Graying'], parent, 'Graying')
-
-    Elements:PopulateTab(ahhTable['Highlights'], parent, 'Highlights')
-
     Elements:PopulateTab(ahhTable['Beard'], parent, 'Beard')
 
     Elements:PopulateTab(ahhTable['BodyHair'], parent, 'Body hair')
-
-    Elements:PopulateTab(ahhTable.Dirt_hair, parent, 'Dirt')
 
 
     local sepa1333 = hairCollapse:AddSeparatorText('')
