@@ -10,7 +10,6 @@ Globals.applyDelay = 1000
 --Only sp for now
 Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
 
-    
 
     DPrint('LevelGameplayStarted')
 
@@ -265,7 +264,7 @@ Ext.RegisterNetListener('CCEE_SetScalesZero', function (channel, payload, user)
         Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
     end
 end)
- 
+
 Ext.RegisterNetListener('CCEE_SetScarsZero', function (channel, payload, user)
     --DPrint('CCEE_SetScarsZero')
     local entity = Ext.Entity.Get(payload)
@@ -285,7 +284,7 @@ Ext.RegisterNetListener('CCEE_SetLipsZero', function (channel, payload, user)
     end
 end)
 
---#region 
+--#region
 --[[
 Ext.RegisterNetListener('CCEE_ApplyHair', function (channel, payload, user)
     --DPrint('CCEE_ApplyHair')
@@ -411,9 +410,8 @@ end)
 
 
 Ext.Entity.Subscribe("ArmorSetState", function(entity)
-    DPrint('ArmorSetState')
-    --UpdateParameters(40, Ext.Entity.Get(entity), true, true)
-    Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    --DPrint('ArmorSetState')
+    --Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
 end)
 
 Ext.Osiris.RegisterListener("CombatStarted", 1, "after", function(combatGuid)
@@ -473,6 +471,10 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
     DefaultCC = data.dataLoad[3].DefaultCC
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM[data.uuid] = CCEEParams[1]
     Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid] or {}
+
+
+    -- DDump(DefaultCC)
+
     Helpers.Timer:OnTicks(1, function ()
         for _, v in pairs(entity.CharacterCreationAppearance.Visuals) do
             Osi.RemoveCustomVisualOvirride(data.uuid, v)
@@ -480,14 +482,14 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
     end)
     local baseTimer = 10
     Helpers.Timer:OnTicks(baseTimer, function ()
-        if DefaultCC then
+        if DefaultCC and DefaultCC.Visuals then
             for _, visUuid in pairs(DefaultCC.Visuals) do
                 if visUuid then
                     Osi.AddCustomVisualOverride(data.uuid, visUuid)
                 end
             end
             Helpers.Timer:OnTicks(baseTimer + 4, function ()
-                applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC)
+                applyCharacterCreationAppearance(entity, data.dataLoad[3].DefaultCC) --TBD: data.dataLoad[3].DefaultC -> DefaultCC
                 if data.skinUuid and Helpers.ModVars.Get(ModuleUUID).CCEE_VARS then
                     Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] = Helpers.ModVars.Get(ModuleUUID).CCEE_MP[data.uuid][data.skinMatUuid] or {}
                     -- DDump(entity.CharacterCreationAppearance.SkinColor)
@@ -506,7 +508,7 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                                 entity.CharacterCreationAppearance.Elements[2].Material = Utils.ZEROUUID
                             end
                             if lookup(CCEEParams[1], 'Head', 'ScalarParameters', 'CustomIndex') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'CustomColor') then
-                                entity.CharacterCreationAppearance.Elements[3].Material = Utils.ZEROUUID    
+                                entity.CharacterCreationAppearance.Elements[3].Material = Utils.ZEROUUID
                             end
                             if lookup(CCEEParams[1], 'Hair', 'ScalarParameters', 'Graying_Intensity') or lookup(CCEEParams[1], 'Head', 'Vector3Parameters', 'Hair_Graying_Color') then
                                 entity.CharacterCreationAppearance.Elements[4].Material = Utils.ZEROUUID
@@ -521,11 +523,41 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                     end
                 end
             end)
+
             Helpers.Timer:OnTicks(baseTimer + 8, function ()
-                reSkin(entity) --temporary
+
+                local s, r = pcall(function()
+                    return   CCEEParams and
+                             CCEEParams[1] and
+                            (CCEEParams[1].NakedBody or (CCEEParams[1].Hair and CCEEParams[1].Hair.Vector3Parameters))
+                end)
+
+                if s and r then
+
+                    DPrint('Preset has CCEE parameters, applying skin material preset from the SkinMap')
+
+                    if Helpers.ModVars.Get(ModuleUUID).CCEE_VARS.SkinMap then
+                        local map = Helpers.ModVars.Get(ModuleUUID).CCEE_VARS.SkinMap
+                        for k, v in pairs(map) do
+                            if k == entity.Uuid.EntityUuid then
+                                entity.CharacterCreationAppearance.SkinColor = v
+                            end
+                        end
+                    end
+
+                else
+
+                    DPrint('Preset has no CCEE parameters, applying skin material preset form the preset')
+
+                    entity.CharacterCreationAppearance.SkinColor = DefaultCC.SkinColor
+                    --PLEASE FUCKING WORK
+                end
+
                 entity:Replicate('GameObjectVisual')
                 entity:Replicate('CharacterCreationAppearance')
+
             end)
+
             Helpers.Timer:OnTicks(baseTimer + 10, function ()
                 Ext.Net.BroadcastMessage('CCEE_ApplyMaterialPresetPararmetersToCharacter', entity.Uuid.EntityUuid)
                 Helpers.Timer:OnTicks(baseTimer + 12, function ()
@@ -533,6 +565,7 @@ Ext.RegisterNetListener('CCEE_LoadPreset', function (channel, payload, user)
                     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_Reload_Lable', '')
                 end)
             end)
+
         end
     end)
 end)

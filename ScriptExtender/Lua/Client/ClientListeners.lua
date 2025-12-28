@@ -4,7 +4,7 @@
 --LevelGameplayStarted
 Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
     Globals.States.firstCC = false
-    GlobalsIMGUI.firstCC.Checked = false
+    E.firstCC.Checked = false
     Globals.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
     Globals.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
     Globals.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
@@ -105,7 +105,7 @@ Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToCharacter', functio
     -- _C().Visual.Visual.Attachments[2].Visual.ObjectDescs[1].Renderable.ActiveMaterial.Material.Parameters.Texture2DParameters[2].Enabled = true
     -- _C().Visual.Visual.Attachments[2].Visual.ObjectDescs[1].Renderable.ActiveMaterial.Material.Parameters.Texture2DParameters[2].ID = '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e'
     --Ext.Resource.Get('6cf160fe-f568-9b7f-6ac9-0b9941b5952a', 'Material').Instance.Parameters.Texture2DParameters[2].ID = '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e'
-    Helpers.Timer:OnTicks(APPLY_TICKS, function ()            
+    Helpers.Timer:OnTicks(APPLY_TICKS, function ()
 
 
         Apply_CharacterActiveMaterialParameters(payload)
@@ -132,14 +132,19 @@ end)
 
 
 --Client Control
-Ext.Entity.OnCreate("ClientControl", function(entity, ct, c)
+Ext.Entity.OnCreate('ClientControl', function(entity, ct, c)
     Apply.entity = entity
+    getAllParameterNames(Apply.entity)
+    if E.checkTests.Checked then
+        sepate:Destroy()
+        testParams2:Destroy()
+        CCEE:Tests()
+    end
     ClientControl = true
-    -- DPrint(entity.Uuid.EntityUuid)
-     Elements:UpdateElements(entity.Uuid.EntityUuid)
-     Helpers.Timer:OnTicks(5, function ()
+    Elements:UpdateElements(entity.Uuid.EntityUuid)
+    Helpers.Timer:OnTicks(5, function ()
         ClientControl = false
-     end)
+    end)
 end)
 
 --Paperdoll
@@ -150,7 +155,7 @@ Ext.Entity.OnCreate("ClientPaperdoll", function(entity, componentType, component
     end)
     Helpers.Timer:OnTicks(5, function ()
         local owner = Paperdoll.GetDollOwner(entity)
-        if owner then                            
+        if owner then
             DPrint('Dummy/Doll owner: ' .. owner.DisplayName.Name:Get())
             Apply_DollsActiveMaterialParameters(entity, owner.Uuid.EntityUuid)
         end
@@ -252,7 +257,7 @@ local function OnClientCharacterIconRender()
             --req.Trigger = 'Icon_Minthara' --'Icon_Origin_Astarion' --"Icon_SCL_HAV_HalsinPortal"
             --req.Template = "05047890-4138-40b5-9d8d-3ccb9d10e434"
             --req.Visual = "cc86c035-ec2b-1ab3-4d8d-5d39092c908c"
-            if GlobalsIMGUI.iconVanity.Checked then
+            if E.iconVanity.Checked then
                 req.ArmorSetState = "Vanity"
             else
                 req.ArmorSetState = "Normal"
@@ -293,7 +298,7 @@ end)
 
 
 -- Ext.Entity.OnSystemUpdate("ClientCh=racterManager", function()
-    
+
 --     local visuals = Ext.System.ClientVisualsVisibilityState.UnloadVisuals
 --     for entity, v in pairs(visuals) do
 --         DPrint('1')

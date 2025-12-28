@@ -1,5 +1,27 @@
 Globals = Globals or {}
 
+AllParameterTypes = {
+    'ScalarParameters',
+    'Vector3Parameters',
+    'VectorParameters',
+    'Texture2DParameters',
+    'VirtualTextureParameters'
+}
+
+AllAttachments = {
+    'Hair',
+    'Head',
+    'NakedBody',
+    'Private Parts',
+    'Tail',
+    'Horns',
+    'Piercing',
+    'Wings',
+    'DragonbornChin',
+    'DragonbornJaw',
+    'DragonbornTop'
+}
+
 CCSkinUuids = {
     'bc372dfb-3a0a-4fc4-a23d-068a12699d78',
     'e3cee464-637e-4a20-ab90-1a90c6d06a43',
@@ -227,11 +249,90 @@ defaultTattooes = {
     'Mud Worms',
     'Macabre Chinstrap',
     'Dread Fog',
-} 
+}
 
+
+BodyVirtualTextures = {
+    'ae852291-e770-8a10-a38c-057f9c22bb5c',
+    '85478d1d-df4a-b0e8-8d8b-57ba057dd5ea',
+    '75ada7a3-af56-93ed-f168-0a8edcb049da',
+    'b1e6f850-1d87-9443-e0c4-17d135a41521',
+    '98eb4b27-ac9d-51c1-9463-1110a0851483',
+    'e807633b-7180-65e3-74f8-f653c2bf0d17',
+    'eefa0aa0-34ea-be5d-8050-6b33b75096bf',
+    'c17522af-218c-f2fd-bb0f-807e5f3f4f07',
+    '853ccc12-ff5b-5411-5595-819e0e6f95ea',
+    '1f0f2a16-e968-e5f5-8cce-f636095d188c',
+    '62ac0ec8-5979-c10c-5766-198384c43237',
+    '933ecb7a-a6e7-c4dc-774c-edaccc5d8147',
+    '5d7285df-d505-4b4d-8596-8ca9dc4272f4',
+    '6b828c9f-bd36-b110-5780-58ad385e5920',
+    '4149f8e1-b78f-9eeb-5741-54fa67ad9868',
+    '0135c710-700b-4baa-887b-199603c0ba68',
+    '11559ac3-4157-26a6-2d2b-eb64d09d8a3c',
+    '47f18258-c960-4ec8-c966-a955ef6f167e',
+    '7adb31c4-7536-9993-785d-a0ad11b5ee32',
+    'c8079b66-d0fd-80c5-8f7d-c3951578676a',
+    '7c38ae74-3de5-b757-d832-cb744e221da8',
+    '429232e5-6fe7-196f-a5c4-eeee28e4190c',
+    'fcfb0e8a-e167-01b5-b0c3-c8300cffdf23',
+    '7bc1e54e-0aa1-0c59-0800-d8ae96e68276',
+    '22c0c93c-ef13-a6db-d29c-b48202694147',
+    'f512821e-afb3-dbf4-c9d4-130473b33176',
+    'e6d80282-13df-f3bc-66a7-c6e0577fb249',
+    '885d5e96-3e15-2fef-f1e9-2a1e184628a9',
+    '06e705f4-a7ed-eea2-3187-094982a6af52',
+    'a68e3b7f-fd4e-bff8-ac44-543f947400b8',
+    '2c4659e9-3b06-7cb7-ff7f-e18b7d2a99a9',
+    '9392ce52-a12d-c8ce-b19e-1a1125e6365c',
+    '949c995c-bde7-8a73-c8ad-6bb540fae45e',
+    '9f31d66d-1115-f32e-e1a0-c8bb263101cd',
+    '958f4f74-03e6-ff59-3d7c-b6e73669b72d',
+    'bbbbacd7-0b3c-7853-e4bf-9d9564ff171d',
+    'fd84e95f-2131-5a42-0fee-fe2af61eff20',
+    '6236e469-34e2-f453-6bfd-ec6c0d9c6b3f',
+    '83235a90-1957-5822-7095-2011be1944e4',
+    'debfcf5a-e73d-7e43-ba8f-e525e140e9a2',
+    'e447a9a9-f0e3-e8ef-24b6-a95676ef6e27',
+    '34d3a79f-b540-07b5-d2ba-22e30833e8bd',
+    'b74eb715-3ee2-c3f5-f59c-c96aa76cde64',
+    '8442ecb3-be19-2ef3-0ce1-b95b420727f5',
+    'fde1ea4f-5d72-f1ce-826e-bdefe1521b0e',
+    '44dc58ea-fc84-c3ad-43e7-1f26ec9745ec',
+    '79569033-984f-c8d0-01e0-1d60a417e38e',
+    '89a96329-e0ae-dafe-b0ce-176cb08453d2',
+    'ff5cf6db-a848-9c24-c728-6c2ddb96faa4',
+    '048b475d-73d6-2a82-b30e-1208b5b06ddf',
+    '58e09cb4-8de7-d521-3d51-1ae5a57165e3',
+    'bd2639d6-dba2-7f57-6b60-b894def581d4',
+    '1f7f35b0-b32f-e611-6a97-8ff847ccb9ab',
+    'e302f3a7-d0c1-a93b-4e86-dac610efd848',
+    '9c945d25-9649-bf74-ab9b-2dcc6d107287',
+    'edd7fe22-7608-fac4-134b-8af9d0635b54',
+    'd2061451-20f6-5867-efd5-86f142f010f9',
+    '919a5892-78df-1f1a-ed1d-1aff6a9fd1b7',
+    '42ba109c-0c7f-6d68-33bb-e39d15a95be7',
+    'bb2b88ad-85ef-14ac-3493-16723a7c804b',
+    '86fae242-bd60-2661-971c-a2886d9d82a0',
+    'ba3ce656-6f58-7a33-4365-a1809a08d99b',
+    '6ffc0f34-a5f7-58ef-246f-af64487a63ad',
+    'c389db1b-a81f-4362-da95-86952c25fa80',
+    'd6052ae7-cd34-544f-bd25-1f6ca07a05da',
+    '943b124f-b6e9-92e3-f105-7b5e6da008c7',
+    '2dcb63ac-a493-c7f2-5765-167b230e8cad',
+    '83a8d926-9cb0-6b9e-cc9b-6e154d873b70',
+    '589bbde8-9039-b092-bf62-0840d5ccba1a',
+    'f2756a69-143f-321e-6734-0b36a02deb0f',
+    'd6b0382f-159f-2118-9ea6-fef29cf757b7',
+    '67c3c432-6255-4d74-cf57-427c994e940a',
+    'f3e7e23a-913b-4348-98a2-c752fdfbb76f',
+    'c46039cf-3db4-4764-9a5c-fb27419db6af',
+    'ada00683-808b-4a37-99a6-2443a5660be6',
+    'bc8521ea-71a2-416c-aa28-387f827bb7c3',
+}
 
 -- defaultMaterials = {
-    
+
 --     '3fa84d0c-016b-65bd-3b16-fc7892eaa85d', --DEF_HUM_M
 --     'ceff760d-6904-40bd-9a8d-8cf84993020f', --DEF_HUM_MS
 --     '5e46e917-0c94-44ae-a41e-96428aa5ea32', --DEF_HUM_F
@@ -271,6 +372,13 @@ defaultTattooes = {
 
 --     '1594b4da-6db1-471b-9a1a-c1ad4ecf721b', --UTAV
 
-    
+
 -- }
 
+
+
+
+
+
+-- Ext.Resource.Get('1594b4da-6db1-471b-9a1a-c1ad4ecf721b', 'Material').VirtualTextureParameters[1].Enabled = false
+-- _D(_C().Visual.Visual.Attachments[1].Visual.ObjectDescs[1].Renderable.ActiveMaterial:SetVirtualTexture('virtualtexture', 'eefa0aa0-34ea-be5d-8050-6b33b75096bf'))
