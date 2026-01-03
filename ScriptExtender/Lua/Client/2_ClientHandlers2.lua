@@ -1,44 +1,40 @@
 local function attachmentFound(entity, attachmentIndex, attachment)
+    if not entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource then return end
 
-    DPrint('In attachmentFound')
-
-    --Special case for the head, since some authors don't assign skeleton slot or don't put Head in template name. Though head attachment seems to be always 2
-    if attachment == 'Head' then
-        if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource and
-            entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) or
-            entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Template:lower():find(attachment:lower()) then
-            return true
-        end
-    end
-
-    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource and
-        entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then
-        return true
-    end
+    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then return true end
+    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Slot == attachment                            then return true end
+    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Template:lower():find(attachment:lower()) and
+        entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Slot ~= 'Private Parts'                       then return true end
 
 end
-
 
 
 
 ---@param entity EntityHandle
 ---@param attachment VisualAttachment | string
 ---@return Visual[]
-function FindAttachment(entity, attachment)
+function FindAttachment2(entity, attachment) ---TBD: Change fn name
     if entity and entity.Visual and entity.Visual.Visual then
             for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
 
-                if attachment == 'Tail' then
+                if  attachment == 'Tail' or
+                    attachment == 'Head' or
+                    attachment == 'Private Parts' or
+                    attachment == 'Wings'
+                then
                     if attachmentFound(entity, attachmentIndex, attachment) then
-                        local TaleVisuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        return {TaleVisuals}
+                        local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                        return {Visuals}
                     end
 
-
-                elseif attachment == 'Head' then
-                    if attachmentFound(entity, attachmentIndex, attachment) then
-                        local HeadVisuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        return {HeadVisuals}
+                elseif attachment == 'Hair' then
+                    local HairVisuals = {}
+                    for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
+                        --Searching all possible hair attachments due to some mods add additional hair things as jaw, etc
+                        if attachmentFound(entity, attachmentIndex, attachment) then
+                            local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                            return {Visuals}
+                        end
                     end
 
 
@@ -50,8 +46,7 @@ function FindAttachment(entity, attachment)
                         then
                             for _,v in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.Attachments) do
                                 local Visuals = v.Visual
-                                table.insert(PiercingVisuals, Visuals)
-                                return PiercingVisuals
+                                return {Visuals}
                             end
                         end
                     end
@@ -67,42 +62,18 @@ function FindAttachment(entity, attachment)
                         for _, Objects in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Objects) do
                             if Objects.ObjectID:lower():find('body') then
                                 local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                                table.insert(BodyVisuals, Visuals)
+                                return {Visuals}
                             end
                         end
-
-                        -- if entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Template:lower():find('body') then
-                        --     local visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        --     table.insert(BodyVisuals, visuals)
-                        -- end
-
                     end
                 end
 
-
-                elseif attachment == 'Hair' then
-                    local HairVisuals = {}
-                    for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
-                        if attachmentFound(entity, attachmentIndex, attachment) then
-                            local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                            table.insert(HairVisuals, Visuals)
-                        end
-                    end
-                    return HairVisuals
-
-
-                elseif  attachment == 'Wings' then
-                    if attachmentFound(entity, attachmentIndex, attachment) then
-                        local WingsVisuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        return {WingsVisuals}
-                    end
-
                 else
-                    --Other attachments. Also sucks up outfit's parameters, since it is an attachment
-                    if attachmentFound(entity, attachmentIndex, attachment) then
-                        local OtherVisuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        return {OtherVisuals}
-                    end
+                --Other attachments. Also sucks up outfit's parameters, since it is an attachment
+                if attachmentFound(entity, attachmentIndex, attachment) then
+                    local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                    return {Visuals}
+                end
             end
         end
     end
@@ -111,7 +82,7 @@ end
 
 
 local function nameCheck(name, attachment, parameterType)
-    for _, existingName in ipairs(Parameters[attachment][parameterType]) do
+    for _, existingName in ipairs(Parameters2[attachment][parameterType]) do
         if existingName == name then
             return true
         end
@@ -125,9 +96,9 @@ local function insertParameter(ActiveMaterial, attachment, parameterType)
     if not ActiveMaterial.Material.Parameters[parameterType] then return end
 
     for _, sp in ipairs(ActiveMaterial.Material.Parameters[parameterType]) do
-        local pn = sp.ParameterName
-        if not nameCheck(pn) then
-            table.insert(Parameters[attachment][parameterType], pn)
+        local parameterName = sp.ParameterName
+        if not nameCheck(parameterName, attachment, parameterType) then
+            table.insert(Parameters2[attachment][parameterType], parameterName)
         end
     end
 
@@ -139,18 +110,18 @@ end
 ---@param entity EntityHandle
 function BuildAllParametersTable(entity)
 
-    Parameters = {}
+    Parameters2 = {}
     local entity = entity or _C()
 
     for _, attachment in ipairs(AllAttachments) do
         for _, parameterType in ipairs(AllParameterTypes) do
 
-            local Visuals = FindAttachment(entity, attachment)
+            local Visuals = FindAttachment2(entity, attachment)
 
             if Visuals then
 
-                Parameters[attachment] = Parameters[attachment] or {}
-                Parameters[attachment][parameterType] = Parameters[attachment][parameterType] or {}
+                Parameters2[attachment] = Parameters2[attachment] or {}
+                Parameters2[attachment][parameterType] = Parameters2[attachment][parameterType] or {}
 
                 for _, visuals in pairs(Visuals) do
                     if visuals and visuals.ObjectDescs then
@@ -165,5 +136,5 @@ function BuildAllParametersTable(entity)
             end
         end
     end
-    return Parameters
+    return Parameters2
 end

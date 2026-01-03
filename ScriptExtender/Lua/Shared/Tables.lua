@@ -1,5 +1,7 @@
 Globals = Globals or {}
 
+
+
 AllParameterTypes = {
     'ScalarParameters',
     'Vector3Parameters',
@@ -7,6 +9,8 @@ AllParameterTypes = {
     'Texture2DParameters',
     'VirtualTextureParameters'
 }
+
+
 
 AllAttachments = {
     'Hair',
@@ -21,6 +25,8 @@ AllAttachments = {
     'DragonbornJaw',
     'DragonbornTop'
 }
+
+
 
 CCSkinUuids = {
     'bc372dfb-3a0a-4fc4-a23d-068a12699d78',
@@ -67,6 +73,8 @@ CCSkinUuids = {
     'a91d04c8-0987-4318-bcf9-e33bf796793a'
 }
 
+
+
 CCHairUuids = {
     '6bfe8eb0-6c80-4edd-9ff4-0ff8f70f1ec1',
     '5b671c83-4ae4-4aed-874b-1977d353bdd1',
@@ -111,13 +119,18 @@ CCHairUuids = {
 }
 
 
+
 CCTattooUuids = {
     '7de88341-07bb-4852-8c06-27ffcfdba7ba',
 }
 
+
+
 CCMakeUpUuids = {
     '42f533ab-52f1-2531-72e7-0c2bcff79eaf',
 }
+
+
 
 CCdummies = {
     "e2badbf0-159a-4ef5-9e73-7bbeb3d1015a", --S_GLO_CharacterCreationDummy_001
@@ -126,132 +139,9 @@ CCdummies = {
     "6bff5419-5a9e-4839-acd4-cac4f6e41bd7", --S_GLO_CharacterCreationDummy_004
 }
 
--- repeated_params = {
---     Scalar = {
---         IsTav = {"Body", "Genital", "Head"},
---         InvertOpacity = {"Body", "Genital", "Head"},
---         AnimationSpeed = {"Body", "Genital", "Head"},
---         GlowMultiplier = {"Body", "Genital", "Head"},
---         DetailNormalTiling = {"Body", "Genital"},
---         HemoglobinAmount = {"Body", "Genital", "Head"},
---         VeinAmount = {"Body", "Genital", "Head"},
---         MelaninDarkThreshold = {"Body", "Genital", "Head"},
---         MelaninDarkMultiplier = {"Body", "Genital", "Head"},
---         MelaninAmount = {"Body", "Genital", "Head"},
---         YellowingAmount = {"Body", "Genital", "Head"},
---         doDrawTattoo = {"Body", "Genital", "Head"},
---         BodyTattooIndex = {"Body", "Genital"},
---         TattooCurvatureInfluence = {"Body", "Genital", "Head"},
---         AdditionalTattooIntensity = {"Body", "Head"},
---         Dirt_Wetness = {"Body", "Genital", "Hair", "Head"},
---         Blood_Sharpness = {"Body", "Genital", "Head"},
---         Dirt_Sharpness = {"Body", "Genital", "Head"},
---         TMP_BODY_ROUGH = {"Body", "Genital"},
---         TattooRoughnessOffset = {"Body", "Genital", "Head"},
---         Dirt = {"Body", "Genital", "Hair", "Head"},
---         Blood = {"Body", "Genital", "Hair", "Head"},
---         Sweat = {"Body", "Head"},
---         Bruises = {"Body", "Head"},
---         Freckles = {"Body", "Head"},
---         FrecklesWeight = {"Body", "Head"},
---         Vitiligo = {"Body", "Head"},
---         VitiligoWeight = {"Body", "Head"},
---         MelaninRemovalAmount = {"Body", "Head"},
---         NonSkin_Weight = {"Body", "Head"},
---         Grime = {"Body", "Head"},
---         TattooMetalness = {"Body", "Head"},
---         MakeupIntensity = {"Genital", "Head"},
---         TattooIndex = {"Genital", "Head"},
---         LipsMakeupIntensity = {"Genital", "Head"},
---         CustomIndex = {"Genital", "Head"},
---         CustomIntensity = {"Genital", "Head"},
---         MakeUpIndex = {"Genital", "Head"},
---         LipsMakeupRoughness = {"Genital", "Head"},
---         MakeupRoughness = {"Genital", "Head"},
---     },
---     Vector = {
---         _WrinkleWeightsR = {"Genital", "Head"},
---         _WrinkleWeightsG = {"Genital", "Head"},
---         _WrinkleWeightsB = {"Genital", "Head"},
---         _WrinkleWeightsA = {"Genital", "Head"},
---         TattooIntensity = {"Genital", "Head"},
---         BodyTattooIntensity = {"Body", "Genital"},
---         CustomColor = {"Genital", "Head"},
---     },
---     Vector3 = {
---         GlowColor = {"Body", "Genital", "Head"},
---         HemoglobinColor = {"Body", "Genital", "Head"},
---         VeinColor = {"Body", "Genital", "Head"},
---         MelaninColor = {"Body", "Genital", "Head"},
---         YellowingColor = {"Body", "Genital", "Head"},
---         BodyTattooColor = {"Body", "Genital"},
---         BodyTattooColorG = {"Body", "Genital"},
---         BodyTattooColorB = {"Body", "Genital"},
---         BodyTattooColorA = {"Body", "Genital"},
---         AdditionalTattooColorB = {"Body", "Genital", "Head"},
---         NonSkinColor = {"Body", "Genital", "Head"},
---         DirtColor = {"Body", "Genital", "Hair", "Head"},
---         Blood_Color = {"Body", "Genital", "Hair", "Head"},
---         Lips_Makeup_Color = {"Genital", "Head"},
---         MakeupColor = {"Genital", "Head"},
---         TattooColor = {"Genital", "Head"},
---         TattooColorG = {"Genital", "Head"},
---         TattooColorB = {"Genital", "Head"},
---         TattooColorA = {"Genital", "Head"},
---         Body_Hair_Color = {"Body", "Genital"},
---         IllithidVeinColor = {"Body", "Head"},
---     }
--- }
-
-defaultTattooes = {
-    'No Tattoo',
-    'Migration',
-    'Squidilection',
-    'Strongarm Syndicate',
-    'Hollow Spaces',
-    'Buggish Curls',
-    'Shriek Mask',
-    'Starpoint Glimmer',
-    'Nightjar Blots',
-    'Spiderlip',
-    'Fiendhorn Lids',
-    'Flaring Sword',
-    'Switchback Trail',
-    'Woven Razors',
-    'Caldera',
-    'Sinner Cheekbone',
-    'Plashing Tailfin',
-    'Fallen Leaves',
-    'Pouring Hate',
-    'Fungal Cloud',
-   'Cursed Rose',
-    'Scrawled Constellation',
-    'Yggdrasil',
-    'Totemic Throat',
-    'Dolmen Cross',
-    'Suffusion',
-    'Faewild Syndicate',
-    'From The Deep',
-    'Beholder Gorgon',
-    'Chastened',
-    'Blake Tiger',
-    'Sharp Candelabra',
-    'Polkadots',
-    'Wicked Reaper',
-    'Brokenshard Sword',
-    'Guerilla',
-    'War Boars',
-    'Masque of Wrath',
-    'Ivy Trellis',
-    'Searching Chains',
-    'Mechanus Moons',
-    'Centipedes',
-    'Mud Worms',
-    'Macabre Chinstrap',
-    'Dread Fog',
-}
 
 
+--Can't get them on demand. Hardcode it is
 BodyVirtualTextures = {
     'ae852291-e770-8a10-a38c-057f9c22bb5c',
     '85478d1d-df4a-b0e8-8d8b-57ba057dd5ea',

@@ -29,7 +29,6 @@ function getCharacterCreationAppearance(entity)
 end
 
 function getDummyAppearance(entity)
-    DPrint('1')
     local SavedAppearance = {}
     local dummyCCA = entity.ClientCCDummyDefinition
     if dummyCCA and dummyCCA.Visual then
