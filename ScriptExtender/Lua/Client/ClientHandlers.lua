@@ -1,5 +1,4 @@
 CCEE = {}
-UI = {}
 Window = {}
 Tests = {}
 Elements = {}
