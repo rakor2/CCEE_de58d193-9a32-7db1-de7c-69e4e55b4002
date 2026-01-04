@@ -10,10 +10,7 @@ end
 
 
 
----@param entity EntityHandle
----@param attachment VisualAttachment | string
----@return Visual[]
-function FindAttachment2(entity, attachment) ---TBD: Change fn name
+function FindAttachment2(entity, attachment, onlyIndexPath) ---TBD: Change fn name
     if entity and entity.Visual and entity.Visual.Visual then
             for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
 
@@ -23,37 +20,49 @@ function FindAttachment2(entity, attachment) ---TBD: Change fn name
                     attachment == 'Wings'
                 then
                     if attachmentFound(entity, attachmentIndex, attachment) then
-                        local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        return {Visuals}
+                        local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
+                        if onlyIndexPath then
+                            return _, attachmentIndex, path
+                        else
+                            local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                            return {Visuals}, attachmentIndex, path
+                        end
                     end
 
                 elseif attachment == 'Hair' then
-                    local HairVisuals = {}
                     for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
                         --Searching all possible hair attachments due to some mods add additional hair things as jaw, etc
                         if attachmentFound(entity, attachmentIndex, attachment) then
-                            local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                            return {Visuals}
+                            local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
+                            if onlyIndexPath then
+                                return _, attachmentIndex,path
+                            else
+                                local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                                return {Visuals}, attachmentIndex, path
+                            end
                         end
                     end
 
 
                 elseif attachment == 'Piercing' then
-                    local PiercingVisuals = {}
                     for q = 1, #entity.Visual.Visual.Attachments[2].Visual.Attachments do
                         if  entity.Visual.Visual.Attachments[2].Visual.Attachments[q].Visual.VisualResource and
                             entity.Visual.Visual.Attachments[2].Visual.Attachments[q].Visual.VisualResource.Slot:lower():find(attachment:lower())
                         then
-                            for _,v in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.Attachments) do
-                                local Visuals = v.Visual
-                                return {Visuals}
+                            local path = {'Visual', 'Visual', 'Attachments', 2, 'Visual', 'Attachments', q, 'Visual'}
+                            if onlyIndexPath then
+                                return _, 2, path
+                            else
+                                for _,v in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.Attachments) do
+                                    local Visuals = v.Visual
+                                    return {Visuals}, attachmentIndex, path
+                                end
                             end
                         end
                     end
 
 
                 elseif attachment == 'NakedBody' then
-                    local BodyVisuals = {}
                     for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
                         if entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource then
 
@@ -61,8 +70,13 @@ function FindAttachment2(entity, attachment) ---TBD: Change fn name
                         --Yes, body attachment is always 1, but I need to support dummy one also
                         for _, Objects in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Objects) do
                             if Objects.ObjectID:lower():find('body') then
-                                local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                                return {Visuals}
+                                local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
+                                if onlyIndexPath then
+                                    return _, attachmentIndex, path
+                                else
+                                    local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                                    return {Visuals}, attachmentIndex, path
+                                end
                             end
                         end
                     end
@@ -71,8 +85,13 @@ function FindAttachment2(entity, attachment) ---TBD: Change fn name
                 else
                 --Other attachments. Also sucks up outfit's parameters, since it is an attachment
                 if attachmentFound(entity, attachmentIndex, attachment) then
-                    local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                    return {Visuals}
+                    local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
+                    if onlyIndexPath then
+                        return _, attachmentIndex, path
+                    else
+                        local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
+                        return {Visuals}, attachmentIndex, path
+                    end
                 end
             end
         end
@@ -136,5 +155,13 @@ function BuildAllParametersTable(entity)
             end
         end
     end
+
+    for attachment, types in pairs(Parameters2) do
+        for parameterType, parameterName in pairs(types) do
+            table.sort(parameterName)
+        end
+    end
+
+    -- _DD(Parameters2, 'ccee_parameters2')
     return Parameters2
 end
