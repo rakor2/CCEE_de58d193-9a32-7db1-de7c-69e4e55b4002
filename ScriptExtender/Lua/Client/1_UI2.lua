@@ -106,6 +106,13 @@ function MainTab(p)
     }
 
 
+    local GropedParameters = {
+        'Melanin',
+        'Hemoglobin',
+        'Vein',
+        'Yellowimg',
+    }
+
     --- Sets initial value for the elements when rebuilding the whole section
     local function setValue(element, objectPaths, parameterType, parameterName)
         Helpers.Timer:OnTicks(10, function ()
@@ -205,12 +212,83 @@ function MainTab(p)
                 Tree2[attachment] = Tree[attachment]:AddTree('Vec3##3123')
                 Tree3[attachment] = Tree[attachment]:AddTree('Vec##3123')
 
+                TestTree = {}
+                TestTree1 = {}
+                TestTree2 = {}
+                TestTree3 = {}
+
+
+                -- for xd, ff in pairs(GropedParameters) do
+                --     if not TestTree[attachment] then
+                --         TestTree[attachment] = Tree[attachment]:AddTree(ff)
+                --     end
+                -- end
                 function CreateElementForParameters(parameterType)
                     for _, parameterName in ipairs(Parameters2[attachment][parameterType]) do
                         if not ParametersToIgnore[parameterName] then
 
                             local cfg = ParametersConfig[parameterName] or {}
                             local elementName = attachment .. '_' .. parameterName
+
+                            -- for el, ty in pairs({TestTree[attachment], TestTree1[attachment], TestTree2[attachment], TestTree3[attachment]}) do
+                            --     if parameterName:lower():find(tostring(ty.Label):lower()) then
+
+                            --         if parameterType == 'ScalarParameters' then
+
+                            --             if cfg.int then
+                            --                 E[elementName] = ty:AddSliderInt(parameterName, 0, cfg.min or min, cfg.max or max, 1)
+                            --             else
+                            --                 E[elementName] = ty:AddSlider(parameterName, 0, cfg.min or min, cfg.max or max, 0.1)
+                            --             end
+                            --             UI:Config(E[elementName], {
+                            --                 Logarithmic = cfg.log or false,
+                            --                 IDContext = attachment .. '_' .. parameterName,
+                            --                 OnChange = function(e)
+                            --                     local value = e.Value[1]
+                            --                     notEnoughAbstractions(elementName, attachment, parameterType, parameterName, value)
+                            --                 end
+                            --             })
+
+                            --             setValue(E[elementName], Globals.StoredVisualPaths[attachment], parameterType, parameterName)
+                            --         end
+
+
+
+                            --         if parameterType == 'Vector3Parameters' then
+                            --             E[elementName] = ty:AddColorEdit(parameterName)
+                            --             UI:Config(E[elementName], {
+                            --                 NoAlpha = true,
+                            --                 IDContext = attachment .. '_' .. parameterName,
+                            --                 OnChange = function(e)
+                            --                     local value = {e.Color[1], e.Color[2], e.Color[3]}
+                            --                     notEnoughAbstractions(elementName, attachment, parameterType, parameterName, value)
+                            --                 end
+                            --             })
+
+                            --             setValue(E[elementName], Globals.StoredVisualPaths[attachment], parameterType, parameterName)
+                            --         end
+
+
+                            --         if parameterType == 'VectorParameters' then
+                            --             E[elementName] = ty:AddColorEdit(parameterName)
+                            --             UI:Config(E[elementName], {
+                            --                 NoAlpha = false,
+                            --                 IDContext = attachment .. '_' .. parameterName,
+                            --                 OnChange = function(e)
+                            --                     local value = e.Color
+                            --                     notEnoughAbstractions(elementName, attachment, parameterType, parameterName, value)
+                            --                 end
+                            --             })
+
+                            --             setValue(E[elementName], Globals.StoredVisualPaths[attachment], parameterType, parameterName)
+                            --         end
+                            --     end
+                            -- end
+
+
+
+
+
 
                             if parameterType == 'ScalarParameters' then
                                 if cfg.int then
