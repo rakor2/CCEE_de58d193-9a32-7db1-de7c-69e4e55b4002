@@ -161,6 +161,20 @@ function BuildAllParametersTable(entity)
         end
     end
 
+    --sloppy toppy xd
+    for attachment, data in pairs(Parameters2) do
+        local keep = false
+        for _, list in pairs(data) do
+            if #list > 0 then
+                keep = true
+                break
+            end
+        end
+        if not keep then
+            Parameters2[attachment] = nil
+        end
+    end
+
     -- _DD(Parameters2, 'ccee_parameters2')
     return Parameters2
 end
