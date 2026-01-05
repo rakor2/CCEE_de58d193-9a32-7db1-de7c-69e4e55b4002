@@ -198,6 +198,7 @@ function MainTab(p)
 
         for _, attachment in ipairs(AttachmentsOrder) do
             if Parameters2[attachment] then
+
                 local onlyIndexPath = true
                 local _, _, Paths = FindAttachment2(entity, attachment, onlyIndexPath)
 
@@ -212,6 +213,8 @@ function MainTab(p)
                 Tree2[attachment] = Tree[attachment]:AddTree('Vec3##3123')
                 Tree3[attachment] = Tree[attachment]:AddTree('Vec##3123')
 
+
+
                 TestTree = {}
                 TestTree1 = {}
                 TestTree2 = {}
@@ -223,6 +226,8 @@ function MainTab(p)
                 --         TestTree[attachment] = Tree[attachment]:AddTree(ff)
                 --     end
                 -- end
+
+
                 function CreateElementForParameters(parameterType)
                     for _, parameterName in ipairs(Parameters2[attachment][parameterType]) do
                         if not ParametersToIgnore[parameterName] then
@@ -339,6 +344,8 @@ function MainTab(p)
 
                                 setValue(E[elementName], Globals.StoredVisualPaths[attachment], parameterType, parameterName)
                             end
+
+
                         end
                     end
                 end
@@ -346,7 +353,11 @@ function MainTab(p)
                 for _, parameterType in pairs(AllParameterTypes) do
                     CreateElementForParameters(parameterType)
                 end
+
+
             end
         end
+
+
     end
 end
