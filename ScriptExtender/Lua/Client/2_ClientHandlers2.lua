@@ -9,93 +9,92 @@ local function attachmentFound(entity, attachmentIndex, attachment)
 end
 
 
+function FindAttachment2(entity, attachment, onlyIndexPath)
 
-function FindAttachment2(entity, attachment, onlyIndexPath) ---TBD: Change fn name
-    if entity and entity.Visual and entity.Visual.Visual then
-            for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
+    local Visuals  = {}
+    local Indices  = {}
+    local Paths    = {}
 
-                if  attachment == 'Tail' or
-                    attachment == 'Head' or
-                    attachment == 'Private Parts' or
-                    attachment == 'Wings'
-                then
-                    if attachmentFound(entity, attachmentIndex, attachment) then
-                        local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
-                        if onlyIndexPath then
-                            return _, attachmentIndex, path
-                        else
-                            local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                            return {Visuals}, attachmentIndex, path
-                        end
-                    end
+    local Attachments = entity.Visual.Visual.Attachments
 
-                elseif attachment == 'Hair' then
-                    for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
-                        --Searching all possible hair attachments due to some mods add additional hair things as jaw, etc
-                        if attachmentFound(entity, attachmentIndex, attachment) then
-                            local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
-                            if onlyIndexPath then
-                                return _, attachmentIndex,path
-                            else
-                                local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                                return {Visuals}, attachmentIndex, path
-                            end
-                        end
-                    end
+    if attachment == 'Hair' then
+        for i = 1, #Attachments do
+            if attachmentFound(entity, i, attachment) then
+                local path = {'Visual', 'Visual', 'Attachments', i, 'Visual'}
 
+                table.insert(Indices, i)
+                table.insert(Paths, path)
 
-                elseif attachment == 'Piercing' then
-                    for q = 1, #entity.Visual.Visual.Attachments[2].Visual.Attachments do
-                        if  entity.Visual.Visual.Attachments[2].Visual.Attachments[q].Visual.VisualResource and
-                            entity.Visual.Visual.Attachments[2].Visual.Attachments[q].Visual.VisualResource.Slot:lower():find(attachment:lower())
-                        then
-                            local path = {'Visual', 'Visual', 'Attachments', 2, 'Visual', 'Attachments', q, 'Visual'}
-                            if onlyIndexPath then
-                                return _, 2, path
-                            else
-                                for _,v in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.Attachments) do
-                                    local Visuals = v.Visual
-                                    return {Visuals}, attachmentIndex, path
-                                end
-                            end
-                        end
-                    end
-
-
-                elseif attachment == 'NakedBody' then
-                    for attachmentIndex = 1, #entity.Visual.Visual.Attachments do
-                        if entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource then
-
-                        --Searching for the body attachment throught object's name to support regular body attachment and dummy body attachment for outfits
-                        --Yes, body attachment is always 1, but I need to support dummy one also
-                        for _, Objects in pairs(entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Objects) do
-                            if Objects.ObjectID:lower():find('body') then
-                                local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
-                                if onlyIndexPath then
-                                    return _, attachmentIndex, path
-                                else
-                                    local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                                    return {Visuals}, attachmentIndex, path
-                                end
-                            end
-                        end
-                    end
+                if not onlyIndexPath then
+                    table.insert(Visuals, Attachments[i].Visual)
                 end
+            end
+        end
 
-                else
-                --Other attachments. Also sucks up outfit's parameters, since it is an attachment
-                if attachmentFound(entity, attachmentIndex, attachment) then
-                    local path = {'Visual', 'Visual', 'Attachments', attachmentIndex, 'Visual'}
-                    if onlyIndexPath then
-                        return _, attachmentIndex, path
-                    else
-                        local Visuals = entity.Visual.Visual.Attachments[attachmentIndex].Visual
-                        return {Visuals}, attachmentIndex, path
+    elseif attachment == 'Piercing' then
+        local xd = Attachments[2]
+        if xd and xd.Visual and xd.Visual.Attachments then
+            for q = 1, #xd.Visual.Attachments do
+                local poggers = xd.Visual.Attachments[q]
+                if poggers.Visual and
+                   poggers.Visual.VisualResource and
+                   poggers.Visual.VisualResource.Slot and
+                   poggers.Visual.VisualResource.Slot:lower():find('piercing') then
+
+                    local path = {'Visual', 'Visual', 'Attachments', 2, 'Visual', 'Attachments', q, 'Visual'}
+
+                    table.insert(Indices, q)
+                    table.insert(Paths, path)
+
+                    if not onlyIndexPath then
+                        table.insert(Visuals, poggers.Visual)
                     end
                 end
             end
         end
+
+    elseif attachment == 'NakedBody' then
+        for i = 1, #Attachments do
+            local Visual = Attachments[i].Visual
+            if Visual and Visual.VisualResource then
+                for _, object in pairs(Visual.VisualResource.Objects or {}) do
+
+                    --Searching for the body attachment throught object's name to support regular body attachment and dummy body attachment for outfits
+                    --Yes, body attachment is always 1, but I need to support dummy one also
+
+                    if object.ObjectID and object.ObjectID:lower():find('body') then
+
+                        local path = {'Visual', 'Visual', 'Attachments', i, 'Visual'}
+
+                        table.insert(Indices, i)
+                        table.insert(Paths, path)
+
+                        if not onlyIndexPath then
+                            table.insert(Visuals, Visual)
+                        end
+
+                        break
+                    end
+                end
+            end
+        end
+
+    else
+        for i = 1, #Attachments do
+            if attachmentFound(entity, i, attachment) then
+                local path = {'Visual', 'Visual', 'Attachments', i, 'Visual'}
+
+                table.insert(Indices, i)
+                table.insert(Paths, path)
+
+                if not onlyIndexPath then
+                    table.insert(Visuals, Attachments[i].Visual)
+                end
+            end
+        end
     end
+
+    return Visuals, Indices, Paths
 end
 
 

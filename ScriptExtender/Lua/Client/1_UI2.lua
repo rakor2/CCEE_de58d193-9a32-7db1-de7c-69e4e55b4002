@@ -107,10 +107,14 @@ function MainTab(p)
 
 
     --- Sets initial value for the elements when rebuilding the whole section
-    local function setValue(element, object, parameterType, parameterName)
+    local function setValue(element, objectPaths, parameterType, parameterName)
         Helpers.Timer:OnTicks(10, function ()
-            local visuals = object:Resolve()
-            local value = Material:GetCharacterParameterValue(visuals, parameterType, parameterName)
+
+            local objectPath = objectPaths[1] or objectPaths
+            local Visuals = objectPath:Resolve()
+            local value = Material:GetCharacterParameterValue(Visuals, parameterType, parameterName)
+
+            if not value then return end
 
             if parameterType == 'ScalarParameters' then
                 element.Value = {value, 0, 0, 0}
@@ -128,8 +132,15 @@ function MainTab(p)
 
     --- Resolves path and sets value for the parameter
     local function resolveAndSetValue(attachment, parameterType, parameterName, value)
-        local Visuals = Globals.StoredVisualPaths[attachment]:Resolve()
-        Material:SetCharacterParameterValue(Visuals, parameterType, parameterName, value)
+        local objectPaths = Globals.StoredVisualPaths[attachment]
+        if not objectPaths then return end
+
+        for _, objectPath in ipairs(objectPaths) do
+            if objectPath and objectPath.Resolve then
+                local Visuals = objectPath:Resolve()
+                Material:SetCharacterParameterValue(Visuals, parameterType, parameterName, value)
+            end
+        end
     end
 
 
@@ -181,8 +192,13 @@ function MainTab(p)
         for _, attachment in ipairs(AttachmentsOrder) do
             if Parameters2[attachment] then
                 local onlyIndexPath = true
-                local _, _, path = FindAttachment2(entity, attachment, onlyIndexPath)
-                Globals.StoredVisualPaths[attachment] = ObjectPath:New(entity, path)
+                local _, _, Paths = FindAttachment2(entity, attachment, onlyIndexPath)
+
+                Globals.StoredVisualPaths[attachment] = {}
+
+                for _, path in ipairs(Paths) do
+                    table.insert(Globals.StoredVisualPaths[attachment], ObjectPath:New(entity, path))
+                end
 
                 Tree[attachment] = E.testParams2:AddTree(attachment .. '##3123')
                 Tree1[attachment] = Tree[attachment]:AddTree('Scalar##3123')
