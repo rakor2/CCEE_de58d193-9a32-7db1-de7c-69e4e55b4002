@@ -5,13 +5,11 @@
 TICKS_TO_WAIT = 2
 TICKS_TO_LOAD = 10
 
-Globals.applyDelay = 1000
+_GLL.applyDelay = 1000
 
 --Only sp for now
 Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelName, isEditorMode)
-
-
-    DPrint('LevelGameplayStarted')
+    -- DPrint('LevelGameplayStarted')
 
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM = Helpers.ModVars.Get(ModuleUUID).CCEE_AM or {}
     Helpers.ModVars.Get(ModuleUUID).CCEE_MP = Helpers.ModVars.Get(ModuleUUID).CCEE_MP or {}
@@ -32,16 +30,16 @@ Ext.Osiris.RegisterListener("LevelGameplayStarted", 2, "after", function(levelNa
 end)
 
 Ext.Osiris.RegisterListener('SavegameLoadStarted', 0, "after", function ()
-    DPrint('SavegameLoadStarted')
+    -- DPrint('SavegameLoadStarted')
 end)
 
 Ext.Osiris.RegisterListener('SavegameLoaded', 0, "after", function ()
-    DPrint('SavegameLoaded')
+    -- DPrint('SavegameLoaded')
 end)
 
 
 Ext.Events.ResetCompleted:Subscribe(function()
-    DPrint('ResetCompleted')
+    -- DPrint('ResetCompleted')
     local data = {
         MatPresetVars = Helpers.ModVars.Get(ModuleUUID).CCEE_MP,
         ActiveMatVars = Helpers.ModVars.Get(ModuleUUID).CCEE_AM,
@@ -151,6 +149,9 @@ Ext.RegisterNetListener('CCEE_SendSingleActiveMatVars', function (channel, paylo
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType] = Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType] or {}
     Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType][xd.parameterName] = xd.value
     --Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleActiveMatVarsToUser', Ext.Json.Stringify(xd))
+
+
+
     local users = Net:GetReservedUserIDs()
     --DDump(users)
     for _, userID in pairs(users) do
@@ -328,33 +329,33 @@ end)
 
 
 Ext.RegisterNetListener('CCEE_UpdateParameters_OnlyVis', function (channel, payload, user)
-    DPrint('CCEE_UpdateParameters_OnlyVis')
+    -- DPrint('CCEE_UpdateParameters_OnlyVis')
     --UpdateParameters(4, nil, false, true)
 end)
 
 Ext.RegisterNetListener('CCEE_UpdateParameters_NotOnlyVis', function (channel, payload, user) --farts second time
-    DPrint('CCEE_UpdateParameters_NotOnlyVis')
+    -- DPrint('CCEE_UpdateParameters_NotOnlyVis')
     --UpdateParameters(4, nil, false, false)
 end)
 
 
 Ext.RegisterNetListener('CCEE_UpdateParametersSingle', function (channel, payload, user)
-    DPrint('CCEE_UpdateParametersSingle')
+    -- DPrint('CCEE_UpdateParametersSingle')
     local entity = Ext.Entity.Get(payload)
     --UpdateParameters(30, entity, true, true)
 
 end)
 
 Ext.RegisterNetListener('CCEE_Apply_Delay', function (channel, payload, user)
-    Globals.applyDelay = payload
+    _GLL.applyDelay = payload
 end)
 
 Ext.RegisterNetListener('CCEE_CCSate', function (channel, payload, user)
-    DPrint('CCState = ' .. tostring(Ext.Json.Parse(payload)) .. ' for user: ' .. user)
+    -- DPrint('CCState = ' .. tostring(Ext.Json.Parse(payload)) .. ' for user: ' .. user)
 end)
 
 Ext.RegisterNetListener('CCEE_Replicate', function (channel, payload, user)
-    DPrint('CCEE_Replicate')
+    -- DPrint('CCEE_Replicate')
     local entityDummy
     local entity = Ext.Json.Parse(payload)
     local CCdumies = Ext.Entity.GetAllEntitiesWithComponent("ClientCCDummyDefinition")
@@ -367,7 +368,7 @@ Ext.RegisterNetListener('CCEE_Replicate', function (channel, payload, user)
             end
         end
     end
-    Utils:AntiSpam(Globals.applyDelay, function ()
+    Utils:AntiSpam(_GLL.applyDelay, function ()
         UpdateParameters(4, Ext.Entity.Get(entity), true, true)
     end)
     Ext.Net.PostMessageToUser(user, 'CCEE_ConfirmWorkaround', '')
@@ -389,7 +390,7 @@ end)
 
 Ext.Osiris.RegisterListener("Equipped", 2, "after", function(item, character)
     Utils:AntiSpam(50, function ()
-        DPrint('Equipped')
+        -- DPrint('Equipped')
     end)
     --UpdateParameters(38, Ext.Entity.Get(character), true, true)
     local entity = Ext.Entity.Get(character)
@@ -400,7 +401,7 @@ end)
 
 
 Ext.Osiris.RegisterListener("Unequipped", 2, "after", function(item, character)
-    DPrint('Unequipped')
+    -- DPrint('Unequipped')
     --UpdateParameters(38, Ext.Entity.Get(character), true, true)
     local entity = Ext.Entity.Get(character)
     if entity and entity.UserReservedFor then
@@ -411,11 +412,11 @@ end)
 
 Ext.Entity.Subscribe("ArmorSetState", function(entity)
     --DPrint('ArmorSetState')
-    --Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
+    Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_ApplyActiveMaterialParametersToCharacter', entity.Uuid.EntityUuid)
 end)
 
 Ext.Osiris.RegisterListener("CombatStarted", 1, "after", function(combatGuid)
-    DPrint('CombatStarted')
+    -- DPrint('CombatStarted')
     --UpdateParameters(2, nil, false, true)
 end)
 
@@ -426,7 +427,7 @@ end)
 -- end)
 
 Ext.Osiris.RegisterListener("DialogStarted", 2, "after", function(dialog, instanceId)
-    DPrint('DialogStarted')
+    -- DPrint('DialogStarted')
     Ext.Net.BroadcastMessage('CCEE_LoadDollParameters', '')
 end)
 
@@ -572,7 +573,7 @@ end)
 
 
 Ext.Osiris.RegisterListener("ChangeAppearanceCompleted", 1, "after", function(character)
-    DPrint('ChangeAppearanceCompleted')
+    -- DPrint('ChangeAppearanceCompleted')
     local entity = Ext.Entity.Get(character)
     Ext.Net.PostMessageToUser(entity.UserReservedFor.UserID, 'CCEE_CAC', '')
 end)
@@ -598,11 +599,11 @@ Ext.RegisterNetListener('CCEE_ApplyCCA', function (channel, payload, user)
 end)
 
 Ext.Osiris.RegisterListener("CharacterCreationStarted", 0, "after", function()
-    DPrint('CharacterCreationStarted')
+    -- DPrint('CharacterCreationStarted')
 end)
 
 Ext.Osiris.RegisterListener("CharacterCreationFinished", 0, "after", function()
-    DPrint('CharacterCreationFinished')
+    -- DPrint('CharacterCreationFinished')
 end)
 
 

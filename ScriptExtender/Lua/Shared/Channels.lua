@@ -1,4 +1,11 @@
-Channels = {}
+local Channels = {
+	'CollectAllSkinUuids',
+	'AssignSkin',
+	'NullifyCCAElements',
 
--- Channels.xd = Ext.Net.CreateChannel(ModuleUUID, 'xd')
--- Channels.xdHand = Ext.Net.CreateChannel(ModuleUUID, 'xdHand')
+
+	'Replicate'
+}
+
+
+Net:CreateChannels(Channels)

@@ -28,6 +28,397 @@ AllAttachments = {
 
 
 
+ParametersToIgnore = {
+    IsTav = true,
+    StrandDirectionVariation = true,
+    DontTouchMe_Beard_Alpha = true,
+    DontTouchMe_isBeard = true,
+    HackParamNeverChange = true,
+    InvertOpacity = true,
+    isGenitals = true,
+    doBodyHide = true,
+}
+
+
+--- Parameters to sync between different attachments
+ParametersToSync = {
+    MelaninAmount = true,
+    MelaninColor = true,
+    MelaninDarkMultiplier = true,
+    MelaninDarkThreshold = true,
+    MelaninRemovalAmount = true,
+
+    HemoglobinAmount = true,
+    HemoglobinColor = true,
+
+    YellowingColor = true,
+    YellowingAmount = true,
+
+    VeinColor = true,
+    VeinAmount = true,
+
+    IllithidVeinColor = true,
+    IllithidColorWeight = true,
+
+    NonSkinColor = true,
+
+    Freckles = true,
+    FrecklesWeight = true,
+
+    Vitiligo = true,
+    VitiligoWeight = true,
+
+    Sweat = true,
+    Sweat_Sharpness = true,
+
+    Blood = true,
+    Blood_Sharpness = true,
+    Blood_Color = true,
+
+    Bruises = true,
+    Bruises_Sharpness = true,
+
+    Dirt = true,
+    DirtColor = true,
+    Dirt_Sharpness = true,
+    Dirt_Wetness = true,
+
+    CLEA_Makeup_Color = true,
+    CLEA_Makeup_Weight = true,
+    CLEA_Makeup_Roughness = true,
+
+    TMP_BODY_ROUGH = true,
+    DetailNormalTiling = true,
+    GlowColor = true,
+}
+
+
+
+--- Just configurations for sliders
+ParametersConfig = {
+    ['Blood'] = { min = -10, max = 10, log = false },
+    ['BodyTattooIndex'] = { int = true, min = 0, max = 31 }
+}
+
+
+
+AttachmentsOrder = {
+    'Hair',
+    'Head',
+    'DragonbornTop',
+    'DragonbornChin',
+    'DragonbornJaw',
+    'NakedBody',
+    'Private Parts',
+    'Tail',
+    'Horns',
+    'Piercing',
+    'Wings',
+}
+
+
+AttachmentsOrderXD = {
+    'Skin',
+    'Hair',
+    'Head',
+    'Body',
+    'Horns',
+    'Glow',
+}
+
+
+--- I guess I have to keep massive things idk
+CategoriesLayout = {
+    ['Skin'] = {
+        ['Melanin'] = {
+            'MelaninAmount',
+            'MelaninColor',
+            'MelaninDarkThreshold',
+            'MelaninDarkMultiplier',
+            'MelaninRemovalAmount',
+        },
+        ['Hemoglobin'] = {
+            'HemoglobinAmount',
+            'HemoglobinColor',
+        },
+        ['Yellowing'] = {
+            'YellowingAmount',
+            'YellowingColor',
+        },
+        ['Vein'] = {
+            'VeinAmount',
+            'VeinColor',
+        },
+        ['Freckles'] = {
+            'Freckles',
+            'FrecklesWeight',
+        },
+        ['Vitiligo'] = {
+            'Vitiligo',
+            'VitiligoWeight',
+        },
+        ['NonSkin'] = {
+            'NonSkin_Weight',
+            'NonSkinColor',
+            'NonSkinMetalness',
+        },
+        ['Sweat'] = {
+            'Sweat',
+            'Sweat_Sharpness',
+        },
+        ['Blood'] = {
+            'Blood',
+            'Blood_Color',
+            'Blood_Sharpness',
+            'Blood_AO_Sharpness',
+            'Blood_AO_Weight',
+            'Blood_AO_Offset',
+        },
+        ['Dirt'] = {
+            'Dirt',
+            'DirtColor',
+            'Dirt_Sharpness',
+            'Dirt_Wetness',
+            'Dirt_AO_Sharpness',
+            'Dirt_AO_Weight',
+            'Dirt_AO_Offset',
+        },
+    },
+
+    ['Head'] = {
+        ['Tattoo'] = {
+            'TattooIndex',
+            'TattooCurvatureInfluence',
+            'AdditionalTattooIntensity',
+            'TattooColor',
+            'TattooColorG',
+            'TattooColorB',
+            'TattooColorA',
+            'TattooIntensity',
+            'TattooMetalness',
+            'TattooRoughnessOffset',
+        },
+        ['Eyes makeup'] = {
+            'MakeUpIndex',
+            'MakeupColor',
+            'MakeupIntensity',
+            'MakeupRoughness',
+            'MakeupThicknessExclusion',
+            'EyesMakeupMetalness',
+        },
+        ['Lips makeup'] = {
+            'Lips_Makeup_Color',
+            'LipsMakeupIntensity',
+            'LipsMakeupMetalness',
+            'LipsMakeupRoughness',
+        },
+        ['Lashes'] = {
+            'LashesAlphaIntensity',
+            'Eyelashes_Color',
+            'LashesIndex',
+        },
+        ['Eyebrows'] = {
+            'Eyebrow_Color',
+        },
+        ['Eyes'] = {
+            'Heterochromia',
+            'Blindness',
+            'Blindness_L',
+            'Eyes_IrisColour',
+            'Eyes_IrisColour_L',
+            'Eyes_IrisSecondaryColour',
+            'Eyes_IrisSecondaryColour_L',
+            'Eyes_BloodColour',
+            'Eyes_BloodColour_L',
+            'Eyes_ScleraColour',
+            'Eyes_ScleraColour_L',
+            'IrisEdgeStrength',
+            'IrisEdgeStrength_L',
+            'SecondaryColourIntensity',
+            'SecondaryColourIntensity_L',
+        },
+        ['Eyes Glow'] = {
+            'Eyes_GlowColour',
+            'Eyes_GlowColour_L',
+            'GlowBrightnessPupil',
+        },
+        ['Head Glow'] = {
+            'GlowColor',
+            'GlowBrightness',
+            'GlowMultiplier',
+            'AnimationSpeed',
+        },
+        ['Scales'] = {
+            "CustomColor",
+            "CustomIndex",
+            "CustomIntensity",
+            "BM_Adjust_Index",
+            "BM_Adjust_Color",
+            "BM_Adjust_Weight",
+        },
+        ['Scars'] = {
+            'ScarIndex',
+            'Scar_Weight',
+            'ScarHemoMultiplier',
+            'ScarMelaninMultiplier',
+            'ScarVeinMultiplier',
+            'ScarsRoughness',
+        },
+        ['Age'] = {
+            'Age_Weight',
+            'Age_Index',
+        },
+        ['Scalp'] = {
+            'Hair_Scalp_Color',
+            'Hair_Scalp_Graying_Color',
+            'Scalp_Graying_Intensity',
+            'ScalpDesaturation',
+            'ScalpDarken',
+            'Scalp_Scatter',
+        },
+        ['NonSkin'] = {
+            'NonSkin_Weight',
+            'NonSkinColor',
+            'NonSkinMetalness',
+        },
+    },
+
+    ['Body'] = {
+        ['Tattoo'] = {
+            'BodyTattooIndex',
+            'BodyTattooIntensity',
+            'BodyTattooColor',
+            'BodyTattooColorG',
+            'BodyTattooColorB',
+            'BodyTattooColorA',
+            'AdditionalTattooColorB',
+            'AdditionalTattooIntensity',
+        },
+        ['Glow'] = {
+            'GlowColor',
+            'GlowBrightness',
+            'GlowMultiplier',
+            'AnimationSpeed',
+        },
+        ['Private Parts'] = {
+            'InvertOpacity',
+            'BodyTattooIndex',
+            'BodyTattooIntensity',
+        },
+        ['Body hair'] = {
+            'Body_Hair_Color',
+        },
+    },
+
+    ['Hair'] = {
+        ['Hair'] = {
+            'Hair_Color',
+            'Highlight_Color',
+            'Highlight_Intensity',
+            'Highlight_Falloff',
+            'Graying_Color',
+            'Graying_Intensity',
+            'Graying_Seed',
+            'Roughness',
+            'HairBacklit',
+            'Scatter',
+            'SoftenTipsAlpha',
+            'HairFrizz',
+            'HairSoupleness',
+            'MaxWindMovementAmount',
+        },
+
+        ['Beard'] = {
+            'Beard_Color',
+            'Beard_Graying_Color',
+            'Beard_Graying_Intensity',
+            'Beard_Highlight_Color',
+        },
+
+    },
+    ['Horns'] = {
+        ['Horns'] = {
+            'Reflectance',
+            'NonSkinTipColor',
+            'SkinApproxColor',
+        },
+    }
+}
+
+
+--- Jank for readability
+AttachmentMap = {
+    Skin = 'NakedBody',
+    Body = 'NakedBody',
+    Eyes = 'Head',
+    Lashes = 'Head',
+}
+
+
+
+ConfirmWorkaroundDummyUuids = {
+    --- Official
+    ['1'] = '00894ccc-31ee-4527-94d5-a408cccb3583', --- Face Tattoo
+    ['2'] = '503bb196-fee7-4e1b-8a58-c09f48bdc9d1', --- Makeup
+    ['3'] = 'f03b33ae-5d47-4cb5-80bc-ea06a3c55c96', --- Scales
+    ['4'] = 'dbf4ab14-44c2-4ef9-b8be-35d1dfdd1c0f', --- Graying
+    ['5'] = '32f58f2c-525d-4b09-86ba-0c6cb0baca28', --- Highlights
+    ['6'] = '5c6acf4c-0438-48ab-9e04-4dee7e88f8f7', --- Scar
+    ['7'] = '3c642923-f0ec-4df2-a918-8ac63d7b8d26', --- Lips makeup
+
+    --- Unofficial
+    ['8'] = 'edbb0710-7162-487b-9553-062bece30c1f', --- Hair
+}
+
+
+
+AvailableSkin = {
+    ['bc372dfb-3a0a-4fc4-a23d-068a12699d78'] = true,
+    ['e3cee464-637e-4a20-ab90-1a90c6d06a43'] = true,
+    ['a0561348-f2f5-447b-9dd0-a2d80b79c892'] = true,
+    ['6ad28264-d419-4fbb-a514-062386f8d923'] = true,
+    ['e542c845-b1e0-4349-9f5e-649d0da52c0e'] = true,
+    ['7beb0d54-9ee7-44fd-adec-c96dc989bb42'] = true,
+    ['68e23b81-d09b-4c63-ad3c-08958d329a68'] = true,
+    ['685eb026-02d2-41f4-9de9-b2dd51de40e5'] = true,
+    ['c5bce236-33db-4662-b9e0-89d20c16c933'] = true,
+    ['c19c608e-f8d3-45a4-9bb6-a6548ac1e8e3'] = true,
+    ['dffbbc9f-8877-4af6-a1f6-095f3b41214c'] = true,
+    ['dcb67f1d-359a-4fc4-bc14-b588cb50aa08'] = true,
+    ['9e9a513c-bc63-4374-a835-169f269c4dfc'] = true,
+    ['a0741c4c-2e20-4ab4-876e-f23769b5c7a8'] = true,
+    ['398b523a-632f-4b74-97f7-9217f83d7d28'] = true,
+    ['f7b1d2a1-942d-477c-b3b8-bb5fa827a94f'] = true,
+    ['fb4c729b-41df-49de-86df-72de6d34a45d'] = true,
+    ['4d2aa967-5c18-47ac-8d0b-dc5f151acfb0'] = true,
+    ['e3c9c5b9-ce5a-4ffd-8944-79b348a22366'] = true,
+    ['0f91955f-28ef-4c99-a22a-b9c2f67f3ad1'] = true,
+    ['73d8cbd9-27fd-4991-972c-1977a995f69a'] = true,
+    ['a08fcb9d-5aa7-465c-ab49-d5b986541e95'] = true,
+    ['3dafa009-ccf3-458f-bd7b-edfd9c1e13db'] = true,
+    ['8318ba69-21c0-44a7-a0ce-29b4f67bc0c5'] = true,
+    ['74f27f58-c75f-4d1c-ba24-cd6048812ce8'] = true,
+    ['18e9fee7-649a-4af7-8974-ad431904842f'] = true,
+    ['97cb8647-c150-4c4f-ad01-b46d87f3f601'] = true,
+    ['97d8ceee-eacc-4057-9028-a112fd9d35b4'] = true,
+    ['398061cf-da56-45bc-909d-e42a3a6b8821'] = true,
+    ['e9ebc83f-d7f5-459f-8aff-b0d200e5ff49'] = true,
+    ['f400e525-718b-4d02-97ba-6702029f458b'] = true,
+    ['5617af94-c374-4231-bf63-ec2d3bcd5e86'] = true,
+    ['52b42c60-dd58-405e-a73f-afe5fa07ae74'] = true,
+    ['598ccc29-2c27-4a64-aa5e-2a36d60f992b'] = true,
+    ['09170204-4976-473c-89bc-393efe7859ae'] = true,
+    ['190da457-8b3b-4dd5-9e5d-23ac3424d581'] = true,
+    ['39dc6983-8d92-4b52-9f88-9fb9e43f85e6'] = true,
+    ['8d76f43f-82c9-4b10-acc5-18a13a54cd64'] = true,
+    ['98c63cda-62a0-4852-b459-75196dd4e654'] = true,
+    ['b5c0a60f-59ca-4640-b06b-538d48f12a4f'] = true,
+    ['94f8315c-452a-4310-a49c-e0767b03a552'] = true,
+    ['a91d04c8-0987-4318-bcf9-e33bf796793a'] = true
+}
+
+
+
 CCSkinUuids = {
     'bc372dfb-3a0a-4fc4-a23d-068a12699d78',
     'e3cee464-637e-4a20-ab90-1a90c6d06a43',
@@ -220,6 +611,10 @@ BodyVirtualTextures = {
     'ada00683-808b-4a37-99a6-2443a5660be6',
     'bc8521ea-71a2-416c-aa28-387f827bb7c3',
 }
+
+
+
+
 
 -- defaultMaterials = {
 

@@ -1,180 +1,544 @@
-local function attachmentFound(entity, attachmentIndex, attachment)
-    if not entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource then return end
-
-    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.SkeletonSlot:lower():find(attachment:lower()) then return true end
-    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Slot == attachment                            then return true end
-    if  entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Template:lower():find(attachment:lower()) and
-        entity.Visual.Visual.Attachments[attachmentIndex].Visual.VisualResource.Slot ~= 'Private Parts'                       then return true end
-
-end
+---@enum UNSPOKEN_ENUM
+En_State = {
+    only_index_and_path = true
+}
 
 
-function FindAttachment2(entity, attachment, onlyIndexPath)
 
-    local Visuals  = {}
-    local Indices  = {}
-    local Paths    = {}
+_GLL.Parameters = {}
+_GLL.ParameterTypeCache = {}
+_GLL.StoredVisualPaths = {}
 
-    local Attachments = entity.Visual.Visual.Attachments
 
-    if attachment == 'Hair' then
-        for i = 1, #Attachments do
-            if attachmentFound(entity, i, attachment) then
-                local path = {'Visual', 'Visual', 'Attachments', i, 'Visual'}
 
-                table.insert(Indices, i)
-                table.insert(Paths, path)
+_GLL.SavedParameters = {}
+_GLL.SavedParameters.ActiveMaterial = {}
+_GLL.SavedParameters.MaterialPreset = {}
 
-                if not onlyIndexPath then
-                    table.insert(Visuals, Attachments[i].Visual)
-                end
+
+_GLL.CharacterSkinMap = {}
+
+
+_GLL.selectedCharacter = nil
+
+
+
+function GetUnmatchedParameters()
+    local UnmatchedParameters = {}
+    local CategoryIndex = {}
+
+    for catAttachment, categories in pairs(CategoriesLayout) do
+        local mappedAttachment = AttachmentMap[catAttachment] or catAttachment
+        CategoryIndex[mappedAttachment] = CategoryIndex[mappedAttachment] or {}
+
+        for _, categoryParams in pairs(categories) do
+            for _, paramName in pairs(categoryParams) do
+                CategoryIndex[mappedAttachment][paramName] = true
             end
         end
+    end
 
-    elseif attachment == 'Piercing' then
-        local xd = Attachments[2]
-        if xd and xd.Visual and xd.Visual.Attachments then
-            for q = 1, #xd.Visual.Attachments do
-                local poggers = xd.Visual.Attachments[q]
-                if poggers.Visual and
-                   poggers.Visual.VisualResource and
-                   poggers.Visual.VisualResource.Slot and
-                   poggers.Visual.VisualResource.Slot:lower():find('piercing') then
+    for uuid, attachments in pairs(_GLL.Parameters) do
+        for attachment, parameterTypes in pairs(attachments) do
+            for parameterType, parameters in pairs(parameterTypes) do
+                for parameterName, value in pairs(parameters) do
+                    local isKnown = CategoryIndex[attachment] and
+                        CategoryIndex[attachment][parameterName]
 
-                    local path = {'Visual', 'Visual', 'Attachments', 2, 'Visual', 'Attachments', q, 'Visual'}
-
-                    table.insert(Indices, q)
-                    table.insert(Paths, path)
-
-                    if not onlyIndexPath then
-                        table.insert(Visuals, poggers.Visual)
-                    end
-                end
-            end
-        end
-
-    elseif attachment == 'NakedBody' then
-        for i = 1, #Attachments do
-            local Visual = Attachments[i].Visual
-            if Visual and Visual.VisualResource then
-                for _, object in pairs(Visual.VisualResource.Objects or {}) do
-
-                    --Searching for the body attachment throught object's name to support regular body attachment and dummy body attachment for outfits
-                    --Yes, body attachment is always 1, but I need to support dummy one also
-
-                    if object.ObjectID and object.ObjectID:lower():find('body') then
-
-                        local path = {'Visual', 'Visual', 'Attachments', i, 'Visual'}
-
-                        table.insert(Indices, i)
-                        table.insert(Paths, path)
-
-                        if not onlyIndexPath then
-                            table.insert(Visuals, Visual)
+                    if not isKnown and uuid and attachment and parameterType and parameterName and value then
+                        EnsureTable(UnmatchedParameters, uuid, attachment, parameterType, parameterName)
+                        if UnmatchedParameters[uuid]
+                            and UnmatchedParameters[uuid][attachment]
+                            and UnmatchedParameters[uuid][attachment][parameterType]
+                            and UnmatchedParameters[uuid][attachment][parameterType][parameterName]
+                        then
+                            UnmatchedParameters[uuid][attachment][parameterType][parameterName] = value
                         end
+                    end
+                end
+            end
+        end
+    end
+    -- cleanTable(UnmatchedParameters)
+    return UnmatchedParameters
+end
 
-                        break
+
+
+--- Sets initial value for the elements when rebuilding all parameter controls
+function SetValueForElement(element, objectPaths, attachment, parameterName)
+    local parameterType = Mat.GetParameterType(nil, attachment, parameterName)
+
+    if parameterType then
+        local objectPath = objectPaths[1] or objectPaths
+        local Visuals = objectPath:Resolve()
+        local value = Material:GetCharacterParameterValue(Visuals, parameterType, parameterName)
+
+        if not value then return end
+            if     parameterType == PT.scl then element.Value = {value, 0, 0, 0}
+            elseif parameterType == PT.v3  then element.Color = {value[1], value[2], value[3], 1}
+            elseif parameterType == PT.v4  then element.Color = {value[1], value[2], value[3], value[4]}
+
+        end
+    end
+end
+
+
+
+function SaveParametersSingle(entity)
+    local entity = entity or Ext.Entity.Get(_GLL.selectedCharacter) or _C()
+    local uuid = entity.Uuid.EntityUuid
+
+    _GLL.SavedParameters[uuid] = table.deepCopy(_GLL.Parameters[uuid])
+    cleanTable(_GLL.SavedParameters)
+
+    return _GLL.SavedParameters
+end
+
+
+
+function LoadFromParametersSingel(entity)
+    DPrint('XD')
+end
+
+
+
+function LoadParametersSingle(entity)
+    local timeStart = Ext.Timer.MonotonicTime()
+    local entity = entity or Ext.Entity.Get(_GLL.selectedCharacter) or _C()
+    local uuid = entity.Uuid.EntityUuid
+
+    for attachment, ParameterTypes in pairs(_GLL.SavedParameters[uuid]) do
+        for parameterType, ParameterNames in pairs(ParameterTypes) do
+            for parameterName, value in pairs(ParameterNames) do
+                ResolveAndSetValue(uuid, attachment, parameterType, parameterName, value)
+            end
+        end
+    end
+
+    local timeEnd = Ext.Timer.MonotonicTime()
+    -- DPrint('LoadParametersSingle took: %s ms', timeEnd - timeStart)
+
+    return _GLL.Parameters
+end
+
+
+
+function LoadParametersAll()
+    local timeStart = Ext.Timer.MonotonicTime()
+
+    for uuid, Attachments in pairs(_GLL.SavedParameters or _GLL.Parameters) do
+        for attachment, ParameterTypes in pairs(Attachments) do
+            for parameterType, ParameterNames in pairs(ParameterTypes) do
+                for parameterName, value in pairs(ParameterNames) do
+                    ResolveAndSetValue(uuid, attachment, parameterType, parameterName, value)
+                end
+            end
+        end
+    end
+
+    local timeEnd = Ext.Timer.MonotonicTime()
+    -- DPrint('LoadParametersAll took: %s ms', timeEnd - timeStart)
+
+    return _GLL.Parameters
+end
+
+
+
+function LoadParametersToDummy(uuid)
+    if not uuid then return end
+    local timeStart = Ext.Timer.MonotonicTime()
+
+    local entity = Ext.Entity.Get(uuid)
+
+    if entity and entity.HasDummy then
+        local dummy = Dummy:Get(entity)
+
+        if _GLL.SavedParameters or _GLL.Parameters and _GLL.SavedParameters[uuid] or _GLL.Parameters[uuid] then
+            for attachment, ParameterTypes in pairs(_GLL.SavedParameters[uuid] or _GLL.Parameters[uuid]) do
+                for parameterType, ParameterNames in pairs(ParameterTypes) do
+                    for parameterName, value in pairs(ParameterNames) do
+                        ResolveAndSetValueToUuidless(dummy, uuid, attachment, parameterType, parameterName, value)
                     end
                 end
             end
         end
 
-    else
-        for i = 1, #Attachments do
-            if attachmentFound(entity, i, attachment) then
-                local path = {'Visual', 'Visual', 'Attachments', i, 'Visual'}
+        local timeEnd = Ext.Timer.MonotonicTime()
+        -- DPrint('LoadParametersToDummy took: %s ms', timeEnd - timeStart)
+    end
+end
 
-                table.insert(Indices, i)
-                table.insert(Paths, path)
 
-                if not onlyIndexPath then
-                    table.insert(Visuals, Attachments[i].Visual)
-                end
+
+function LoadParametersToAllDummies()
+    local Origins = Entity:GetOrigins()
+    for _, origin in pairs(Origins) do
+        LoadParametersToDummy(origin.Uuid.EntityUuid)
+    end
+end
+
+
+
+function LoadParametersToPaperdoll(entity)
+    DPrint('XD')
+end
+
+
+
+function LoadParametersToPreviewDummy(entity)
+    DPrint('XD')
+end
+
+
+
+--- Resolves path and sets value for the parameter
+function ResolveAndSetValue(uuid, attachment, parameterType, parameterName, value)
+    local objectPaths = _GLL.StoredVisualPaths[uuid][attachment]
+    if not objectPaths then return end
+
+    for _, objectPath in ipairs(objectPaths) do
+        if objectPath and objectPath.Resolve then
+            local Visuals = objectPath:Resolve()
+            Material:SetCharacterParameterValue(Visuals, parameterType, parameterName, value)
+
+            if _GLL.Parameters[uuid][attachment][parameterType] then
+                _GLL.Parameters[uuid][attachment][parameterType][parameterName] = value
             end
+
+            -- DDump(_GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType][parameterName])
+            -- DPrint('Attachment: %s, Type: %s, Name: %s, Value: %s', attachment, parameterType, parameterName, value)
+
+            --- Temporal garbo thing to make it work with current main ccee implementation
+            if _GLL.AllParameters.ActiveMatParameters[uuid][attachment] and
+               _GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType]
+            then
+                _GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType][parameterName] = value
+            end
+
+            --- TBD: temp
+            local Data = {
+                entityUuid = uuid,
+                attachment = attachment,
+                parameterType = parameterType,
+                parameterName = parameterName,
+                value = value
+            }
+            Ext.Net.PostMessageToServer('CCEE_SendSingleActiveMatVars', Ext.Json.Stringify(Data))
         end
     end
-
-    return Visuals, Indices, Paths
 end
 
 
 
-local function nameCheck(name, attachment, parameterType)
-    for _, existingName in ipairs(Parameters2[attachment][parameterType]) do
-        if existingName == name then
-            return true
-        end
-    end
-end
-
-
-
-local function insertParameter(ActiveMaterial, attachment, parameterType)
-    if not parameterType then return end
-    if not ActiveMaterial.Material.Parameters[parameterType] then return end
-
-    for _, sp in ipairs(ActiveMaterial.Material.Parameters[parameterType]) do
-        local parameterName = sp.ParameterName
-        if not nameCheck(parameterName, attachment, parameterType) then
-            table.insert(Parameters2[attachment][parameterType], parameterName)
-        end
-    end
-
-end
-
-
-
----Gets entity's (character's) all available meterial parameters
----@param entity EntityHandle
-function BuildAllParametersTable(entity)
-
-    Parameters2 = {}
-    local entity = entity or _C()
-
-    for _, attachment in ipairs(AllAttachments) do
-        for _, parameterType in ipairs(AllParameterTypes) do
-
-            local Visuals = FindAttachment2(entity, attachment)
-
+--- Trash
+--- Re-resolving path for photo mode dummies due to how I implemented the thing in the first place.
+--- Maybe refactor some other time
+function ResolveAndSetValueToUuidless(entity, uuid, attachment, parameterType, parameterName, value)
+    local objectPaths = _GLL.StoredVisualPaths[uuid][attachment]
+    if objectPaths then
+        for _, objectPath in ipairs(objectPaths) do
+            local Visuals = ObjectPath:New(entity, objectPath.Path):Resolve()
             if Visuals then
+                Material:SetCharacterParameterValue(Visuals, parameterType, parameterName, value)
+            end
+        end
+    end
+end
 
-                Parameters2[attachment] = Parameters2[attachment] or {}
-                Parameters2[attachment][parameterType] = Parameters2[attachment][parameterType] or {}
 
-                for _, visuals in pairs(Visuals) do
-                    if visuals and visuals.ObjectDescs then
-                        for od = 1, #visuals.ObjectDescs do
-                            local ActiveMaterial = visuals.ObjectDescs[od].Renderable.ActiveMaterial
-                            if ActiveMaterial and ActiveMaterial.Material then
-                                insertParameter(ActiveMaterial, attachment, parameterType)
-                            end
-                        end
+
+--- Syncs elements values between ParametersToSync
+function SyncElementValue(syncedAttachment, parameterName, elementName)
+    local syncedElementName = syncedAttachment .. '_' .. parameterName
+
+    if E[syncedElementName] then
+        local isSlider = pcall(function()
+            return E[syncedElementName].Value
+        end)
+
+        if isSlider then
+            E[syncedElementName].Value = E[elementName].Value
+        else
+            E[syncedElementName].Color = E[elementName].Color
+        end
+    end
+end
+
+
+
+function SetValueWithSync(elementName, attachment, parameterType, parameterName, value)
+    local entity = entity or Ext.Entity.Get(_GLL.selectedCharacter) or _C()
+    local uuid = entity.Uuid.EntityUuid
+
+    if ParametersToSync[parameterName] then
+        for _, syncedAttachment in pairs(AllAttachments) do
+            if _GLL.Parameters[uuid]
+            and _GLL.Parameters[uuid][syncedAttachment]
+            and _GLL.StoredVisualPaths[uuid][syncedAttachment] then
+
+                ResolveAndSetValue(uuid, syncedAttachment, parameterType, parameterName, value)
+                SyncElementValue(syncedAttachment, parameterName, elementName)
+            end
+        end
+    else
+        ResolveAndSetValue(uuid, attachment, parameterType, parameterName, value)
+    end
+end
+
+
+
+function CreateElementForParameter(parent, widgetKey, attachment, parameterName)
+    local max = 5
+    local min = -max
+    local cfg = ParametersConfig[parameterName] or {}
+    local parameterType = Mat.GetParameterType(parameterName)
+
+    if parameterType == PT.scl then
+        if cfg.int then
+            E[widgetKey] = parent:AddDragInt(parameterName, 0, min, max, 1)
+        else
+            E[widgetKey] = parent:AddDrag(parameterName, 0, min, max, 0.1)
+        end
+            UI:Config(E[widgetKey], {
+                -- Logarithmic = cfg.log or false,
+                OnChange = function(e)
+                    local value = e.Value[1]
+                    SetValueWithSync(widgetKey, attachment, parameterType, parameterName, value)
+                end
+            })
+    end
+
+    if parameterType == PT.v3 then
+        E[widgetKey] = parent:AddColorEdit(parameterName)
+            UI:Config(E[widgetKey], {
+                NoAlpha = true,
+                OnChange = function(e)
+                    local value = { e.Color[1], e.Color[2], e.Color[3] }
+                    SetValueWithSync(widgetKey, attachment, parameterType, parameterName, value)
+                end
+            })
+    end
+
+    if parameterType == PT.v4 then
+        E[widgetKey] = parent:AddColorEdit(parameterName)
+            UI:Config(E[widgetKey], {
+                NoAlpha = false,
+                OnChange = function(e)
+                    local value = e.Color
+                    SetValueWithSync(widgetKey, attachment, parameterType, parameterName, value)
+                end
+            })
+    end
+end
+
+
+
+function StoreVisualPaths(entity)
+    local uuid = entity.Uuid.EntityUuid
+
+    for _, attachment in ipairs(AttachmentsOrder) do
+        if _GLL.Parameters[uuid] and _GLL.Parameters[uuid][attachment] then
+            local _, _, Paths = Att.FindAttachment(entity, attachment, En_State.only_index_and_path)
+
+            Utils:EnsureTable(_GLL.StoredVisualPaths, uuid, attachment)
+            for _, path in ipairs(Paths) do
+                table.insert(_GLL.StoredVisualPaths[uuid][attachment], ObjectPath:New(entity, path))
+            end
+        end
+    end
+    return _GLL.StoredVisualPaths
+end
+
+
+
+function CreateControlsInSortedTrees()
+    local timeStart = Ext.Timer.MonotonicTime()
+
+    local p = E.grpCat
+    local Trees = {}
+    local CatTrees = {}
+    local entity = entity or Ext.Entity.Get(_GLL.selectedCharacter) or _C()
+    local uuid = entity.Uuid.EntityUuid
+
+    for _, mainCategoryName in ipairs(AttachmentsOrderXD) do
+        local attachment = AttachmentMap[mainCategoryName] or mainCategoryName
+        local SubCategories = CategoriesLayout[mainCategoryName]
+        local SubCatOrder = {}
+
+        CatTrees[attachment] = p:AddCollapsingHeader(mainCategoryName) --- Main collapse
+        CatTrees[attachment].IDContext = Ext.Math.Random(1, 10000)
+        Trees[attachment] = Trees[attachment] or {}
+
+        if SubCategories then
+            for subCatName, _ in pairs(SubCategories) do
+                table.insert(SubCatOrder, subCatName)
+            end
+            table.sort(SubCatOrder)
+
+            for _, subCatName in ipairs(SubCatOrder) do
+                if not Trees[attachment][subCatName] then
+                    local tree = CatTrees[attachment]:AddTree(subCatName) --- Tree
+                    tree.IDContext = Ext.Math.Random(1, 1000)
+                    Trees[attachment][subCatName] = tree
+                    tree:AddSeparator()
+                end
+
+                local parentTree = Trees[attachment][subCatName]
+                parentTree.IDContext = Ext.Math.Random(1, 1000)
+
+                for _, parameterName in ipairs(SubCategories[subCatName]) do
+                    local widgetName = attachment .. '_' .. parameterName
+
+                    --- Populating trees with the imjui widgets HERE
+                    --- Populating trees with the imjui widgets HERE
+                    --- Populating trees with the imjui widgets HERE
+                    CreateElementForParameter(parentTree, widgetName, attachment, parameterName)
+
+                    if widgetName and E[widgetName] and _GLL.StoredVisualPaths and _GLL.StoredVisualPaths[uuid][attachment] then
+                        SetValueForElement(E[widgetName], _GLL.StoredVisualPaths[uuid][attachment], attachment, parameterName)
                     end
+                end
+                parentTree:AddSeparator()
+            end
+        end
+        CatTrees[attachment]:AddSeparator()
+    end
+
+    CatTrees['Unsorted'] = p:AddCollapsingHeader('Unsorted')
+    CreateControlsInUnsortedTree(CatTrees['Unsorted'])
+    CreateDiffusionProfileControls(E.grpDiffusion)
+
+
+    --- I hate cats atp
+    local timeEnd = Ext.Timer.MonotonicTime()
+    -- DPrint('CreateControlsInSortedTrees took: %s ms', timeEnd - timeStart)
+end
+
+
+
+function CreateControlsInUnsortedTree(parent)
+    local timeStart = Ext.Timer.MonotonicTime()
+
+    local UnsortedTrees = {}
+    local UnsortedParameters = GetUnmatchedParameters()
+    local entity = entity or Ext.Entity.Get(_GLL.selectedCharacter) or _C()
+    local uuid = entity.Uuid.EntityUuid
+    local Attachments = UnsortedParameters[uuid]
+
+    if Attachments then
+        for attachment, ParameterTypes in pairs(Attachments) do
+            local catTree = parent:AddTree(attachment)
+            UnsortedTrees[attachment] = UnsortedTrees[attachment] or {}
+
+            for parameterType, parameterNames in pairs(ParameterTypes) do
+                if not UnsortedTrees[attachment][parameterType] then
+                    local tree = catTree:AddTree(parameterType)
+                    tree.IDContext = Ext.Math.Random(1, 10000)
+                    UnsortedTrees[attachment][parameterType] = tree
+                end
+
+                local parentTree = UnsortedTrees[attachment][parameterType]
+
+                for parameterName, _ in pairs(parameterNames) do
+                    local elementName = attachment .. '_' .. parameterName
+
+                    CreateElementForParameter(parentTree, elementName, attachment, parameterName)
+                    SetValueForElement(E[elementName], _GLL.StoredVisualPaths[uuid][attachment], attachment, parameterName)
                 end
             end
         end
     end
 
-    for attachment, types in pairs(Parameters2) do
-        for parameterType, parameterName in pairs(types) do
-            table.sort(parameterName)
+    local timeEnd = Ext.Timer.MonotonicTime()
+    -- DPrint('CreateControlsInUnsortedTree took: %s ms', timeEnd - timeStart)
+end
+
+
+
+--- Basically the main UI thing
+function GetParametersAndBuildControls(entity)
+    local timeStart = Ext.Timer.MonotonicTime()
+
+    if entity then
+        StoreVisualPaths(entity)
+        Mat.GetParametersSingleCharacter(entity)
+    else
+        local Origins = Entity:GetOrigins()
+
+        for _, entity in pairs(Origins) do
+            Mat.GetParametersSingleCharacter(entity)
+            StoreVisualPaths(entity)
         end
     end
 
-    --sloppy toppy xd
-    for attachment, data in pairs(Parameters2) do
-        local keep = false
-        for _, list in pairs(data) do
-            if #list > 0 then
-                keep = true
-                break
+    --- I'd really like to track what to rebuild and what to not rebuild, and just change paths, but holy shit, I don't care. 20ms it is.
+    --- Too complicated, and I don't really see how to, and I don't want to full slop. Maybe one day
+    CreateControlsInSortedTrees()
+    local timeEnd = Ext.Timer.MonotonicTime()
+    -- DPrint('GetParametersAndBuildControls took: %s ms', timeEnd - timeStart)
+end
+
+
+
+function GetSkinColors(uuid)
+    local SkinColor = {}
+    local uuid = uuid or '685eb026-02d2-41f4-9de9-b2dd51de40e5'
+    local Skin = Ext.StaticData.Get(uuid, 'CharacterCreationSkinColor')
+    local SkinPreset = Ext.Resource.Get(Skin.MaterialPresetUUID, 'MaterialPreset')
+    local UIColor = Skin.UIColor
+
+    for parameterType, Parameters in pairs(SkinPreset.Presets) do
+        if parameterType == PT.scl or  parameterType == PT.v3 or parameterType == PT.v4 then
+            for _, Parameter in pairs(Parameters) do
+                Utils:EnsureTable(SkinColor, parameterType, Parameter.Parameter)
+                SkinColor[parameterType][Parameter.Parameter] = Parameter.Value
             end
         end
-        if not keep then
-            Parameters2[attachment] = nil
+    end
+    return SkinColor
+end
+
+
+
+function CreateDiffusionProfileControls(parent)
+    E.collpaseDiffusion = parent:AddCollapsingHeader('Diffusion profile')
+    local p = E.collpaseDiffusion
+    local Profile = Ext.Resource.Get('a8c42087-d32f-9cbe-6b0c-d566de6a082d', 'DiffusionProfile')
+
+    local function SetDiffusionProfile()
+        for i = 1, 2 do
+            local ObjectDescs = Apply.entity.Visual.Visual.Attachments[i].Visual.ObjectDescs[1]
+            ObjectDescs.Renderable.ActiveMaterial.Material.DiffusionProfileUUID = 'a8c42087-d32f-9cbe-6b0c-d566de6a082d'
         end
     end
 
-    -- _DD(Parameters2, 'ccee_parameters2')
-    return Parameters2
+    for k, v in pairs(Profile) do
+        if type(v) ~= 'string'
+            and type(v) ~= 'boolean'
+            and k ~= 'RefCount'
+            and k ~= 'State'
+        then
+            if type(v) == 'number' then
+                E[k] = p:AddDrag(k, v, 0, 100)
+                    UI:Config(E[k], {
+                        Value = {v, 0,0,0},
+                        OnChange = function(e)
+                            SetDiffusionProfile()
+                            Ext.Resource.Get('a8c42087-d32f-9cbe-6b0c-d566de6a082d', 'DiffusionProfile')[k] = e.Value[1]
+                        end
+                    })
+
+            elseif type(v) == 'table' or 'userdata' then
+                E[k] = p:AddColorEdit(k)
+                    UI:Config(E[k], {
+                        Color = {v[1], v[2], v[3], 1},
+                        OnChange = function(e)
+                            SetDiffusionProfile()
+                            Ext.Resource.Get('a8c42087-d32f-9cbe-6b0c-d566de6a082d', 'DiffusionProfile')[k] = {e.Color[1], e.Color[2], e.Color[3]}
+                        end
+                    })
+            end
+        end
+    end
 end

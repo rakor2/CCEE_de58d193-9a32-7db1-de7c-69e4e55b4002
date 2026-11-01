@@ -65,7 +65,7 @@ end
 function setElementsToZero(entity)
     entity = entity or _C()
     local cca = entity.CharacterCreationAppearance
-    Globals.backupCca = getCharacterCreationAppearance2(entity)
+    _GLL.backupCca = getCharacterCreationAppearance2(entity)
     for i = 1, #cca.Elements do
         cca.Elements[i].Material = Utils.ZEROUUID
         cca.Elements[i].Color = Utils.ZEROUUID
@@ -83,7 +83,7 @@ end
 
 function restoreElements(entity)
     entity = entity or _C()
-    entity.CharacterCreationAppearance = Globals.backupCca
+    entity.CharacterCreationAppearance = _GLL.backupCca
     Helpers.Timer:OnTicks(5, function ()
         entity:Replicate('CharacterCreationAppearance')
     end)

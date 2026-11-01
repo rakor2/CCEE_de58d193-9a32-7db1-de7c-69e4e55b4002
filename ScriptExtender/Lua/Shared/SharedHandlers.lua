@@ -28,6 +28,12 @@ function getCharacterCreationAppearance(entity)
     return SavedAppearance
 end
 
+
+
+
+
+
+
 function getDummyAppearance(entity)
     local SavedAppearance = {}
     local dummyCCA = entity.ClientCCDummyDefinition
