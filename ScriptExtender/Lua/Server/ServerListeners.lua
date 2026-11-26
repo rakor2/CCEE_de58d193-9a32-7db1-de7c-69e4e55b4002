@@ -151,6 +151,8 @@ Ext.RegisterNetListener('CCEE_SendSingleActiveMatVars', function (channel, paylo
     --Ext.Net.PostMessageToUser(userID, 'CCEE_SendSingleActiveMatVarsToUser', Ext.Json.Stringify(xd))
 
 
+    -- DDump(Helpers.ModVars.Get(ModuleUUID).CCEE_AM[xd.entityUuid][xd.attachment][xd.parameterType][xd.parameterName])
+
 
     local users = Net:GetReservedUserIDs()
     --DDump(users)

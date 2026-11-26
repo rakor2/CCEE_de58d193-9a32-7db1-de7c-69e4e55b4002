@@ -22,6 +22,20 @@ _GLL.CharacterSkinMap = {}
 _GLL.selectedCharacter = nil
 
 
+_GLL.AllParameters = {}
+_GLL.AllParameters.ActiveMatParameters = {}
+_GLL.AllParameters.MatPresetParameters = {}
+_GLL.AllParameters.CCEEModStuff = {}
+
+
+
+_GLL.AllParameters.CCEEModStuff = {}
+_GLL.AllParameters.CCEEModStuff.SkinMap = {}
+_GLL.AllParameters.CCEEModStuff.HairMap = {}
+_GLL.AllParameters.CCEEModStuff.UsedSkinUUID = {}
+_GLL.AllParameters.CCEEModStuff.UsedHairUUID = {}
+
+
 
 function GetUnmatchedParameters()
     local UnmatchedParameters = {}
@@ -67,9 +81,11 @@ end
 
 --- Sets initial value for the elements when rebuilding all parameter controls
 function SetValueForElement(element, objectPaths, attachment, parameterName)
-    local parameterType = Mat.GetParameterType(nil, attachment, parameterName)
+    local parameterType = Mat.GetParameterType(parameterName)
 
     if parameterType then
+        -- DPrint('Name: %s', parameterName)
+        -- DPrint('Type: %s', parameterType)
         local objectPath = objectPaths[1] or objectPaths
         local Visuals = objectPath:Resolve()
         local value = Material:GetCharacterParameterValue(Visuals, parameterType, parameterName)
@@ -90,7 +106,7 @@ function SaveParametersSingle(entity)
     local uuid = entity.Uuid.EntityUuid
 
     _GLL.SavedParameters[uuid] = table.deepCopy(_GLL.Parameters[uuid])
-    cleanTable(_GLL.SavedParameters)
+    Utils:CleanTable(_GLL.SavedParameters)
 
     return _GLL.SavedParameters
 end
@@ -154,10 +170,12 @@ function LoadParametersToDummy(uuid)
     if entity and entity.HasDummy then
         local dummy = Dummy:Get(entity)
 
-        if _GLL.SavedParameters or _GLL.Parameters and _GLL.SavedParameters[uuid] or _GLL.Parameters[uuid] then
-            for attachment, ParameterTypes in pairs(_GLL.SavedParameters[uuid] or _GLL.Parameters[uuid]) do
+        if _GLL.Parameters and _GLL.Parameters[uuid] then
+            for attachment, ParameterTypes in pairs(_GLL.Parameters[uuid]) do
                 for parameterType, ParameterNames in pairs(ParameterTypes) do
                     for parameterName, value in pairs(ParameterNames) do
+                        -- DPrint(attachment)
+
                         ResolveAndSetValueToUuidless(dummy, uuid, attachment, parameterType, parameterName, value)
                     end
                 end
@@ -200,9 +218,18 @@ function ResolveAndSetValue(uuid, attachment, parameterType, parameterName, valu
     for _, objectPath in ipairs(objectPaths) do
         if objectPath and objectPath.Resolve then
             local Visuals = objectPath:Resolve()
+
+            -- DPrint('Type: %s, Name: %s', parameterType, parameterName)
+
             Material:SetCharacterParameterValue(Visuals, parameterType, parameterName, value)
 
             if _GLL.Parameters[uuid][attachment][parameterType] then
+
+                -- DPrint(attachment)
+                -- DPrint(parameterType)
+                -- DPrint(parameterName)
+                -- DPrint('--------------------')
+
                 _GLL.Parameters[uuid][attachment][parameterType][parameterName] = value
             end
 
@@ -210,21 +237,21 @@ function ResolveAndSetValue(uuid, attachment, parameterType, parameterName, valu
             -- DPrint('Attachment: %s, Type: %s, Name: %s, Value: %s', attachment, parameterType, parameterName, value)
 
             --- Temporal garbo thing to make it work with current main ccee implementation
-            if _GLL.AllParameters.ActiveMatParameters[uuid][attachment] and
-               _GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType]
-            then
-                _GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType][parameterName] = value
-            end
+            -- if _GLL.AllParameters.ActiveMatParameters[uuid][attachment] and
+            --    _GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType]
+            -- then
+            --     _GLL.AllParameters.ActiveMatParameters[uuid][attachment][parameterType][parameterName] = value
+            -- end
 
             --- TBD: temp
-            local Data = {
-                entityUuid = uuid,
-                attachment = attachment,
-                parameterType = parameterType,
-                parameterName = parameterName,
-                value = value
-            }
-            Ext.Net.PostMessageToServer('CCEE_SendSingleActiveMatVars', Ext.Json.Stringify(Data))
+            -- local Data = {
+            --     entityUuid = uuid,
+            --     attachment = attachment,
+            --     parameterType = parameterType,
+            --     parameterName = parameterName,
+            --     value = value
+            -- }
+            -- Ext.Net.PostMessageToServer('CCEE_SendSingleActiveMatVars', Ext.Json.Stringify(Data))
         end
     end
 end
@@ -235,12 +262,28 @@ end
 --- Re-resolving path for photo mode dummies due to how I implemented the thing in the first place.
 --- Maybe refactor some other time
 function ResolveAndSetValueToUuidless(entity, uuid, attachment, parameterType, parameterName, value)
+    -- DPrint(entity)
+    -- DPrint(_GLL.StoredVisualPaths[uuid])
+    -- DPrint(_GLL.StoredVisualPaths[uuid][attachment])
+    -- DPrint(_GLL.StoredVisualPaths[uuid][attachment])
     local objectPaths = _GLL.StoredVisualPaths[uuid][attachment]
     if objectPaths then
+        -- DPrint('1')
         for _, objectPath in ipairs(objectPaths) do
             local Visuals = ObjectPath:New(entity, objectPath.Path):Resolve()
             if Visuals then
                 Material:SetCharacterParameterValue(Visuals, parameterType, parameterName, value)
+
+                if _GLL.Parameters[uuid][attachment][parameterType] then
+
+                    -- DPrint(attachment)
+                    -- DPrint(parameterType)
+                    -- DPrint(parameterName)
+                    -- DPrint('--------------------')
+
+                    _GLL.Parameters[uuid][attachment][parameterType][parameterName] = value
+                end
+
             end
         end
     end
@@ -390,12 +433,21 @@ function CreateControlsInSortedTrees()
                 for _, parameterName in ipairs(SubCategories[subCatName]) do
                     local widgetName = attachment .. '_' .. parameterName
 
+                    -- DPrint(parameterName)
+                    -- DPrint(attachment)
+
                     --- Populating trees with the imjui widgets HERE
                     --- Populating trees with the imjui widgets HERE
                     --- Populating trees with the imjui widgets HERE
                     CreateElementForParameter(parentTree, widgetName, attachment, parameterName)
 
-                    if widgetName and E[widgetName] and _GLL.StoredVisualPaths and _GLL.StoredVisualPaths[uuid][attachment] then
+                    if widgetName and E[widgetName]
+                        and _GLL.StoredVisualPaths
+                        and _GLL.StoredVisualPaths[uuid]
+                        and _GLL.StoredVisualPaths[uuid][attachment]
+                    then
+                        -- DPrint(attachment)
+                        -- DDump(_GLL.StoredVisualPaths[uuid][attachment])
                         SetValueForElement(E[widgetName], _GLL.StoredVisualPaths[uuid][attachment], attachment, parameterName)
                     end
                 end
@@ -541,4 +593,28 @@ function CreateDiffusionProfileControls(parent)
             end
         end
     end
+end
+
+
+
+
+function LoadPreset2(uuid, presetName)
+    local entity = _C()
+    local uuid = uuid or entity.Uuid.EntityUuid
+    local presetName = presetName or 'se/E2_Short_Hair'
+    local Preset = Ext.IO.LoadFile('CCEE/' .. presetName .. '.json')
+    if Preset then
+        Preset = Ext.Json.Parse(Preset)
+        DDump(Preset[2]['CCEEParams'])
+        _GLL.SavedParameters[uuid] = {}
+        -- _GLL.Parameters[uuid] = {}
+
+        _GLL.SavedParameters[uuid] = Preset[2]['CCEEParams']
+        -- _GLL.Parameters[uuid] = Preset[2]['CCEEParams']
+    end
+
+
+    StoreVisualPaths(entity)
+    LoadParametersSingle(entity)
+
 end

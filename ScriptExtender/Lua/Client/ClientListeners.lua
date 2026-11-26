@@ -4,7 +4,7 @@
 --LevelGameplayStarted
 Ext.RegisterNetListener('CCEE_WhenLevelGameplayStarted', function (channel, payload, user)
     _GLL.States.firstCC = false
-    E.firstCC.Checked = false
+    -- E.firstCC.Checked = false
     _GLL.AllParameters.MatPresetParameters = Ext.Json.Parse(payload).MatPresetVars
     _GLL.AllParameters.ActiveMatParameters = Ext.Json.Parse(payload).ActiveMatVars
     _GLL.AllParameters.CCEEModStuff = Ext.Json.Parse(payload).CCEEModVars
@@ -47,7 +47,7 @@ Ext.RegisterNetListener('CCEE_SendSingleActiveMatVarsToUser', function (channel,
     Utils:AntiSpam(1000, function ()
         -- DPrint('CCEE_SendSingleActiveMatVarsToUser')
         Apply_CharacterActiveMaterialParameters(xd.entityUuid)
-        DDump(_GLL.AllParameters.ActiveMatParameters)
+        -- DDump(_GLL.AllParameters.ActiveMatParameters)
     end)
 end)
 
@@ -106,6 +106,7 @@ Ext.RegisterNetListener('CCEE_ApplyActiveMaterialParametersToCharacter', functio
     -- _C().Visual.Visual.Attachments[2].Visual.ObjectDescs[1].Renderable.ActiveMaterial.Material.Parameters.Texture2DParameters[2].ID = '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e'
     --Ext.Resource.Get('6cf160fe-f568-9b7f-6ac9-0b9941b5952a', 'Material').Instance.Parameters.Texture2DParameters[2].ID = '67c3ace1-7ec1-6426-3ba9-91d4cf2f0e8e'
     Helpers.Timer:OnTicks(APPLY_TICKS, function ()
+        DDump(payload)
         Apply_CharacterActiveMaterialParameters(payload)
         Ext.Net.PostMessageToServer('CCEE_SendActiveMatVars', Ext.Json.Stringify(_GLL.AllParameters.ActiveMatParameters))
     end)

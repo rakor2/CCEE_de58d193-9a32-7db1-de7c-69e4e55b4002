@@ -1190,7 +1190,7 @@ end
 
 function HandleActiveMaterialParameters(entity, attachment, parameterName, parameterType, value, objectIndex)
     if _GLL.States.CCState or _GLL.inPhotoMode then
-        SaveActiveMaterialLastChanges(entity, attachment, parameterName, parameterType, value, objectIndex)
+        SaveActiveMaterialLastChanges(_C(), attachment, parameterName, parameterType, value, objectIndex)
         SetActiveMaterialParameterValue(entity, attachment, parameterName, parameterType, value, objectIndex)
     else
         SaveActiveMaterialLastChanges(entity, attachment, parameterName, parameterType, value, objectIndex)
@@ -1443,6 +1443,8 @@ function Apply_CharacterActiveMaterialParameters(charUuid)
                         end
 
                         local targetEntity = (_GLL.States.CCState == true) and _GLL.dummyEntity or entity
+                        -- DPrint(parameterName)
+                        -- DDump(value)
                         SetActiveMaterialParameterValue(targetEntity, attachment, parameterName, parameterType, value, objectIndex)
                         SetActiveMaterialParameterValue(targetEntity, 'NakedBody', 'IsTav', 'ScalarParameters', 1, nil)
                     end

@@ -4,7 +4,7 @@ Ext.Require('Client/Extender.lua')
 Ext.Require('Client/MaterialPreset.lua')
 Ext.Require('Client/Attachments.lua')
 Ext.Require('Client/Materials.lua')
-Ext.Require('Client/CutsomPrarmeters.lua')
+-- Ext.Require('Client/CutsomPrarmeters.lua')
 
 Ext.Require('Client/1_UI2.lua')
 Ext.Require('Client/2_ClientHandlers2.lua')

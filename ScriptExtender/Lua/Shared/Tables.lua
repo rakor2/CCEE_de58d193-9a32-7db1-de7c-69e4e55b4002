@@ -663,6 +663,62 @@ BodyVirtualTextures = {
 
 
 
+KAVTMakeUpAtlases = {
+    '2f72fffe-7602-05c4-b005-ieatpaste666', -- 1 default
+    'dbe13558-dfc4-045a-568c-850493864cf1', -- 2
+    '949346a9-15a6-dd44-6b75-b5480a1a8e72', -- 3
+    '2be3aecd-ab16-a40e-89f2-6e65b592abaa', -- 4
+    '30f9a26c-1900-955d-4e1d-8385020b6fc9', -- 5
+    'c8e3f071-c98d-3b17-9073-b65846ebc6b2', -- 6
+    '58987f72-860a-e40a-9ff5-787ae081a924', -- 7
+    'd8bdd71b-85bb-b01d-7483-af5d12429d0d', -- 8
+    '07a10cd9-5702-9312-faaf-1b36caf31e49', -- 9
+    'c774dedb-45c9-c322-57aa-1cd61bf40e7c', -- 10
+}
+
+
+
+
+KAVTFaceTattooAtlases = {
+    '505e82ee-ed64-05cc-aa31-ieatpaste666', -- 1 default
+    '9a1821e6-be66-a402-6a69-f9544fbb38f8', -- 2
+    '00f3c035-bd6c-514e-b035-94f46cc03cae', -- 3
+    '43cdc32a-b4d2-f7f1-8310-c8af93e7151b', -- 4
+    '5407333a-9369-e5cd-c769-f482972adfae', -- 5
+    'e9b1c9c1-7a68-9a05-0a67-88561fa3ee88', -- 6
+    '263f3aea-cc6c-f83a-6814-f7ee99f421c6', -- 7
+    '2a99c42d-e713-3cf6-2bbd-581cabf220ed', -- 8
+    '268a8c8f-6d12-4550-9dd8-d846630d5468', -- 9
+    'fa4c40b1-da71-8bdb-0c69-bff72360389e', -- 10
+}
+
+
+
+
+-- KVT_Head_Atlas_Makeup_2_dbe13558-dfc4-045a-568c-850493864cf1
+-- KVT_Head_Atlas_Makeup_3_949346a9-15a6-dd44-6b75-b5480a1a8e72
+-- KVT_Head_Atlas_Makeup_4_2be3aecd-ab16-a40e-89f2-6e65b592abaa
+-- KVT_Head_Atlas_Makeup_5_30f9a26c-1900-955d-4e1d-8385020b6fc9
+-- KVT_Head_Atlas_Makeup_6_c8e3f071-c98d-3b17-9073-b65846ebc6b2
+-- KVT_Head_Atlas_Makeup_7_58987f72-860a-e40a-9ff5-787ae081a924
+-- KVT_Head_Atlas_Makeup_8_d8bdd71b-85bb-b01d-7483-af5d12429d0d
+-- KVT_Head_Atlas_Makeup_9_07a10cd9-5702-9312-faaf-1b36caf31e49
+-- KVT_Head_Atlas_Makeup_10_c774dedb-45c9-c322-57aa-1cd61bf40e7c
+
+
+
+
+
+-- KVT_Head_Atlas_Tattoo_2_9a1821e6-be66-a402-6a69-f9544fbb38f8
+-- KVT_Head_Atlas_Tattoo_3_00f3c035-bd6c-514e-b035-94f46cc03cae
+-- KVT_Head_Atlas_Tattoo_4_43cdc32a-b4d2-f7f1-8310-c8af93e7151b
+-- KVT_Head_Atlas_Tattoo_5_5407333a-9369-e5cd-c769-f482972adfae
+-- KVT_Head_Atlas_Tattoo_6_e9b1c9c1-7a68-9a05-0a67-88561fa3ee88
+-- KVT_Head_Atlas_Tattoo_7_263f3aea-cc6c-f83a-6814-f7ee99f421c6
+-- KVT_Head_Atlas_Tattoo_8_2a99c42d-e713-3cf6-2bbd-581cabf220ed
+-- KVT_Head_Atlas_Tattoo_9_268a8c8f-6d12-4550-9dd8-d846630d5468
+-- KVT_Head_Atlas_Tattoo_10_fa4c40b1-da71-8bdb-0c69-bff72360389e
+
 
 
 -- Ext.Resource.Get('1594b4da-6db1-471b-9a1a-c1ad4ecf721b', 'Material').VirtualTextureParameters[1].Enabled = false

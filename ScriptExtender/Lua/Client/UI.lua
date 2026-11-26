@@ -1,6 +1,6 @@
 ---@diagnostic disable: param-type-mismatch
 
-OPENQUESTIONMARK = true
+OPENQUESTIONMARK = false
 IMGUI:AntiStupiditySystem()
 
 function UI:Init()
@@ -260,7 +260,7 @@ function Window:CCEEWindow()
         elseif type == 'inp' then
             self[var] = parent:AddInputText(name)
         else
-            self[var] = parent:AddSlider(name, options.default or 0, options.min or 0, options.max or 1, 0)
+            self[var] = parent:AddDrag(name, options.default or 0, options.min or 0, options.max or 1, 0)
             self[var].Logarithmic = options.log or false
         end
         self[var].IDContext = Ext.Math.Random(1,1000000)
@@ -874,7 +874,7 @@ ahhTable = {
             HandleAllScalarMaterialParameters(Apply.entity, 'MaxWindMovementAmount', var, {'Hair'})
         end},
 
-        {nil, 'slSoftenTipsAlpha', 'Soften Tips Alpha', parent, {}, function(var)
+        {nil, 'slSoftenTipsAlpha', 'Soften Tips Alpha', parent, {min = -4, max = 4}, function(var)
             HandleAllScalarMaterialParameters(Apply.entity, 'SoftenTipsAlpha', var, {'Hair'})
         end},
 
@@ -1159,11 +1159,31 @@ function CCEE:Face()
     local faceCollapse = p:AddCollapsingHeader('Face')
     local parent = faceCollapse
 
-    Elements:PopulateTab(ahhTable.Eyes_makeup, parent, 'Eyes makeup')
+    local treeMakeup = Elements:PopulateTab(ahhTable.Eyes_makeup, parent, 'Eyes makeup')
+
+    slFaceTatIndex = treeMakeup:AddSliderInt('MakeUpAtlasIndex', 1, 1, 10)
+    slFaceTatIndex.IDContext = 'MakeUpAtlasIndex'
+    slFaceTatIndex.OnChange = function(e)
+        local var = KAVTMakeUpAtlases[e.Value[1]]
+        HandleAllTex2DMaterialParameters(Apply.entity, 'MakeUpAtlas', var, {'Head'})
+    end
+
+
 
     Elements:PopulateTab(ahhTable.Lips_makeup, parent, 'Lips makeup')
 
-    Elements:PopulateTab(ahhTable['Tattoo'], parent, 'Tattoo')
+
+
+
+    local treeTattoo = Elements:PopulateTab(ahhTable['Tattoo'], parent, 'Tattoo')
+
+    slFaceTatIndex = treeTattoo:AddSliderInt('FaceTatAtlasIndex', 1, 1, 10)
+    slFaceTatIndex.IDContext = 'FaceTatAtlasIndex'
+    slFaceTatIndex.OnChange = function(e)
+        local var = KAVTFaceTattooAtlases[e.Value[1]]
+        HandleAllTex2DMaterialParameters(Apply.entity, 'TattooAtlas', var, {'Head'})
+    end
+
 
     Elements:PopulateTab(ahhTable['Scars'], parent, 'Scars')
 
